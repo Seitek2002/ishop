@@ -8,6 +8,7 @@ import Order from 'pages/Order';
 import Scan from 'pages/Scan';
 import SelectOrderType from 'pages/SelectOrderType';
 import Takeaway from 'pages/Takeaway';
+import SaveRefPage from 'src/pages/SaveRefPage/SaveRefPage';
 import ProtectedRoute from 'components/ProtectedRoute';
 
 const AppRoutes = () => {
@@ -21,8 +22,7 @@ const AppRoutes = () => {
         <Route path='/:venue' element={<SelectOrderType />} />
         <Route path='/:venue/d' element={<Home />} />
         <Route path='/:venue/:venueId/:id' element={<Home />} />
-        <Route path='/I/:venue/d' element={<Home />} />
-        <Route path='/I/:venue/:venueId/:id' element={<Home />} />
+        <Route path='/:venue/ref/:ref' element={<SaveRefPage />} />
 
         <Route element={<ProtectedRoute />}>
           <Route path='/cart' element={<Cart />} />
