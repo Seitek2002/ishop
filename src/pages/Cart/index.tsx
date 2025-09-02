@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
@@ -60,6 +60,8 @@ const Cart: React.FC = () => {
 
   const [activeFood, setActiveFood] = useState<IProduct | null>(null);
   const [active, setActive] = useState(false);
+  const wrapperRef = useRef<HTMLDivElement | null>(null);
+  const [wrapperHeight, setWrapperHeight] = useState(0);
   const [clearCartModal, setClearCartModal] = useState(false);
   const [showWorkTimeModal, setShowWorkTimeModal] = useState(false);
 
@@ -269,8 +271,21 @@ const Cart: React.FC = () => {
       ? 0
       : deliveryFixedFee
     : 0;
+  const hasFreeDeliveryHint =
+    isDeliveryType && deliveryFreeFrom !== null && subtotal < deliveryFreeFrom;
   const total =
     Math.round((subtotal + serviceFeeAmt + deliveryFee) * 100) / 100;
+
+  // Smooth auto-height for details dropdown (no hardcoded px)
+  useEffect(() => {
+    if (active) {
+      const h = wrapperRef.current?.scrollHeight ?? 0;
+      setWrapperHeight(h);
+    } else {
+      setWrapperHeight(0);
+    }
+    // Recompute when content that affects height changes
+  }, [active, subtotal, serviceFeeAmt, deliveryFee, hasFreeDeliveryHint]);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -542,12 +557,13 @@ const Cart: React.FC = () => {
                     />
                   </div>
                   <div
+                    ref={wrapperRef}
                     className={
                       active
                         ? 'cart__sum-wrapper divide-y active'
                         : 'cart__sum-wrapper divide-y'
                     }
-                    style={{ height: active ? '160px' : '0' }}
+                    style={{ height: `${wrapperHeight}px` }}
                   >
                     <div className='cart__sum-item text-[#80868B]'>
                       {t('empty.total')}
@@ -567,7 +583,7 @@ const Cart: React.FC = () => {
                         {deliveryFee} c
                       </div>
                     </div>
-                    {isDeliveryType && deliveryFreeFrom !== null && subtotal < deliveryFreeFrom && (
+                    {hasFreeDeliveryHint && (
                       <div className='cart__sum-item text-[#80868B]'>
                         <span className=''>{t('freeDeliveryFrom')}</span>
                         <div className='cart__sum-total text-[#00BFB2] font-semibold'>
