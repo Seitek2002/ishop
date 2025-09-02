@@ -4,8 +4,6 @@ import Cart from 'pages/Cart';
 import Home from 'pages/Home';
 import Main from 'pages/Main';
 import Order from 'pages/Order';
-import Scan from 'pages/Scan';
-import Takeaway from 'pages/Takeaway';
 import SaveRefPage from 'src/pages/SaveRefPage/SaveRefPage';
 import ProtectedRoute from 'components/ProtectedRoute';
 
@@ -14,8 +12,6 @@ const AppRoutes = () => {
     <BrowserRouter>
       <Routes>
         <Route path='/' element={<Main />} />
-        <Route path='/scan' element={<Scan />} />
-        <Route path='/takeaway/:venue' element={<Takeaway />} />
         {/* <Route path='/:venue' element={<SelectOrderType />} /> */}
         <Route path='/:venue' element={<Home />} />
         <Route path='/:venue/ref/:ref' element={<SaveRefPage />} />
