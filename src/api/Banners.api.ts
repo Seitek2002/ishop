@@ -11,11 +11,11 @@ export interface IBanner {
 
 export const bannersApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    getBanners: builder.query<IBanner[], { organization_slug: string }>({
-      query: ({ organization_slug }) => ({
+    getBanners: builder.query<IBanner[], { organizationSlug: string }>({
+      query: ({ organizationSlug }) => ({
         url: 'banners',
         method: 'GET',
-        params: { organizationSlug: organization_slug },
+        params: { organizationSlug },
       }),
     }),
     addBanner: builder.mutation<IBanner, Partial<IBanner>>({

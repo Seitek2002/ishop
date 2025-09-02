@@ -4,11 +4,14 @@ import { baseApi } from './base';
 
 export const categoriesApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    getCategories: builder.query<ICategory[], { venueSlug?: string }>({
-      query: ({ venueSlug }) => ({
+    getCategories: builder.query<
+      ICategory[],
+      { organizationSlug?: string; venueSlug?: string }
+    >({
+      query: ({ organizationSlug, venueSlug }) => ({
         url: 'categories',
         method: 'GET',
-        params: { organizationSlug: venueSlug },
+        params: { organizationSlug: organizationSlug ?? venueSlug },
       }),
     }),
     addCategories: builder.mutation<void, ICategory>({

@@ -9,16 +9,22 @@ export const productsApi = baseApi.injectEndpoints({
       {
         category?: number;
         search?: string;
-        spotSlug?: string;
+        // New schema fields
+        organizationSlug?: string;
+        spotId?: string | number;
+        // Backward compatibility:
+        spotSlug?: string | number;
         venueSlug?: string;
       }
     >({
-      query: ({ category, search, spotSlug, venueSlug }) => {
+      query: ({ category, search, organizationSlug, spotId, spotSlug, venueSlug }) => {
         const params = new URLSearchParams();
         if (category) params.append('category', String(category));
         if (search) params.append('search', search);
-        if (spotSlug) params.append('spotId', spotSlug);
-        if (venueSlug) params.append('organizationSlug', venueSlug);
+        const spot = (spotId ?? spotSlug) as string | number | undefined;
+        const org = organizationSlug ?? venueSlug;
+        if (spot !== undefined && spot !== null) params.append('spotId', String(spot));
+        if (org) params.append('organizationSlug', String(org));
 
         return `products/?${params.toString()}`;
       },

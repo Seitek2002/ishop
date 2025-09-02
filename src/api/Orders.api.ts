@@ -7,17 +7,22 @@ export const ordersApi = baseApi.injectEndpoints({
     getOrders: builder.query<
       IOrder[],
       {
-        tableNum?: string;
-        venueSlug?: string;
-        spotSlug?: string;
+        // New schema fields
+        organizationSlug?: string;
+        spotId?: string | number;
         phone?: string;
+        // Backward compatibility with older code paths:
+        venueSlug?: string;
+        spotSlug?: string | number;
       }
     >({
-      query: ({ tableNum, venueSlug, spotSlug, phone }) => {
+      query: ({ organizationSlug, spotId, phone, venueSlug, spotSlug }) => {
         const params = new URLSearchParams();
-        if (tableNum) params.append('tableNum', tableNum);
-        if (venueSlug) params.append('organizationSlug', venueSlug);
-        if (spotSlug) params.append('spotId', spotSlug);
+        const org = organizationSlug ?? venueSlug;
+        const spot = (spotId ?? spotSlug) as string | number | undefined;
+
+        if (org) params.append('organizationSlug', String(org));
+        if (spot !== undefined && spot !== null) params.append('spotId', String(spot));
         if (phone) params.append('phone', phone);
 
         return `orders/?${params.toString()}`;

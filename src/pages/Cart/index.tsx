@@ -64,7 +64,8 @@ const Cart: React.FC = () => {
 
   const navigate = useNavigate();
   const { data } = useGetProductsQuery({
-    venueSlug: venueData.companyName.toUpperCase(),
+    organizationSlug: venueData.slug,
+    spotId: selectedSpot,
   });
 
   // console.log(data);
@@ -181,9 +182,8 @@ const Cart: React.FC = () => {
       orderProducts,
       comment,
       serviceMode: 1,
-      organization_slug: venueData.slug,
       address: '',
-      spot: venueData?.spots?.[0].id || 0,
+      spot: selectedSpot,
     };
 
     if (venueData?.table?.tableNum) {

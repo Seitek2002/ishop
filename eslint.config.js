@@ -28,7 +28,7 @@ export default tseslint.config({ ignores: ['dist', 'node_modules'] }, js.configs
       'error',
       {
         groups: [
-          ['^react', '^react-dom', '^react-router-dom', '^react-redux', '@reduxjs/toolkit', '^axios'],
+          ['^react', '^react-dom', '^react-router-dom', '^react-redux', '@reduxjs/toolkit', '^axios', '^swiper'],
           [
             '^~',
             '^app',

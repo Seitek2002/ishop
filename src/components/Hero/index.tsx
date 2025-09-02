@@ -1,11 +1,14 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+import { Pagination } from 'swiper/modules';
+import { Swiper, SwiperSlide } from 'swiper/react';
 
 import { statusMessages } from 'pages/Order/enums';
 import { IBanner, useGetBannersQuery } from 'api/Banners.api';
 import { useGetOrdersQuery } from 'api/Orders.api';
 import { IOrder } from 'types/orders.types';
+import { isOutsideWorkTime } from 'utils/timeUtils';
 import Loader from 'components/Loader';
 
 import offer1 from 'assets/images/OrderStatus/Offer-1.png';
@@ -14,47 +17,6 @@ import offer3 from 'assets/images/OrderStatus/schedule-status.png';
 
 import './style.scss';
 
-import { Pagination } from 'swiper/modules';
-import { Swiper, SwiperSlide } from 'swiper/react';
-
-function getWorkStatus(schedule: string) {
-  const [startTimeStr, endTimeStr] = schedule.split('-');
-
-  const [startHours, startMinutes] = startTimeStr.split(':').map(Number);
-  const [endHours, endMinutes] = endTimeStr.split(':').map(Number);
-
-  const now = new Date();
-  const nowHours = now.getHours();
-  const nowMinutes = now.getMinutes();
-
-  const startTotalMinutes = startHours * 60 + startMinutes;
-  const endTotalMinutes = endHours * 60 + endMinutes;
-  const nowTotalMinutes = nowHours * 60 + nowMinutes;
-
-  if (startTotalMinutes === endTotalMinutes) {
-    return 'Заведение работает круглосуточно';
-  }
-
-  if (startTotalMinutes < endTotalMinutes) {
-    if (
-      nowTotalMinutes >= startTotalMinutes &&
-      nowTotalMinutes < endTotalMinutes
-    ) {
-      return false;
-    } else {
-      return true;
-    }
-  } else {
-    if (
-      nowTotalMinutes >= startTotalMinutes ||
-      nowTotalMinutes < endTotalMinutes
-    ) {
-      return false;
-    } else {
-      return true;
-    }
-  }
-}
 
 const Hero = () => {
   const user = JSON.parse(localStorage.getItem('users') ?? '{}');
@@ -65,11 +27,11 @@ const Hero = () => {
     data: fetchedBanners,
     isLoading: bannersLoading,
     isError: bannersError,
-  } = useGetBannersQuery({ organization_slug: venue.slug });
+  } = useGetBannersQuery({ organizationSlug: venue.slug });
 
   const { data: fetchedOrders } = useGetOrdersQuery({
     phone: `${user.phoneNumber}`,
-    venueSlug: venue.slug,
+    organizationSlug: venue.slug,
   });
   const { t } = useTranslation();
 
@@ -153,7 +115,7 @@ const Hero = () => {
         modules={[Pagination]}
         className='hero-swiper'
       >
-        {getWorkStatus(venue.schedule || '00:00-00:00') && (
+        {isOutsideWorkTime(venue.schedule || '00:00-00:00') && (
           <SwiperSlide>
             <div
               className='hero__item'

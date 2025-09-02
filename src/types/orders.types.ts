@@ -19,7 +19,9 @@ export interface IReqCreateOrder {
   tipsPrice?: number;
   spot: number;
   table?: number;
-  organization_slug: string;
+  isTgBot?: boolean;
+  tgRedirectUrl?: string;
+  refAgent?: string;
   orderProducts: {
     product: number;
     count: number;
@@ -32,7 +34,6 @@ export interface IOrder {
   phone: string;
   comment?: string;
   address?: string;
-  organization_slug: string;
   serviceMode: number;
   servicePrice?: string;
   tipsPrice?: string;
