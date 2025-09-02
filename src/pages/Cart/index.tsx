@@ -50,9 +50,10 @@ const Cart: React.FC = () => {
   const [phoneNumber, setPhoneNumber] = useState(
     `+996${userData.phoneNumber.replace('996', '')}`
   );
-  const [comment, setComment] = useState(userData.comment || '');
+  const [comment, setComment] = useState('');
   const [address, setAddress] = useState(userData.address || '');
   const [promoCode, setPromoCode] = useState('');
+  const [showCommentInput, setShowCommentInput] = useState(false);
 
   const [phoneError, setPhoneError] = useState('');
   const [addressError, setAddressError] = useState('');
@@ -227,7 +228,6 @@ const Cart: React.FC = () => {
         ...userData,
         phoneNumber: acc.phone,
         address,
-        comment,
         type: currentType.value,
         activeSpot: selectedSpot,
       })
@@ -467,17 +467,6 @@ const Cart: React.FC = () => {
                     )}
                   </label>
 
-                  <label htmlFor='comment'>
-                    <span className='text-[14px]'>{t('comment')}</span>
-                    <input
-                      id='comment'
-                      type='text'
-                      placeholder={t('empty.comment') || t('comment')}
-                      value={comment}
-                      onChange={(e) => setComment(e.target.value)}
-                    />
-                  </label>
-
                   {
                     <>
                       {orderTypes[activeIndex]?.value === 3 && (
@@ -499,6 +488,28 @@ const Cart: React.FC = () => {
                       )}
                     </>
                   }
+
+                  {!showCommentInput ? (
+                    <button
+                      type='button'
+                      className='text-[14px] block underline mb-3'
+                      style={{ color: colorTheme }}
+                      onClick={() => setShowCommentInput(true)}
+                    >
+                      {t('addComment')}
+                    </button>
+                  ) : (
+                    <label htmlFor='comment'>
+                      <span className='text-[14px]'>{t('comment')}</span>
+                      <input
+                        id='comment'
+                        type='text'
+                        placeholder={t('empty.comment') || t('comment')}
+                        value={comment}
+                        onChange={(e) => setComment(e.target.value)}
+                      />
+                    </label>
+                  )}
                 </div>
 
                 <div className='cart__promo bg-[#fff] p-[12px] rounded-[12px] mt-[12px]'>
