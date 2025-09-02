@@ -4,6 +4,14 @@ export interface ISpot {
   address: string | null;
 }
 
+export interface IWorkSchedule {
+  dayOfWeek: number;
+  dayName: string;
+  workStart: string;
+  workEnd: string;
+  isDayOff?: boolean;
+}
+
 export interface IVenues {
   colorTheme: string;
   companyName: string;
@@ -14,6 +22,8 @@ export interface IVenues {
   // Delivery pricing
   deliveryFixedFee?: string | number;
   deliveryFreeFrom?: string | number | null;
+  // Optional weekly schedule from backend
+  schedules?: IWorkSchedule[];
   defaultDeliverySpot?: number | null;
   table: {
     id: number;

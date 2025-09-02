@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import { useAppSelector } from 'hooks/useAppSelector';
-import { isOutsideWorkTime } from 'utils/timeUtils';
+import { getTodayScheduleWindow, isOutsideWorkTime } from 'utils/timeUtils';
 import BusketCard from 'components/Cards/Cart';
 import WorkTimeModal from 'components/WorkTimeModal';
 
@@ -30,8 +30,11 @@ const BusketDesktop = ({
   const [showWorkTimeModal, setShowWorkTimeModal] = useState(false);
 
   const handleClick = () => {
-    const venueSchedule = venueData?.schedule || '00:00-00:00';
-    if (isOutsideWorkTime(venueSchedule)) {
+    const { window: todayWindow, isClosed } = getTodayScheduleWindow(
+      venueData?.schedules,
+      venueData?.schedule
+    );
+    if (isClosed || isOutsideWorkTime(todayWindow)) {
       setShowWorkTimeModal(true);
       return;
     }

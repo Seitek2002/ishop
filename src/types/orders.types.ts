@@ -15,13 +15,12 @@ export interface IReqCreateOrder {
   comment?: string;
   serviceMode: number;
   address?: string;
-  servicePrice?: number;
+  servicePrice?: string;
   tipsPrice?: number;
   spot: number;
-  table?: number;
   isTgBot?: boolean;
   tgRedirectUrl?: string;
-  refAgent?: string;
+  refAgent?: number | null;
   orderProducts: {
     product: number;
     count: number;

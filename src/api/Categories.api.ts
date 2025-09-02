@@ -9,7 +9,7 @@ export const categoriesApi = baseApi.injectEndpoints({
       { organizationSlug?: string; venueSlug?: string }
     >({
       query: ({ organizationSlug, venueSlug }) => ({
-        url: 'categories',
+        url: 'categories/',
         method: 'GET',
         params: { organizationSlug: organizationSlug ?? venueSlug },
       }),

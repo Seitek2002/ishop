@@ -13,7 +13,7 @@ export const bannersApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getBanners: builder.query<IBanner[], { organizationSlug: string }>({
       query: ({ organizationSlug }) => ({
-        url: 'banners',
+        url: 'banners/',
         method: 'GET',
         params: { organizationSlug },
       }),

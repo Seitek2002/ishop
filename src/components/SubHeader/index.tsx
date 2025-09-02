@@ -4,6 +4,7 @@ import { useDispatch } from 'react-redux';
 
 import { useGetVenueQuery } from 'api/Venue.api';
 import { loadVenueFromStorage } from 'utils/storageUtils';
+import { getTodayScheduleText } from 'utils/timeUtils';
 
 // import { useAppSelector } from 'hooks/useAppSelector';
 // import bell from 'assets/icons/SubHeader/bell.svg';
@@ -38,6 +39,8 @@ const SubHeader = () => {
     // }
   }, []);
 
+  const scheduleText = getTodayScheduleText(data?.schedules, data?.schedule);
+
   return (
     <div className='sub-header'>
       <div className='sub-header__content'>
@@ -46,8 +49,8 @@ const SubHeader = () => {
             <img src={data?.logo} alt='' />
           </div>
           <div>
-            <div className='name'>{data?.companyName}</div>
-            <span className='schedule'>{data?.schedule}</span>
+            <div className='name' title={data?.companyName}>{data?.companyName}</div>
+            <span className='schedule' title={scheduleText}>{scheduleText}</span>
           </div>
         </div>
         <div className='flex items-center justify-between md:gap-[12px] md:flex-initial'>

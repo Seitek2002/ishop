@@ -9,7 +9,7 @@ import { IFoodCart, IProduct } from 'types/products.types';
 import { useAppDispatch } from 'hooks/useAppDispatch';
 import { useAppSelector } from 'hooks/useAppSelector';
 import { loadUsersDataFromStorage } from 'utils/storageUtils';
-import { isOutsideWorkTime } from 'utils/timeUtils';
+import { getTodayScheduleWindow, isOutsideWorkTime } from 'utils/timeUtils';
 import Empty from './components/Empty';
 import BusketDesktop from 'components/BusketDesktop';
 import BusketCard from 'components/Cards/Cart';
@@ -163,9 +163,12 @@ const Cart: React.FC = () => {
 
     setIsLoading(true);
 
-    // Block ordering outside working hours
-    const venueSchedule = venueData?.schedule || '00:00-00:00';
-    if (isOutsideWorkTime(venueSchedule)) {
+    // Block ordering outside working hours (weekly schedules aware)
+    const { window: todayWindow, isClosed } = getTodayScheduleWindow(
+      venueData?.schedules,
+      venueData?.schedule
+    );
+    if (isClosed || isOutsideWorkTime(todayWindow)) {
       setShowWorkTimeModal(true);
       setIsLoading(false);
       return;
@@ -210,7 +213,6 @@ const Cart: React.FC = () => {
 
     if (venueData?.table?.tableNum) {
       acc.serviceMode = 1;
-      acc.table = +venueData.table.id;
     } else {
       if (currentType.value === 3) {
         acc.serviceMode = 3;
@@ -251,7 +253,6 @@ const Cart: React.FC = () => {
     return item.productPrice;
   }
 
-
   const subtotal = cart.reduce((acc, item) => {
     const realPrice = getCartItemPrice(item);
     return acc + realPrice * item.quantity;
@@ -268,7 +269,8 @@ const Cart: React.FC = () => {
       ? 0
       : deliveryFixedFee
     : 0;
-  const total = Math.round((subtotal + serviceFeeAmt + deliveryFee) * 100) / 100;
+  const total =
+    Math.round((subtotal + serviceFeeAmt + deliveryFee) * 100) / 100;
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -476,7 +478,6 @@ const Cart: React.FC = () => {
                     />
                   </label>
 
-
                   {
                     <>
                       {orderTypes[activeIndex]?.value === 3 && (
@@ -535,7 +536,7 @@ const Cart: React.FC = () => {
                         ? 'cart__sum-wrapper divide-y active'
                         : 'cart__sum-wrapper divide-y'
                     }
-                    style={{ height: active ? '120px' : '0' }}
+                    style={{ height: active ? '160px' : '0' }}
                   >
                     <div className='cart__sum-item text-[#80868B]'>
                       {t('empty.total')}
@@ -555,6 +556,14 @@ const Cart: React.FC = () => {
                         {deliveryFee} c
                       </div>
                     </div>
+                    {isDeliveryType && deliveryFreeFrom !== null && subtotal < deliveryFreeFrom && (
+                      <div className='cart__sum-item text-[#80868B]'>
+                        <span className=''>{t('freeDeliveryFrom')}</span>
+                        <div className='cart__sum-total text-[#00BFB2] font-semibold'>
+                          {Number(deliveryFreeFrom)} c
+                        </div>
+                      </div>
+                    )}
                   </div>
                   <div className='cart__sum-ress border-[#f3f3f3]'>
                     {t('empty.totalAmount')} <span>{total} c</span>
