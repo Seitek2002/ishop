@@ -1,8 +1,11 @@
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import { useAppSelector } from 'hooks/useAppSelector';
+import { isOutsideWorkTime } from 'utils/timeUtils';
 import BusketCard from 'components/Cards/Cart';
+import WorkTimeModal from 'components/WorkTimeModal';
 
 import './style.scss';
 
@@ -24,7 +27,15 @@ const BusketDesktop = ({
   const cart = useAppSelector((state) => state.yourFeature.cart);
   const location = useLocation();
 
+  const [showWorkTimeModal, setShowWorkTimeModal] = useState(false);
+
   const handleClick = () => {
+    const venueSchedule = venueData?.schedule || '00:00-00:00';
+    if (isOutsideWorkTime(venueSchedule)) {
+      setShowWorkTimeModal(true);
+      return;
+    }
+
     if (location.pathname === '/cart') {
       if (createOrder) createOrder();
     } else {
@@ -34,6 +45,10 @@ const BusketDesktop = ({
 
   return (
     <>
+      <WorkTimeModal
+        isShow={showWorkTimeModal}
+        onClose={() => setShowWorkTimeModal(false)}
+      />
       <div className='busket__content'>
         {venueData?.table?.tableNum && (
           <div className='table-num'>
