@@ -11,6 +11,9 @@ export interface IVenues {
   logo: string;
   schedule: string;
   serviceFeePercent: number;
+  // Delivery pricing
+  deliveryFixedFee?: string | number;
+  deliveryFreeFrom?: string | number | null;
   defaultDeliverySpot?: number | null;
   table: {
     id: number;

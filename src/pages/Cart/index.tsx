@@ -229,18 +229,24 @@ const Cart: React.FC = () => {
     return item.productPrice;
   }
 
-  const solveTotalSum = () => {
-    const subtotal = cart.reduce((acc, item) => {
-      const realPrice = getCartItemPrice(item);
-      return acc + realPrice * item.quantity;
-    }, 0);
-    return subtotal + subtotal * (venueData.serviceFeePercent / 100);
-  };
 
   const subtotal = cart.reduce((acc, item) => {
     const realPrice = getCartItemPrice(item);
     return acc + realPrice * item.quantity;
   }, 0);
+  const serviceFeeAmt = subtotal * (venueData.serviceFeePercent / 100);
+  const isDeliveryType = orderTypes[activeIndex]?.value === 3;
+  const deliveryFreeFrom =
+    venueData?.deliveryFreeFrom != null
+      ? Number(venueData.deliveryFreeFrom)
+      : null;
+  const deliveryFixedFee = Number(venueData?.deliveryFixedFee || 0);
+  const deliveryFee = isDeliveryType
+    ? deliveryFreeFrom !== null && subtotal >= deliveryFreeFrom
+      ? 0
+      : deliveryFixedFee
+    : 0;
+  const total = Math.round((subtotal + serviceFeeAmt + deliveryFee) * 100) / 100;
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -507,7 +513,7 @@ const Cart: React.FC = () => {
                         ? 'cart__sum-wrapper divide-y active'
                         : 'cart__sum-wrapper divide-y'
                     }
-                    style={{ height: active ? '80px' : '0' }}
+                    style={{ height: active ? '120px' : '0' }}
                   >
                     <div className='cart__sum-item text-[#80868B]'>
                       {t('empty.total')}
@@ -521,9 +527,15 @@ const Cart: React.FC = () => {
                         {venueData.serviceFeePercent}%
                       </div>
                     </div>
+                    <div className='cart__sum-item text-[#80868B]'>
+                      {t('deliveryFee')}
+                      <div className='cart__sum-total delivery'>
+                        {deliveryFee} c
+                      </div>
+                    </div>
                   </div>
                   <div className='cart__sum-ress border-[#f3f3f3]'>
-                    {t('empty.totalAmount')} <span>{solveTotalSum()} c</span>
+                    {t('empty.totalAmount')} <span>{total} c</span>
                   </div>
                 </div>
               </>

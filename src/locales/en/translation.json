@@ -46,6 +46,7 @@
     }
   },
   "services": "Service",
+  "deliveryFee": "Delivery",
   "empty": {
     "contact": "Your order details",
     "comment": "Write the order time or comment",
@@ -82,6 +83,7 @@
     "close": "Close"
   },
   "close": "Close",
+  "workSchedule": "Work schedule:",
   "nonWorkingTime": {
     "title": "Currently non-working hours",
     "description": "Ordering is temporarily unavailable. Please try during working hours."
