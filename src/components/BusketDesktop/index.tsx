@@ -33,29 +33,37 @@ const BusketDesktop = ({
   };
 
   return (
-    <div className='busket__content'>
-      {venueData?.table?.tableNum && (
-        <div className='table-num'>{t('table')}{venueData.table.tableNum}</div>
-      )}
-      {cart.length > 0 ? (
-        <>
-          {cart.map((item) => (
-            <BusketCard key={item.id} item={item} />
-          ))}
-          <button
-            style={{ backgroundColor: colorTheme }}
-            onClick={handleClick}
-            disabled={disabled}
-          >
-            {t("button.next")}
-          </button>
-        </>
-      ) : (
-        <div className='busket__empty text-center'>
-          {t('basket.addItems')}
-        </div>
-      )}
-    </div>
+    <>
+      <div className='busket__content'>
+        {venueData?.table?.tableNum && (
+          <div className='table-num'>
+            {t('table')}
+            {venueData.table.tableNum}
+          </div>
+        )}
+        {cart.length > 0 ? (
+          <>
+            {cart.map((item) => (
+              <BusketCard key={item.id} item={item} />
+            ))}
+          </>
+        ) : (
+          <div className='busket__empty text-center'>
+            {t('basket.addItems')}
+          </div>
+        )}
+      </div>
+      <hr />
+      <div className='bg-[#fff] p-[12px]'>
+        <button
+          style={{ backgroundColor: colorTheme }}
+          onClick={handleClick}
+          disabled={disabled}
+        >
+          {t('button.next')}
+        </button>
+      </div>
+    </>
   );
 };
 

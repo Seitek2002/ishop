@@ -124,21 +124,43 @@ const Cart: React.FC = () => {
     }
   };
 
-  const isButtonDisabled = useMemo(() => {
-    if (phoneError) return false;
+  const validateForm = () => {
+    let hasError = false;
+
+    const cleanPhone = phoneNumber.replace(/\D/g, '');
+    if (!cleanPhone || cleanPhone.length < 12) {
+      setPhoneError('Тут нужно минимум 12 символов');
+      hasError = true;
+      const el = document.getElementById('phoneNumber');
+      el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    } else {
+      setPhoneError('');
+    }
 
     const isDelivery = orderTypes[activeIndex]?.value === 3;
+    if (isDelivery) {
+      if (!address.trim() || address.trim().length < 4) {
+        setAddressError('Тут нужно минимум 4 символа');
+        hasError = true;
+        const el = document.getElementById('address');
+        el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      } else {
+        setAddressError('');
+      }
+    }
 
-    if (isDelivery && addressError) return false;
-
-    if (!phoneNumber.trim() || phoneNumber.length < 12) return false;
-    if (isDelivery && (!address.trim() || address.trim().length < 4))
-      return false;
-
-    return true;
-  }, [phoneNumber, address, phoneError, addressError, activeIndex, orderTypes]);
+    return !hasError;
+  };
 
   const handleOrder = async () => {
+    // Validate before proceeding; show inline errors and keep button enabled
+    if (!validateForm()) {
+      if (navigator.vibrate) {
+        navigator.vibrate(50);
+      }
+      return;
+    }
+
     setIsLoading(true);
 
     // Block ordering outside working hours
@@ -549,7 +571,7 @@ const Cart: React.FC = () => {
               <BusketDesktop
                 to='/order'
                 createOrder={handleOrder}
-                disabled={!isButtonDisabled || !cart.length}
+                disabled={!cart.length}
               />
             </div>
           )}
@@ -578,7 +600,7 @@ const Cart: React.FC = () => {
         {window.innerWidth < 768 && (
           <footer className='cart__footer'>
             <button
-              disabled={!cart.length || !isButtonDisabled}
+              disabled={!cart.length}
               style={{ backgroundColor: colorTheme }}
               onClick={handleOrder}
             >
