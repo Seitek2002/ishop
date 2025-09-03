@@ -49,6 +49,9 @@
   "services": "Service",
   "deliveryFee": "Delivery",
   "freeDeliveryFrom": "Free delivery from",
+  "freeDeliveryYouGet": "You get",
+  "freeDelivery": "free delivery",
+  "freeDeliveryAdd": "Add items for {{amount}} c to get",
   "empty": {
     "contact": "Your order details",
     "comment": "Write the order time or comment",

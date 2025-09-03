@@ -49,6 +49,9 @@
   "services": "Кызмат",
   "deliveryFee": "Жеткирүү",
   "freeDeliveryFrom": "Бекер жеткирүү от",
+  "freeDeliveryYouGet": "Сиз аласыз",
+  "freeDelivery": "бекер жеткирүү",
+  "freeDeliveryAdd": "{{amount}} cга товар кошуңуз үчүн",
   "empty": {
     "contact": "Буйрутмаңыздын маалыматтары",
     "comment": "Буйрутма убактысын же комментарий жазыңыз",

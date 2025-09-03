@@ -49,6 +49,9 @@
   "services":"Обслуживание",
   "deliveryFee": "Доставка",
   "freeDeliveryFrom": "Бесплатная доставка от",
+  "freeDeliveryYouGet": "Вы получаете",
+  "freeDelivery": "бесплатную доставку",
+  "freeDeliveryAdd": "Добавьте товаров на {{amount}} c для",
   "empty":{
     "contact":"Ваши данные к заказу",
     "comment":"Напишите время заказа или комментарий",

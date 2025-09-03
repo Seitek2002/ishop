@@ -23,6 +23,7 @@ import clearCartIcon from 'assets/icons/Busket/clear-cart.svg';
 import cookie from 'assets/icons/Busket/cookie.svg';
 import headerArrowIcon from 'assets/icons/Busket/header-arrow.svg';
 import priceArrow from 'assets/icons/Busket/price-arrow.svg';
+import deliveryIcon from 'assets/icons/Order/delivery.svg';
 
 import './style.scss';
 
@@ -527,20 +528,42 @@ const Cart: React.FC = () => {
                   )}
                 </div>
 
-                <div className='cart__promo bg-[#fff] p-[12px] rounded-[12px] mt-[12px]'>
-                  <label htmlFor='promoCode' className='block'>
-                    <span className='text-[14px] block mb-[8px]'>
-                      {t('promoCode')}
-                    </span>
-                    <input
-                      id='promoCode'
-                      type='text'
-                      placeholder={t('promoCode')}
-                      value={promoCode}
-                      onChange={(e) => setPromoCode(e.target.value)}
-                    />
-                  </label>
-                </div>
+                {/* Delivery info banner */}
+                {isDeliveryType && deliveryFreeFrom !== null && (
+                  <div
+                    className='cart__delivery-info rounded-[12px] mt-[12px] bg-white'
+                    style={{ border: `1px solid ${colorTheme}33` }}
+                  >
+                    <div
+                      className='cart__delivery-icon'
+                      style={{ borderColor: colorTheme }}
+                    >
+                      <img src={deliveryIcon} alt='delivery' />
+                    </div>
+                    <div className='cart__delivery-text'>
+                      {subtotal >= deliveryFreeFrom ? (
+                        <span>
+                          {t('freeDeliveryYouGet')}{' '}
+                          <span style={{ color: colorTheme, fontWeight: 600 }}>
+                            {t('freeDelivery')}
+                          </span>
+                        </span>
+                      ) : (
+                        <span>
+                          {t('freeDeliveryAdd', {
+                            amount: Math.max(
+                              0,
+                              Math.ceil(deliveryFreeFrom - subtotal)
+                            ),
+                          })}{' '}
+                          <span style={{ color: colorTheme, fontWeight: 600 }}>
+                            бесплатной доставки
+                          </span>
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                )}
 
                 <div className='cart__sum bg-[#fff]'>
                   <div
@@ -595,6 +618,24 @@ const Cart: React.FC = () => {
                   <div className='cart__sum-ress border-[#f3f3f3]'>
                     {t('empty.totalAmount')} <span>{total} c</span>
                   </div>
+                </div>
+
+                <div className='cart__promo bg-[#fff] p-[12px] rounded-[12px] mt-[12px]'>
+                  <label htmlFor='promoCode' className='block'>
+                    <span className='text-[14px] flex items-center justify-between mb-[8px]'>
+                      {t('promoCode')}
+                      <span className='text-[12px] text-[#ccc]'>
+                        Необязательно
+                      </span>
+                    </span>
+                    <input
+                      id='promoCode'
+                      type='text'
+                      placeholder={t('promoCode')}
+                      value={promoCode}
+                      onChange={(e) => setPromoCode(e.target.value)}
+                    />
+                  </label>
                 </div>
               </>
             ) : (

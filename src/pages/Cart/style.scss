@@ -40,6 +40,24 @@
     }
   }
 
+  // Delivery info banner (color accent подставляется инлайном из colorTheme)
+  &__delivery-info {
+    @apply p-[12px] flex items-center gap-[12px] bg-white rounded-[12px];
+    box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+  }
+
+  &__delivery-icon {
+    @apply w-[32px] h-[32px] rounded-full flex items-center justify-center;
+    border-width: 2px;
+    img {
+      @apply w-[18px] h-[18px];
+    }
+  }
+
+  &__delivery-text {
+    @apply text-[14px] leading-[18px];
+  }
+
   &__order-type {
     @apply flex justify-between gap-[8px] mt-[20px];
 
