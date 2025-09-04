@@ -18,6 +18,8 @@ export interface IReqCreateOrder {
   servicePrice?: string;
   tipsPrice?: number;
   spot: number;
+  organizationSlug?: string;
+  spotId?: number;
   isTgBot?: boolean;
   tgRedirectUrl?: string;
   refAgent?: number | null;

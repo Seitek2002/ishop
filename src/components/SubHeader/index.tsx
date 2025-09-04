@@ -1,10 +1,11 @@
 import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 
 import { useGetVenueQuery } from 'api/Venue.api';
 import { loadVenueFromStorage } from 'utils/storageUtils';
-import { getTodayScheduleText } from 'utils/timeUtils';
+import { getTodayScheduleInfo } from 'utils/timeUtils';
 
 // import { useAppSelector } from 'hooks/useAppSelector';
 // import bell from 'assets/icons/SubHeader/bell.svg';
@@ -17,6 +18,7 @@ import { clearCart, setVenue } from 'src/store/yourFeatureSlice';
 const SubHeader = () => {
   const { venue, id } = useParams();
   const dispatch = useDispatch();
+  const { t } = useTranslation();
   // const venueData = useAppSelector((state) => state.yourFeature.venue);
   const { data } = useGetVenueQuery({
     venueSlug: venue || '',
@@ -37,9 +39,10 @@ const SubHeader = () => {
     // if(venueData.activeSpot !== location.pathname.split('/').filter((item) => +item)[0]) {
 
     // }
-  }, []);
+  }, [venue, dispatch]);
 
-  const scheduleText = getTodayScheduleText(data?.schedules, data?.schedule);
+  const scheduleInfo = getTodayScheduleInfo(data?.schedules, data?.schedule, t('dayOff'));
+  const scheduleDisplay = `${scheduleInfo.dayName}: ${scheduleInfo.text}`;
 
   return (
     <div className='sub-header'>
@@ -50,7 +53,7 @@ const SubHeader = () => {
           </div>
           <div>
             <div className='name' title={data?.companyName}>{data?.companyName}</div>
-            <span className='schedule' title={scheduleText}>{scheduleText}</span>
+            <span className='schedule' title={scheduleDisplay}>{scheduleDisplay}</span>
           </div>
         </div>
         <div className='flex items-center justify-between md:gap-[12px] md:flex-initial'>

@@ -71,3 +71,57 @@ export function getTodayScheduleText(
   if (isClosed) return localeDayOffText;
   return window;
 }
+
+/**
+ * Local RU names for days by API day index (1..7 => Mon..Sun)
+ */
+const DAY_NAMES_RU = [
+  'Понедельник',
+  'Вторник',
+  'Среда',
+  'Четверг',
+  'Пятница',
+  'Суббота',
+  'Воскресенье',
+];
+
+function getRuDayName(apiDay: number): string {
+  const idx = ((apiDay - 1) % 7 + 7) % 7;
+  return DAY_NAMES_RU[idx] ?? '';
+}
+
+/**
+ * Returns detailed info for today's schedule including a localized day name.
+ * - dayName: taken from schedules[i].dayName if provided, otherwise RU fallback
+ * - window: "HH:MM-HH:MM" (or fallbackSchedule if weekly is absent)
+ * - isClosed: true if today is day-off
+ * - text: isClosed ? localeDayOffText : window
+ */
+export function getTodayScheduleInfo(
+  schedules?: Array<{ dayOfWeek: number; dayName?: string; workStart: string; workEnd: string; isDayOff?: boolean }>,
+  fallbackSchedule?: string,
+  localeDayOffText: string = 'Выходной'
+): { dayName: string; window: string; isClosed: boolean; text: string } {
+  const today = new Date();
+  const apiDay = ((today.getDay() + 6) % 7) + 1; // 1..7
+
+  let dayName = getRuDayName(apiDay);
+  let window = '00:00-00:00';
+  let isClosed = false;
+
+  if (schedules && schedules.length) {
+    const item = schedules.find((s) => s.dayOfWeek === apiDay) ?? schedules[0];
+    if (item) {
+      dayName = item.dayName || getRuDayName(item.dayOfWeek);
+      const start = (item.workStart || '').slice(0, 5);
+      const end = (item.workEnd || '').slice(0, 5);
+      isClosed = !!item.isDayOff;
+      window = `${start || '00:00'}-${end || '00:00'}`;
+    }
+  } else {
+    window = fallbackSchedule && fallbackSchedule.includes('-') ? fallbackSchedule : '00:00-00:00';
+  }
+
+  const text = isClosed ? localeDayOffText : window;
+  return { dayName, window, isClosed, text };
+}

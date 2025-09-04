@@ -237,8 +237,13 @@ const Cart: React.FC = () => {
     );
 
     const { data: res } = await postOrder({
-      ...acc,
-      spot: selectedSpot,
+      body: {
+        ...acc,
+        spot: selectedSpot,
+        organizationSlug: venueData.slug,
+      },
+      organizationSlug: venueData.slug,
+      spotId: selectedSpot,
     });
 
     if (res?.paymentUrl) {

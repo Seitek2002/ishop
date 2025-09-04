@@ -2,6 +2,12 @@ import { IOrder, IOrderById, IReqCreateOrder } from 'src/types/orders.types';
 
 import { baseApi } from './base';
 
+export type PostOrderArgs = {
+  body: IReqCreateOrder;
+  organizationSlug: string;
+  spotId?: string | number;
+};
+
 export const ordersApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getOrders: builder.query<
@@ -28,11 +34,15 @@ export const ordersApi = baseApi.injectEndpoints({
         return `orders/?${params.toString()}`;
       },
     }),
-    postOrders: builder.mutation<{ paymentUrl: string }, IReqCreateOrder>({
-      query: (newOrder) => ({
+    postOrders: builder.mutation<{ paymentUrl: string }, PostOrderArgs>({
+      query: ({ body, organizationSlug, spotId }) => ({
         url: 'orders/',
         method: 'POST',
-        body: newOrder,
+        body,
+        params: {
+          organizationSlug,
+          ...(spotId !== undefined && spotId !== null ? { spotId } : {}),
+        },
       }),
     }),
     getOrdersById: builder.query<IOrderById, { id: number }>({

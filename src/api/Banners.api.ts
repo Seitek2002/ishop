@@ -20,7 +20,7 @@ export const bannersApi = baseApi.injectEndpoints({
     }),
     addBanner: builder.mutation<IBanner, Partial<IBanner>>({
       query: (newBanner) => ({
-        url: 'banners',
+        url: 'banners/',
         method: 'POST',
         body: newBanner,
       }),
