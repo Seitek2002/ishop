@@ -30,9 +30,10 @@ export interface IProduct {
   productPhoto: string;
   productPhotoSmall: string;
   productPhotoLarge: string;
-  category: ICategory;
+  category?: ICategory;
+  categories?: ICategory[];
   modificators: IModificator[];
-  isRecommended: boolean
+  isRecommended: boolean;
 }
 
 export interface IOrderProduct {

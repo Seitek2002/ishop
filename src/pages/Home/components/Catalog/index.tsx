@@ -1,4 +1,4 @@
-import { FC, useState } from 'react';
+import { FC, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { useGetProductsQuery } from 'api/Products.api';
@@ -28,7 +28,6 @@ const Catalog: FC<IProps> = ({ searchText, selectedCategory = 0 }) => {
   );
   const navigate = useNavigate();
   const { data: items } = useGetProductsQuery({
-    category: selectedCategory || undefined,
     search: searchText,
     venueSlug: venue,
   });
@@ -58,6 +57,21 @@ const Catalog: FC<IProps> = ({ searchText, selectedCategory = 0 }) => {
     return acc + realPrice * item.quantity;
   }, 0);
 
+  // Frontend filtering by category ID using categories[] (or fallback category)
+  const filteredItems = useMemo(() => {
+    if (!items) return [];
+    if (!selectedCategory || selectedCategory === 0) return items;
+
+    const matchCategory = (p: IProduct) => {
+      const fromArray = (p.categories || []).map((c) => c.id);
+      const fromSingle = p.category ? [p.category.id] : [];
+      const allIds = fromArray.length ? fromArray : fromSingle;
+      return allIds.includes(selectedCategory);
+    };
+
+    return items.filter(matchCategory);
+  }, [items, selectedCategory]);
+
   return (
     <section className='catalog'>
       <FoodDetail
@@ -86,9 +100,9 @@ const Catalog: FC<IProps> = ({ searchText, selectedCategory = 0 }) => {
         }
       />
       <h2>{t('allDishes')}</h2>
-      {items && items.length > 0 ? (
+      {filteredItems.length > 0 ? (
         <div className='catalog__content'>
-          {items?.map((item) => {
+          {filteredItems.map((item) => {
             return (
               <CatalogCard foodDetail={handleOpen} key={item.id} item={item} />
             );

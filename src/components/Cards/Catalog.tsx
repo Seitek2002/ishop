@@ -35,6 +35,8 @@ const CatalogCard: FC<IProps> = ({ item, foodDetail }) => {
     } else {
       const newItem = {
         ...item,
+        // Ensure cart item always has a single category (fallback to first categories[] or empty)
+        category: item.category ?? item.categories?.[0] ?? { id: 0, categoryName: "" },
         id: item.id + "",
         modificators: undefined,
         quantity: 1,
