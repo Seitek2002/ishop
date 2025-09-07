@@ -48,6 +48,8 @@ const FoodDetail: FC<IProps> = ({ setIsShow, item, isShow }) => {
     if (item) {
       const newItem = {
         ...item,
+        // Ensure required cart shape: always provide a single category
+        category: item.category ?? item.categories?.[0] ?? { id: 0, categoryName: '' },
         modificators: selectedSize,
         id: item.id + ',' + selectedSize.id,
         quantity: counter,
