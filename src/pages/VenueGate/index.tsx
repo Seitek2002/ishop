@@ -1,5 +1,5 @@
-import { FC } from 'react';
-import { useParams } from 'react-router-dom';
+import { FC, useEffect } from 'react';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 
 import Home from 'pages/Home';
 import NotFound from 'pages/NotFound';
@@ -8,6 +8,22 @@ import Loader from 'components/Loader';
 
 const VenueGate: FC = () => {
   const { venue, id } = useParams();
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  // Capture promo/ref from query and redirect to clean URL
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const promo = params.get('promo');
+    const ref = params.get('ref') ?? params.get('refId');
+
+    if (promo) localStorage.setItem('promo', promo);
+    if (ref) localStorage.setItem('refId', ref);
+
+    if (promo || ref) {
+      navigate(location.pathname, { replace: true });
+    }
+  }, [location.search, location.pathname, navigate]);
 
   const { data, isError, isLoading } = useGetVenueQuery({
     venueSlug: venue || '',
