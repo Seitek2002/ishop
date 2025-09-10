@@ -2,8 +2,8 @@ import { FC, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import arrowIcon from 'assets/icons/Header/arrow.svg';
-import logoIcon from 'assets/icons/Header/logo.svg';
 import search from 'assets/icons/Header/search.svg';
+import logoIcon from 'assets/icons/header-logo.svg';
 
 import './style.scss';
 
@@ -44,7 +44,7 @@ const Header: FC<IProps> = ({ searchText, setSearchText }) => {
     <header className='header'>
       <div className='header__content'>
         <div className='logo'>
-          <img src={logoIcon} alt='iMenu Logo' />
+          <img src={logoIcon} width={30} alt='iMenu Logo' />
           <span>ishop.kg</span>
         </div>
 

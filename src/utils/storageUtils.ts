@@ -32,7 +32,7 @@ export const loadVenueFromStorage: () => IVenues = () => {
   return storedVenue
     ? JSON.parse(storedVenue)
     : {
-        colorTheme: '#875AFF',
+        colorTheme: '#854C9D',
         companyName: '',
         slug: '',
         logo: '',

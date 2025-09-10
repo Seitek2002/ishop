@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 
-import logoIcon from 'assets/icons/Header/logo.svg';
+import logoIcon from 'assets/icons/header-logo.svg';
 
 import { Clock, Mail, MapPin, Phone, Plus, Star } from 'lucide-react';
 
@@ -12,22 +12,22 @@ const Main = () => {
           <div className='flex justify-between items-center h-16'>
             <div className='flex items-center'>
               <div className='flex-shrink-0 flex gap-[10px]'>
-                <img src={logoIcon} alt='iMenu Logo' />
-                <h1 className='text-2xl font-bold text-red-600'>ishop.kg</h1>
+                <img className='h-8 w-8' src={logoIcon} alt='iMenu Logo' />
+                <h1 className='text-2xl font-bold text-[#854C9D]'>ishop.kg</h1>
               </div>
             </div>
             <div className='flex items-center space-x-4'>
               <div className='hidden lg:flex items-center space-x-2 text-gray-600'>
-                <Phone className='h-5 w-5 text-red-500' />
+                <Phone className='h-5 w-5 text-[#854C9D]' />
                 <a
                   href='tel:+996706204501'
-                  className='text-sm hover:text-red-500 transition-colors'
+                  className='text-sm hover:text-[#854C9D] transition-colors'
                 >
                   +996 706 204 501
                 </a>
               </div>
               <Link
-                className='bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded'
+                className='bg-[#854C9D] hover:bg-[#6f3f90] text-white py-2 px-4 rounded'
                 to={'/scan'}
               >
                 Сканировать QR код
@@ -37,12 +37,12 @@ const Main = () => {
         </div>
       </header>
 
-      <section className='bg-gradient-to-br from-red-50 to-orange-50 py-16'>
+      <section className='bg-gradient-to-br from-[#F4ECF8] to-[#EDE3F5] py-16'>
         <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
           <div className='text-center'>
             <h1 className='text-4xl md:text-6xl font-bold text-gray-900 mb-6'>
               Найдите лучшие
-              <span className='text-red-600 block'>заведения Кыргызстана</span>
+              <span className='text-[#854C9D] block'>заведения Кыргызстана</span>
             </h1>
             <p className='text-xl text-gray-600 mb-8 max-w-3xl mx-auto'>
               Откройте для себя рестораны, кафе и другие заведения с подробными
@@ -50,29 +50,29 @@ const Main = () => {
             </p>
             <div className='flex flex-col sm:flex-row gap-4 justify-center items-center mb-12'>
               <div className='flex items-center space-x-2 text-gray-600'>
-                <MapPin className='h-5 w-5 text-red-500' />
+                <MapPin className='h-5 w-5 text-[#854C9D]' />
                 <span>По всему Кыргызстану</span>
               </div>
               <div className='flex items-center space-x-2 text-gray-600'>
-                <Clock className='h-5 w-5 text-red-500' />
+                <Clock className='h-5 w-5 text-[#854C9D]' />
                 <span>Актуальные часы работы</span>
               </div>
               <div className='flex items-center space-x-2 text-gray-600'>
-                <Star className='h-5 w-5 text-red-500' />
+                <Star className='h-5 w-5 text-[#854C9D]' />
                 <span>Честные отзывы</span>
               </div>
             </div>
             <div className='grid grid-cols-1 md:grid-cols-3 gap-8 text-center'>
               <div className='bg-white p-6 rounded-xl shadow-sm'>
-                <div className='text-3xl font-bold text-red-600 mb-2'>500+</div>
+                <div className='text-3xl font-bold text-[#854C9D] mb-2'>500+</div>
                 <div className='text-gray-600'>Заведений</div>
               </div>
               <div className='bg-white p-6 rounded-xl shadow-sm'>
-                <div className='text-3xl font-bold text-red-600 mb-2'>10K+</div>
+                <div className='text-3xl font-bold text-[#854C9D] mb-2'>10K+</div>
                 <div className='text-gray-600'>Отзывов</div>
               </div>
               <div className='bg-white p-6 rounded-xl shadow-sm'>
-                <div className='text-3xl font-bold text-red-600 mb-2'>50K+</div>
+                <div className='text-3xl font-bold text-[#854C9D] mb-2'>50K+</div>
                 <div className='text-gray-600'>Пользователей</div>
               </div>
             </div>
@@ -81,7 +81,7 @@ const Main = () => {
                 href='https://wa.me/996706204501'
                 target='_blank'
                 rel='noopener'
-                className='inline-block mt-4 bg-red-600 text-white px-8 py-3 rounded-lg hover:bg-red-700 transition-colors font-medium text-lg'
+                className='inline-block mt-4 bg-[#854C9D] text-white px-8 py-3 rounded-lg hover:bg-[#6f3f90] transition-colors font-medium text-lg'
               >
                 Добавить заведение бесплатно
               </a>
@@ -92,13 +92,13 @@ const Main = () => {
 
       <section id='add-business-section' className='py-16 bg-white'>
         <div className='max-w-4xl mx-auto px-4 sm:px-6 lg:px-8'>
-          <div className='bg-gradient-to-r from-red-50 to-orange-50 rounded-2xl'>
+          <div className='bg-gradient-to-r from-[#F4ECF8] to-[#EDE3F5] rounded-2xl'>
             <div
-              className='w-full px-8 py-6 flex items-center hover:bg-red-50 transition-colors'
+              className='w-full px-8 py-6 flex items-center hover:bg-[#F3EAF9] transition-colors'
               style={{ justifyContent: 'flex-start' }}
             >
               <div className='flex items-center space-x-4'>
-                <div className='bg-red-600 p-3 rounded-full flex items-center justify-center'>
+                <div className='bg-[#854C9D] p-3 rounded-full flex items-center justify-center'>
                   <a
                     href='https://wa.me/996706204501'
                     target='_blank'
@@ -144,7 +144,7 @@ const Main = () => {
                             <td className='py-2 px-2 border-b'>
                               QR-меню «на стол»
                             </td>
-                            <td className='py-2 px-2 border-b text-pink-600 font-semibold'>
+                            <td className='py-2 px-2 border-b text-[#854C9D] font-semibold'>
                               +40%{' '}
                               <span className='font-normal text-gray-700'>
                                 к скорости обслуживания стола
@@ -154,14 +154,14 @@ const Main = () => {
                           <tr>
                             <td className='py-2 px-2 border-b'>
                               Нет{' '}
-                              <span className='underline text-red-500'>
+                              <span className='underline text-[#854C9D]'>
                                 предзаказа
                               </span>
                             </td>
                             <td className='py-2 px-2 border-b'>
                               QR-меню «на вынос»
                             </td>
-                            <td className='py-2 px-2 border-b text-pink-600 font-semibold'>
+                            <td className='py-2 px-2 border-b text-[#854C9D] font-semibold'>
                               +25%{' '}
                               <span className='font-normal text-gray-700'>
                                 заказов «to-go»
@@ -175,7 +175,7 @@ const Main = () => {
                             <td className='py-2 px-2 border-b'>
                               Комиссия 1,5%
                             </td>
-                            <td className='py-2 px-2 border-b text-pink-600 font-semibold'>
+                            <td className='py-2 px-2 border-b text-[#854C9D] font-semibold'>
                               до 18%{' '}
                               <span className='font-normal text-gray-700'>
                                 экономии на обороте
@@ -189,7 +189,7 @@ const Main = () => {
                             <td className='py-2 px-2 border-b'>
                               QR-эквайринг всех банков КР
                             </td>
-                            <td className='py-2 px-2 border-b text-pink-600 font-semibold'>
+                            <td className='py-2 px-2 border-b text-[#854C9D] font-semibold'>
                               +12%{' '}
                               <span className='font-normal text-gray-700'>
                                 среднего чека
@@ -203,7 +203,7 @@ const Main = () => {
                             <td className='py-2 px-2 border-b'>
                               Сбор клиентов по номеру телефона
                             </td>
-                            <td className='py-2 px-2 border-b text-pink-600 font-semibold'>
+                            <td className='py-2 px-2 border-b text-[#854C9D] font-semibold'>
                               Рост{' '}
                               <span className='font-normal text-gray-700'>
                                 лояльной базы
@@ -217,7 +217,7 @@ const Main = () => {
                             <td className='py-2 px-2 border-b'>
                               Уведомления в Telegram
                             </td>
-                            <td className='py-2 px-2 border-b text-pink-600 font-semibold'>
+                            <td className='py-2 px-2 border-b text-[#854C9D] font-semibold'>
                               Рост{' '}
                               <span className='font-normal text-gray-700'>
                                 повторных продаж
@@ -266,7 +266,7 @@ const Main = () => {
                           <li>Доставка или самовывоз в 1 клик</li>
                           <li>
                             Заказ «на диване» вместо{' '}
-                            <span className='underline text-red-500'>
+                            <span className='underline text-[#854C9D]'>
                               Glovных
                             </span>{' '}
                             конкурентов.
@@ -345,7 +345,7 @@ const Main = () => {
                   href='https://wa.me/996706204501'
                   target='_blank'
                   rel='noopener'
-                  className='inline-block mt-4 bg-red-600 text-white px-8 py-3 rounded-lg hover:bg-red-700 transition-colors font-medium text-lg'
+                  className='inline-block mt-4 bg-[#854C9D] text-white px-8 py-3 rounded-lg hover:bg-[#6f3f90] transition-colors font-medium text-lg'
                 >
                   Добавить заведение бесплатно
                 </a>
@@ -355,7 +355,7 @@ const Main = () => {
         </div>
       </section>
 
-      <section className='py-16 bg-gradient-to-br from-orange-50 to-red-50'>
+      <section className='py-16 bg-gradient-to-br from-[#EDE3F5] to-[#F4ECF8]'>
         <div className='max-w-4xl mx-auto px-4 sm:px-6 lg:px-8'>
           <h2 className='text-3xl font-bold text-center text-gray-900 mb-10'>
             Преимущества iMenu
@@ -367,9 +367,9 @@ const Main = () => {
                   <th className='py-4 px-2 text-lg font-semibold text-gray-700 border-b'>
                     Параметр
                   </th>
-                  <th className='py-4 px-2 text-lg font-semibold text-red-600 border-b'>
-                    iMenu
-                  </th>
+              <th className='py-4 px-2 text-lg font-semibold text-[#854C9D] border-b'>
+                iMenu
+              </th>
                   <th className='py-4 px-2 text-lg font-semibold text-gray-500 border-b'>
                     Конкуренты
                   </th>
@@ -436,7 +436,7 @@ const Main = () => {
         <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12'>
           <div className='grid grid-cols-1 md:grid-cols-4 gap-8'>
             <div className='col-span-1 md:col-span-2'>
-              <h3 className='text-2xl font-bold text-red-500 mb-4'>Ishop.kg</h3>
+              <h3 className='text-2xl font-bold text-[#854C9D] mb-4'>Ishop.kg</h3>
               <p className='text-gray-300 mb-6 max-w-md'>
                 Ваш надежный гид по лучшим заведениям Кыргызстана. Находите
                 рестораны, кафе и другие места с подробными меню и честными
@@ -444,23 +444,23 @@ const Main = () => {
               </p>
               <div className='space-y-2'>
                 <div className='flex items-center space-x-2'>
-                  <MapPin className='h-4 w-4 text-red-500' />
+                  <MapPin className='h-4 w-4 text-[#854C9D]' />
                   <span className='text-gray-300'>г. Бишкек, Кыргызстан</span>
                 </div>
                 <div className='flex items-center space-x-2'>
-                  <Phone className='h-4 w-4 text-red-500' />
+                  <Phone className='h-4 w-4 text-[#854C9D]' />
                   <a
                     href='tel:+996706204501'
-                    className='text-gray-300 hover:text-red-500 transition-colors'
+                    className='text-gray-300 hover:text-[#854C9D] transition-colors'
                   >
                     +996 706 204 501
                   </a>
                 </div>
                 <div className='flex items-center space-x-2'>
-                  <Mail className='h-4 w-4 text-red-500' />
+                  <Mail className='h-4 w-4 text-[#854C9D]' />
                   <a
                     href='mailto:adamtechkg@gmail.com'
-                    className='text-gray-300 hover:text-red-500 transition-colors'
+                    className='text-gray-300 hover:text-[#854C9D] transition-colors'
                   >
                     adamtechkg@gmail.com
                   </a>
@@ -473,7 +473,7 @@ const Main = () => {
                 <li>
                   <a
                     href='#'
-                    className='text-gray-300 hover:text-red-500 transition-colors'
+                    className='text-gray-300 hover:text-[#854C9D] transition-colors'
                   >
                     Рестораны
                   </a>
@@ -481,7 +481,7 @@ const Main = () => {
                 <li>
                   <a
                     href='#'
-                    className='text-gray-300 hover:text-red-500 transition-colors'
+                    className='text-gray-300 hover:text-[#854C9D] transition-colors'
                   >
                     Кафе
                   </a>
@@ -489,7 +489,7 @@ const Main = () => {
                 <li>
                   <a
                     href='#'
-                    className='text-gray-300 hover:text-red-500 transition-colors'
+                    className='text-gray-300 hover:text-[#854C9D] transition-colors'
                   >
                     Фастфуд
                   </a>
@@ -497,7 +497,7 @@ const Main = () => {
                 <li>
                   <a
                     href='#'
-                    className='text-gray-300 hover:text-red-500 transition-colors'
+                    className='text-gray-300 hover:text-[#854C9D] transition-colors'
                   >
                     Кофейни
                   </a>
@@ -505,7 +505,7 @@ const Main = () => {
                 <li>
                   <a
                     href='#'
-                    className='text-gray-300 hover:text-red-500 transition-colors'
+                    className='text-gray-300 hover:text-[#854C9D] transition-colors'
                   >
                     Бары
                   </a>
