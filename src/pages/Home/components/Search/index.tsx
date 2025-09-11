@@ -29,6 +29,15 @@ const Search: FC<IProps> = ({ onSearchChange, searchText, setSearchText }) => {
     { skip: !venue }
   );
 
+  const sortedItems = (items ?? []).slice().sort((a, b) => {
+    const ha = (a.productPhoto || a.productPhotoSmall || a.productPhotoLarge) ? 1 : 0;
+    const hb = (b.productPhoto || b.productPhotoSmall || b.productPhotoLarge) ? 1 : 0;
+    if (hb !== ha) return hb - ha;
+    const an = (a.productName || '').localeCompare(b.productName || '');
+    if (an !== 0) return an;
+    return (a.id || 0) - (b.id || 0);
+  });
+
   const handleClose = () => {
     setIsShow(false);
     document.body.style.height = '';
@@ -141,9 +150,9 @@ const Search: FC<IProps> = ({ onSearchChange, searchText, setSearchText }) => {
         </div>
 
         {searchText &&
-          (items && items.length > 0 ? (
+          (sortedItems.length > 0 ? (
             <div className='search__catalog'>
-              {items.map((item) => (
+              {sortedItems.map((item) => (
                 <CatalogCard
                   foodDetail={handleOpen}
                   key={item.id}

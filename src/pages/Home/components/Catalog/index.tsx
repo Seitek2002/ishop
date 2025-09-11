@@ -63,16 +63,25 @@ const Catalog: FC<IProps> = ({ searchText, selectedCategory = 0 }) => {
   // Frontend filtering by category ID using categories[] (or fallback category)
   const filteredItems = useMemo(() => {
     if (!items) return [];
-    if (!selectedCategory || selectedCategory === 0) return items;
-
-    const matchCategory = (p: IProduct) => {
+    const base = !selectedCategory || selectedCategory === 0 ? items : items.filter((p: IProduct) => {
       const fromArray = (p.categories || []).map((c) => c.id);
       const fromSingle = p.category ? [p.category.id] : [];
       const allIds = fromArray.length ? fromArray : fromSingle;
       return allIds.includes(selectedCategory);
-    };
+    });
 
-    return items.filter(matchCategory);
+    const hasPhoto = (p: IProduct) =>
+      Boolean(p.productPhoto || p.productPhotoSmall || p.productPhotoLarge);
+
+    // Items with photo first; stable tie-breaker by name then id
+    return [...base].sort((a, b) => {
+      const ha = hasPhoto(a) ? 1 : 0;
+      const hb = hasPhoto(b) ? 1 : 0;
+      if (hb !== ha) return hb - ha;
+      const an = (a.productName || '').localeCompare(b.productName || '');
+      if (an !== 0) return an;
+      return (a.id || 0) - (b.id || 0);
+    });
   }, [items, selectedCategory]);
 
   return (

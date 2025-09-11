@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { IProduct } from "types/products.types";
@@ -7,6 +7,7 @@ import { useAppSelector } from "hooks/useAppSelector";
 
 import whiteMinus from "assets/icons/CatalogCard/white-minus.svg";
 import whitePlus from "assets/icons/CatalogCard/white-plus.svg";
+import defaultProduct from "assets/images/default-product.svg";
 
 import "./style.scss";
 
@@ -19,7 +20,16 @@ interface IProps {
 
 const CatalogCard: FC<IProps> = ({ item, foodDetail }) => {
   const dispatch = useAppDispatch();
-  const [isLoaded, setIsLoaded] = useState(false);
+
+  const srcCandidate = useMemo(
+    () =>
+      item.productPhoto ||
+      item.productPhotoLarge ||
+      item.productPhotoSmall ||
+      defaultProduct,
+    [item.productPhoto, item.productPhotoLarge, item.productPhotoSmall]
+  );
+  const [isLoaded, setIsLoaded] = useState(srcCandidate === defaultProduct);
   const cart = useAppSelector((state) => state.yourFeature.cart);
   const colorTheme = useAppSelector(
     (state) => state.yourFeature.venue?.colorTheme
@@ -64,9 +74,15 @@ const CatalogCard: FC<IProps> = ({ item, foodDetail }) => {
           <div className="cart-img-skeleton absolute top-0 left-0 w-full h-full bg-gray-300 animate-pulse"></div>
         )}
         <img
-          src={item.productPhoto}
-          alt="img"
-          onLoad={() => setIsLoaded(true)} 
+          src={srcCandidate}
+          alt={item.productName || "product"}
+          onLoad={() => setIsLoaded(true)}
+          onError={(e) => {
+            if (e.currentTarget.src !== defaultProduct) {
+              e.currentTarget.src = defaultProduct;
+              setIsLoaded(true);
+            }
+          }}
           className={`transition-opacity duration-300 cursor-pointer ${
             isLoaded ? "opacity-100" : "opacity-0"
           }`}
