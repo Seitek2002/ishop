@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
@@ -6,20 +6,17 @@ import { useDispatch } from 'react-redux';
 import { useGetVenueQuery } from 'api/Venue.api';
 import { loadVenueFromStorage } from 'utils/storageUtils';
 import { getTodayScheduleInfo } from 'utils/timeUtils';
+import WeeklyScheduleModal from 'components/WeeklyScheduleModal';
 
-// import { useAppSelector } from 'hooks/useAppSelector';
-// import bell from 'assets/icons/SubHeader/bell.svg';
-// import check from 'assets/icons/SubHeader/check.svg';
-// import logo from 'assets/images/SubHeader/logo.png';
 import './style.scss';
 
+import { Calendar, Coins } from 'lucide-react';
 import { clearCart, setVenue } from 'src/store/yourFeatureSlice';
 
 const SubHeader = () => {
   const { venue, id } = useParams();
   const dispatch = useDispatch();
   const { t } = useTranslation();
-  // const venueData = useAppSelector((state) => state.yourFeature.venue);
   const { data } = useGetVenueQuery({
     venueSlug: venue || '',
     tableId: Number(id) || undefined,
@@ -31,56 +28,61 @@ const SubHeader = () => {
 
   useEffect(() => {
     const loadedVenue = loadVenueFromStorage();
-
     if (loadedVenue.companyName !== venue) {
       dispatch(clearCart());
     }
-
-    // if(venueData.activeSpot !== location.pathname.split('/').filter((item) => +item)[0]) {
-
-    // }
   }, [venue, dispatch]);
 
-  const scheduleInfo = getTodayScheduleInfo(data?.schedules, data?.schedule, t('dayOff'));
-  const scheduleDisplay = `${scheduleInfo.dayName}: ${scheduleInfo.text}`;
+  const [isScheduleOpen, setIsScheduleOpen] = useState(false);
+
+  const scheduleDisplay = useMemo(() => {
+    const info = getTodayScheduleInfo(data?.schedules, data?.schedule, t('dayOff'));
+    return `${info.dayName}: ${info.text}`;
+  }, [data?.schedules, data?.schedule, t]);
 
   return (
     <div className='sub-header'>
       <div className='sub-header__content'>
         <div className='venue'>
           <div className='logo'>
-            <img src={data?.logo} alt='' />
+            <img src={data?.logo || undefined} alt='' />
           </div>
           <div>
-            <div className='name' title={data?.companyName}>{data?.companyName}</div>
-            <span className='schedule' title={scheduleDisplay}>{scheduleDisplay}</span>
+            <div className='name' title={data?.companyName}>
+              {data?.companyName}
+            </div>
+            <span className='schedule' title={scheduleDisplay}>
+              {scheduleDisplay}
+            </span>
           </div>
         </div>
         <div className='flex items-center justify-between md:gap-[12px] md:flex-initial'>
-          {/* {data?.table?.tableNum && (
-            <div className='call'>
-              <img src={bell} alt='' />
-              <span className='hidden md:inline'>Позвать официанта</span>
-            </div>
-          )}
-          {
-            data?.table?.tableNum ? (
-              <div className='check'>
-                <img src={check} alt='' />
-                <span className='hidden md:inline'>Чек</span>
-              </div>
-            ) : (
-              <div className='check'>
-                <img src={check} alt='' />
-                <span>Чек</span>
-              </div>
-            )
-          } */}
+          <div className='call' title='Баллы'>
+            <span className='text-[14px] font-bold text-center flex items-center gap-[8px]'>
+              <Coins size={20} />
+              <span className='mt-[4px]'>0 б.</span>
+            </span>
+          </div>
+          <div
+            className='call cursor-pointer'
+            role='button'
+            aria-label='График работы'
+            onClick={() => setIsScheduleOpen(true)}
+          >
+            <Calendar size={20} />
+          </div>
           {data?.table?.tableNum && (
             <div className='table'>Стол №{data.table.tableNum}</div>
           )}
         </div>
       </div>
+
+      <WeeklyScheduleModal
+        isShow={isScheduleOpen}
+        onClose={() => setIsScheduleOpen(false)}
+        schedules={data?.schedules}
+        fallbackSchedule={data?.schedule}
+      />
     </div>
   );
 };

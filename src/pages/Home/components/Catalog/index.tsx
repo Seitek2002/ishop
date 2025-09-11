@@ -27,10 +27,13 @@ const Catalog: FC<IProps> = ({ searchText, selectedCategory = 0 }) => {
     (state) => state.yourFeature.venue?.colorTheme
   );
   const navigate = useNavigate();
-  const { data: items } = useGetProductsQuery({
-    search: searchText,
-    venueSlug: venue,
-  });
+  const { data: items } = useGetProductsQuery(
+    {
+      search: searchText,
+      organizationSlug: venue,
+    },
+    { skip: !venue }
+  );
 
   const handleClose = () => {
     setIsShow(false);

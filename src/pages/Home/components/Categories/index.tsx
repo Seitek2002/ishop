@@ -17,9 +17,12 @@ interface IProps {
 const Categories: FC<IProps> = ({ onCategoryChange, onSearchChange }) => {
   const params = useParams<{ venue: string }>();
   const [isShow, setIsShow] = useState(false);
-  const { data: categories } = useGetCategoriesQuery({
-    venueSlug: params.venue,
-  });
+  const { data: categories } = useGetCategoriesQuery(
+    {
+      organizationSlug: params.venue,
+    },
+    { skip: !params.venue }
+  );
   const [active, setActive] = useState<number | undefined>(0);
   const colorTheme = useAppSelector(
     (state) => state.yourFeature.venue?.colorTheme

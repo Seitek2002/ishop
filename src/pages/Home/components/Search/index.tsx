@@ -20,11 +20,14 @@ const Search: FC<IProps> = ({ onSearchChange, searchText, setSearchText }) => {
   const { venue } = useParams();
   const [isShow, setIsShow] = useState(false);
   const [activeFood, setActiveFood] = useState<IProduct | null>(null);
-  const { data: items } = useGetProductsQuery({
-    category: undefined,
-    search: searchText,
-    venueSlug: venue,
-  });
+  const { data: items } = useGetProductsQuery(
+    {
+      category: undefined,
+      search: searchText,
+      organizationSlug: venue,
+    },
+    { skip: !venue }
+  );
 
   const handleClose = () => {
     setIsShow(false);

@@ -1,4 +1,4 @@
-import { IOrder, IOrderById, IReqCreateOrder } from 'src/types/orders.types';
+import { ICreateOrderResponse, IOrder, IOrderById, IReqCreateOrder } from 'src/types/orders.types';
 
 import { baseApi } from './base';
 
@@ -34,7 +34,7 @@ export const ordersApi = baseApi.injectEndpoints({
         return `orders/?${params.toString()}`;
       },
     }),
-    postOrders: builder.mutation<{ paymentUrl: string }, PostOrderArgs>({
+    postOrders: builder.mutation<ICreateOrderResponse, PostOrderArgs>({
       query: ({ body, organizationSlug, spotId }) => ({
         url: 'orders/',
         method: 'POST',

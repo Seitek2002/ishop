@@ -23,6 +23,13 @@ export interface IReqCreateOrder {
   isTgBot?: boolean;
   tgRedirectUrl?: string;
   refAgent?: number | null;
+
+  // Bonus/points (parity with web-menu OpenAPI)
+  useBonus?: boolean;
+  bonus?: number;
+  code?: string | null;
+  hash?: string | null;
+
   orderProducts: {
     product: number;
     count: number;
@@ -58,7 +65,13 @@ export interface IOrderById {
   statusText: string;
 }
 
-// orderProducts: [
+export interface ICreateOrderResponse {
+  id: number;
+  paymentUrl: string | null;
+  phoneVerificationHash?: string;
+}
+
+ // orderProducts: [
 //   {
 //     product: 10;
 //     count: 1;

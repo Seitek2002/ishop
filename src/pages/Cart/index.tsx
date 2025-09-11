@@ -17,6 +17,7 @@ import CatalogCard from 'components/Cards/Catalog';
 import CartLoader from 'components/CartLoader';
 import ClearCartModal from 'components/ClearCartModal';
 import FoodDetail from 'components/FoodDetail';
+import PointsModal from 'components/PointsModal';
 import WorkTimeModal from 'components/WorkTimeModal';
 
 import clearCartIcon from 'assets/icons/Busket/clear-cart.svg';
@@ -28,6 +29,7 @@ import deliveryIcon from 'assets/icons/Order/delivery.svg';
 import './style.scss';
 
 import { useMask } from '@react-input/mask';
+import { Pencil } from 'lucide-react';
 import { clearCart, setUsersData } from 'src/store/yourFeatureSlice';
 
 const Cart: React.FC = () => {
@@ -66,11 +68,32 @@ const Cart: React.FC = () => {
   const [clearCartModal, setClearCartModal] = useState(false);
   const [showWorkTimeModal, setShowWorkTimeModal] = useState(false);
 
+  const [isPointsModalOpen, setIsPointsModalOpen] = useState(false);
+  const [usePoints, setUsePoints] = useState(false);
+  const [bonusPoints, setBonusPoints] = useState(0);
+  const [otpCode, setOtpCode] = useState<string>('');
+  const lastOrderBaseRef = useRef<IReqCreateOrder | null>(null);
+  const getHashLS = () => {
+    try {
+      if (typeof window === 'undefined') return undefined;
+      return (
+        localStorage.getItem('phoneVerificationHash') ||
+        localStorage.getItem('hash') ||
+        undefined
+      );
+    } catch {
+      return undefined;
+    }
+  };
+
   const navigate = useNavigate();
-  const { data } = useGetProductsQuery({
-    organizationSlug: venueData.slug,
-    spotId: selectedSpot,
-  });
+  const { data } = useGetProductsQuery(
+    {
+      organizationSlug: venueData?.slug,
+      spotId: selectedSpot,
+    },
+    { skip: !venueData?.slug }
+  );
 
   // console.log(data);
 
@@ -213,6 +236,7 @@ const Cart: React.FC = () => {
       serviceMode: 1,
       address: '',
       spot: selectedSpot,
+      organizationSlug: venueData.slug,
     };
 
     if (venueData?.table?.tableNum) {
@@ -236,12 +260,20 @@ const Cart: React.FC = () => {
       })
     );
 
+    const hashLS = getHashLS();
+    const payloadBase: IReqCreateOrder = {
+      ...acc,
+      spot: selectedSpot,
+      organizationSlug: venueData.slug,
+      useBonus: usePoints || undefined,
+      bonus: usePoints ? Math.min(bonusPoints, maxUsablePoints) : undefined,
+      code: otpCode || undefined,
+      hash: hashLS,
+    };
+    lastOrderBaseRef.current = payloadBase;
+
     const { data: res } = await postOrder({
-      body: {
-        ...acc,
-        spot: selectedSpot,
-        organizationSlug: venueData.slug,
-      },
+      body: payloadBase,
       organizationSlug: venueData.slug,
       spotId: selectedSpot,
     });
@@ -249,6 +281,17 @@ const Cart: React.FC = () => {
     if (res?.paymentUrl) {
       window.location.href = res.paymentUrl;
       dispatch(clearCart());
+    } else if (res?.phoneVerificationHash) {
+      try {
+        localStorage.setItem(
+          'phoneVerificationHash',
+          res.phoneVerificationHash
+        );
+        localStorage.setItem('hash', res.phoneVerificationHash);
+      } catch {
+        /* ignore */
+      }
+      setIsLoading(false);
     } else {
       setIsLoading(false);
     }
@@ -281,6 +324,12 @@ const Cart: React.FC = () => {
     isDeliveryType && deliveryFreeFrom !== null && subtotal < deliveryFreeFrom;
   const total =
     Math.round((subtotal + serviceFeeAmt + deliveryFee) * 100) / 100;
+  const maxUsablePoints = Math.min(100, Math.floor(total));
+  const appliedBonus = usePoints ? Math.min(bonusPoints, maxUsablePoints) : 0;
+  const displayTotal = Math.max(
+    0,
+    Math.round((total - appliedBonus) * 100) / 100
+  );
 
   // Smooth auto-height for details dropdown (no hardcoded px)
   useEffect(() => {
@@ -301,6 +350,177 @@ const Cart: React.FC = () => {
       if (idx >= 0) setActiveIndex(idx);
     }
   }, [userData.type, orderTypes]);
+
+  const requestOtpForPoints = async (v: number) => {
+    try {
+      const orderProducts = cart.map((item) => {
+        if (item.modificators?.id) {
+          return {
+            product: +item.id.split(',')[0],
+            count: +item.quantity,
+            modificator: item.modificators.id,
+          };
+        } else {
+          return {
+            product: +item.id.split(',')[0],
+            count: +item.quantity,
+          };
+        }
+      });
+
+      const currentType = orderTypes[activeIndex];
+      if (!currentType) {
+        setIsLoading(false);
+        return;
+      }
+
+      const accBase: IReqCreateOrder = {
+        phone: phoneNumber
+          .replace('-', '')
+          .replace('(', '')
+          .replace(')', '')
+          .replace(' ', '')
+          .replace('+', '')
+          .replace(' ', ''),
+        orderProducts,
+        comment,
+        serviceMode: 1,
+        address: '',
+        spot: selectedSpot,
+        organizationSlug: venueData.slug,
+      };
+
+      if (venueData?.table?.tableNum) {
+        accBase.serviceMode = 1;
+      } else {
+        if (currentType.value === 3) {
+          accBase.serviceMode = 3;
+          accBase.address = address;
+        } else {
+          accBase.serviceMode = currentType.value;
+        }
+      }
+
+      const hashLS = getHashLS();
+      const payloadBase: IReqCreateOrder = {
+        ...accBase,
+        spot: selectedSpot,
+        organizationSlug: venueData.slug,
+        useBonus: true,
+        bonus: Math.min(v, maxUsablePoints),
+        hash: hashLS,
+      };
+      lastOrderBaseRef.current = payloadBase;
+
+      const { data: res } = await postOrder({
+        body: payloadBase,
+        organizationSlug: venueData.slug,
+        spotId: selectedSpot,
+      });
+
+      if (res?.phoneVerificationHash) {
+        try {
+          localStorage.setItem(
+            'phoneVerificationHash',
+            res.phoneVerificationHash
+          );
+          localStorage.setItem('hash', res.phoneVerificationHash);
+        } catch {
+          /* ignore */
+        }
+      }
+    } catch {
+      /* ignore */
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const requestPhoneVerificationHash = async (code: string, v: number) => {
+    try {
+      const orderProducts = cart.map((item) => {
+        if (item.modificators?.id) {
+          return {
+            product: +item.id.split(',')[0],
+            count: +item.quantity,
+            modificator: item.modificators.id,
+          };
+        } else {
+          return {
+            product: +item.id.split(',')[0],
+            count: +item.quantity,
+          };
+        }
+      });
+
+      const currentType = orderTypes[activeIndex];
+      if (!currentType) {
+        setIsLoading(false);
+        return;
+      }
+
+      const accBase: IReqCreateOrder = {
+        phone: phoneNumber
+          .replace('-', '')
+          .replace('(', '')
+          .replace(')', '')
+          .replace(' ', '')
+          .replace('+', '')
+          .replace(' ', ''),
+        orderProducts,
+        comment,
+        serviceMode: 1,
+        address: '',
+        spot: selectedSpot,
+      };
+
+      if (venueData?.table?.tableNum) {
+        accBase.serviceMode = 1;
+      } else {
+        if (currentType.value === 3) {
+          accBase.serviceMode = 3;
+          accBase.address = address;
+        } else {
+          accBase.serviceMode = currentType.value;
+        }
+      }
+
+      const hashLS = getHashLS();
+      const payloadBase: IReqCreateOrder = {
+        ...accBase,
+        spot: selectedSpot,
+        organizationSlug: venueData.slug,
+        useBonus: true,
+        bonus: Math.min(v, maxUsablePoints),
+        code,
+        hash: hashLS,
+      };
+
+      lastOrderBaseRef.current = payloadBase;
+
+      const { data: res } = await postOrder({
+        body: payloadBase,
+        organizationSlug: venueData.slug,
+        spotId: selectedSpot,
+      });
+
+      if (res?.phoneVerificationHash) {
+        try {
+          localStorage.setItem(
+            'phoneVerificationHash',
+            res.phoneVerificationHash
+          );
+          localStorage.setItem('hash', res.phoneVerificationHash);
+        } catch {
+          /* ignore */
+        }
+      }
+    } catch {
+      /* ignore */
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <>
@@ -621,7 +841,45 @@ const Cart: React.FC = () => {
                     )}
                   </div>
                   <div className='cart__sum-ress border-[#f3f3f3]'>
-                    {t('empty.totalAmount')} <span>{total} c</span>
+                    <div className='flex items-center justify-between w-full'>
+                      <span className='flex items-center gap-2'>
+                        <button
+                          type='button'
+                          aria-pressed={usePoints}
+                          aria-label='Оплатить баллами'
+                          onClick={() => {
+                            const nv = !usePoints;
+                            setUsePoints(nv);
+                            if (nv) {
+                              setBonusPoints(maxUsablePoints);
+                              setIsPointsModalOpen(true);
+                            } else {
+                              setBonusPoints(0);
+                            }
+                          }}
+                          className={`w-[48px] h-[28px] rounded-full p-[3px] transition-colors duration-200 flex ${
+                            usePoints ? 'justify-end' : 'justify-start'
+                          }`}
+                          style={{
+                            backgroundColor: usePoints ? colorTheme : '#E5E7EB',
+                          }}
+                        >
+                          <span className='w-[22px] h-[22px] bg-white rounded-full shadow-md transition-transform duration-200' />
+                        </button>
+                        Оплатить баллами
+                      </span>
+                      <div className='flex items-center gap-[8px]'>
+                        {maxUsablePoints} б.
+                        <Pencil
+                          size={18}
+                          className='cursor-pointer'
+                          onClick={() => setIsPointsModalOpen(true)}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <div className='cart__sum-ress border-[#f3f3f3]'>
+                    {t('empty.totalAmount')} <span>{displayTotal} c</span>
                   </div>
                 </div>
 
@@ -690,6 +948,34 @@ const Cart: React.FC = () => {
             </button>
           </footer>
         )}
+        <PointsModal
+          isShow={isPointsModalOpen}
+          max={maxUsablePoints}
+          initial={maxUsablePoints}
+          skipOtp={!!getHashLS()}
+          onCancel={() => {
+            setIsPointsModalOpen(false);
+            setUsePoints(false);
+            setBonusPoints(0);
+            setOtpCode('');
+          }}
+          onConfirm={(v) => {
+            setBonusPoints(v);
+            if (v > 0) setUsePoints(true);
+            if (!getHashLS()) {
+              requestOtpForPoints(v);
+            } else {
+              setIsPointsModalOpen(false);
+            }
+          }}
+          onConfirmOtp={(code) => {
+            if (code) {
+              setOtpCode(code);
+              requestPhoneVerificationHash(code, bonusPoints);
+            }
+            setIsPointsModalOpen(false);
+          }}
+        />
       </section>
     </>
   );
