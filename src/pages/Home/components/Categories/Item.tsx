@@ -28,6 +28,7 @@ const Item: FC<IProps> = ({ item, active, selectCategory }) => {
         style={{
           backgroundColor: active === item.id ? colorTheme : 'white',
           borderColor: active === item.id ? colorTheme : 'white',
+          borderWidth: active === item.id ? '3px' : '1px',
         }}
       >
         <img src={item.categoryPhoto} alt='icon' />
