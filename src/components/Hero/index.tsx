@@ -1,15 +1,12 @@
 import { useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { Pagination } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/react';
 
 import { statusMessages } from 'pages/Order/enums';
-import { IBanner, useGetBannersQuery } from 'api/Banners.api';
 import { useGetOrdersQuery } from 'api/Orders.api';
 import { IOrder } from 'types/orders.types';
 import { isOutsideWorkTime } from 'utils/timeUtils';
-import Loader from 'components/Loader';
 
 import offer1 from 'assets/images/OrderStatus/Offer-1.png';
 import offer2 from 'assets/images/OrderStatus/Offer-2.png';
@@ -23,17 +20,11 @@ const Hero = () => {
   const venue = JSON.parse(localStorage.getItem('venue') ?? '{}');
   const navigate = useNavigate();
 
-  const {
-    data: fetchedBanners,
-    isLoading: bannersLoading,
-    isError: bannersError,
-  } = useGetBannersQuery({ organizationSlug: venue.slug });
 
   const { data: fetchedOrders } = useGetOrdersQuery({
     phone: `${user.phoneNumber}`,
     organizationSlug: venue.slug,
   });
-  const { t } = useTranslation();
 
   const [orders, setOrders] = useState<IOrder[] | undefined>([]);
 
@@ -99,16 +90,9 @@ const Hero = () => {
     navigate(`/orders/${orderId}`);
   };
 
-  const handleBannerClick = (url: string | undefined) => {
-    if (url) {
-      window.open(url, '_blank');
-    }
-  };
 
   return (
     <section className='hero'>
-      {bannersError && <p>{t('banner.error')}</p>}
-      {bannersLoading && <Loader />}
 
       <Swiper
         pagination={{ dynamicBullets: true }}
@@ -157,16 +141,6 @@ const Hero = () => {
           );
         })}
 
-        {fetchedBanners?.map((banner: IBanner) => (
-          <SwiperSlide key={`banner-${banner.id}`}>
-            <div
-              className='hero__item banner__item cursor-pointer'
-              onClick={() => handleBannerClick(banner.url)}
-            >
-              <img src={banner.image} alt={banner.title} />
-            </div>
-          </SwiperSlide>
-        ))}
       </Swiper>
     </section>
   );

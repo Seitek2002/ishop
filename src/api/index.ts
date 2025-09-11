@@ -1,4 +1,3 @@
-export * from './Banners.api';
 export * from './base';
 export * from './Categories.api';
 export * from './Orders.api';
