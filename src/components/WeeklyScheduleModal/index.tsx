@@ -78,7 +78,7 @@ const WeeklyScheduleModal: FC<Props> = ({ isShow, onClose, schedules, fallbackSc
           {weekly.map((row, idx) => (
             <div className='row' key={idx}>
               <span className='day'>{row.label}</span>
-              <span className='time'>{row.time}</span>
+              <span className='time'>{row.time.replace('-', ' - ')}</span>
             </div>
           ))}
         </div>
