@@ -3,8 +3,9 @@ import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 
+import { useGetClientBonusQuery } from 'api/Client.api';
 import { useGetVenueQuery } from 'api/Venue.api';
-import { loadVenueFromStorage } from 'utils/storageUtils';
+import { loadUsersDataFromStorage,loadVenueFromStorage } from 'utils/storageUtils';
 import { getTodayScheduleInfo } from 'utils/timeUtils';
 import WeeklyScheduleModal from 'components/WeeklyScheduleModal';
 
@@ -35,8 +36,26 @@ const SubHeader = () => {
 
   const [isScheduleOpen, setIsScheduleOpen] = useState(false);
 
+  const phoneForBonus = useMemo(() => {
+    try {
+      const u = loadUsersDataFromStorage();
+      return (u?.phoneNumber || '').trim();
+    } catch {
+      return '';
+    }
+  }, []);
+
+  const { data: bonusData } = useGetClientBonusQuery(
+    { phone: phoneForBonus },
+    { skip: !phoneForBonus }
+  );
+
   const scheduleDisplay = useMemo(() => {
-    const info = getTodayScheduleInfo(data?.schedules, data?.schedule, t('dayOff'));
+    const info = getTodayScheduleInfo(
+      data?.schedules,
+      data?.schedule,
+      t('dayOff')
+    );
     return `${info.dayName}: ${info.text}`;
   }, [data?.schedules, data?.schedule, t]);
 
@@ -60,7 +79,7 @@ const SubHeader = () => {
           <div className='call' title='Баллы'>
             <span className='text-[14px] font-bold text-center flex items-center gap-[8px]'>
               <Coins size={20} />
-              <span className='mt-[4px]'>0 б.</span>
+              <span className='mt-[4px]'>{bonusData?.bonus ?? 0} б.</span>
             </span>
           </div>
           <div

@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
+import { useGetClientBonusQuery } from 'api/Client.api';
 import { usePostOrdersMutation } from 'api/Orders.api';
 import { useGetProductsQuery } from 'api/Products.api';
 import { IReqCreateOrder } from 'types/orders.types';
@@ -69,6 +70,11 @@ const Cart: React.FC = () => {
   const [showWorkTimeModal, setShowWorkTimeModal] = useState(false);
 
   const [isPointsModalOpen, setIsPointsModalOpen] = useState(false);
+  const { data: bonusData } = useGetClientBonusQuery(
+    { phone: phoneNumber },
+    { skip: !phoneNumber }
+  );
+  const availablePoints = Math.max(0, Math.floor(bonusData?.bonus ?? 0));
   const [usePoints, setUsePoints] = useState(false);
   const [bonusPoints, setBonusPoints] = useState(0);
   const [otpCode, setOtpCode] = useState<string>('');
@@ -324,7 +330,7 @@ const Cart: React.FC = () => {
     isDeliveryType && deliveryFreeFrom !== null && subtotal < deliveryFreeFrom;
   const total =
     Math.round((subtotal + serviceFeeAmt + deliveryFee) * 100) / 100;
-  const maxUsablePoints = Math.min(100, Math.floor(total));
+  const maxUsablePoints = Math.min(availablePoints, Math.floor(total));
   const appliedBonus = usePoints ? Math.min(bonusPoints, maxUsablePoints) : 0;
   const displayTotal = Math.max(
     0,

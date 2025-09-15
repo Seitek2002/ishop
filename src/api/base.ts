@@ -16,5 +16,7 @@ export const baseApi = createApi({
       return headers;
     },
   }),
+  refetchOnFocus: true,
+  refetchOnReconnect: true,
   endpoints: () => ({}),
 });
