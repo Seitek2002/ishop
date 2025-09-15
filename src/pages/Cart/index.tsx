@@ -59,6 +59,15 @@ const Cart: React.FC = () => {
   const [promoCode, setPromoCode] = useState('');
   const [showCommentInput, setShowCommentInput] = useState(false);
 
+  useEffect(() => {
+    try {
+      const storedPromo = localStorage.getItem('promoCode') || '';
+      if (storedPromo) setPromoCode(storedPromo);
+    } catch {
+      /* ignore */
+    }
+  }, []);
+
   const [phoneError, setPhoneError] = useState('');
   const [addressError, setAddressError] = useState('');
 
@@ -273,7 +282,7 @@ const Cart: React.FC = () => {
       organizationSlug: venueData.slug,
       useBonus: usePoints || undefined,
       bonus: usePoints ? Math.min(bonusPoints, maxUsablePoints) : undefined,
-      code: otpCode || undefined,
+      code: (promoCode?.trim() || otpCode || undefined),
       hash: hashLS,
     };
     lastOrderBaseRef.current = payloadBase;
@@ -902,7 +911,15 @@ const Cart: React.FC = () => {
                       type='text'
                       placeholder={t('promoCode')}
                       value={promoCode}
-                      onChange={(e) => setPromoCode(e.target.value)}
+                      onChange={(e) => {
+                        const v = e.target.value;
+                        setPromoCode(v);
+                        try {
+                          localStorage.setItem('promoCode', v);
+                        } catch {
+                          /* ignore */
+                        }
+                      }}
                     />
                   </label>
                 </div>
