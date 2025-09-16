@@ -27,14 +27,16 @@ const Catalog: FC<IProps> = ({ searchText, selectedCategory = 0 }) => {
     (state) => state.yourFeature.venue?.colorTheme
   );
   const navigate = useNavigate();
-  const { data: items } = useGetProductsQuery(
+  const { data: items, isLoading, isFetching, isUninitialized } = useGetProductsQuery(
     {
       search: searchText,
       organizationSlug: venue,
     },
     { skip: !venue }
   );
-
+ 
+  const loading = isUninitialized || isLoading || isFetching;
+ 
   const handleClose = () => {
     setIsShow(false);
     document.body.style.height = '';
@@ -63,12 +65,15 @@ const Catalog: FC<IProps> = ({ searchText, selectedCategory = 0 }) => {
   // Frontend filtering by category ID using categories[] (or fallback category)
   const filteredItems = useMemo(() => {
     if (!items) return [];
-    const base = !selectedCategory || selectedCategory === 0 ? items : items.filter((p: IProduct) => {
-      const fromArray = (p.categories || []).map((c) => c.id);
-      const fromSingle = p.category ? [p.category.id] : [];
-      const allIds = fromArray.length ? fromArray : fromSingle;
-      return allIds.includes(selectedCategory);
-    });
+    const base =
+      !selectedCategory || selectedCategory === 0
+        ? items
+        : items.filter((p: IProduct) => {
+            const fromArray = (p.categories || []).map((c) => c.id);
+            const fromSingle = p.category ? [p.category.id] : [];
+            const allIds = fromArray.length ? fromArray : fromSingle;
+            return allIds.includes(selectedCategory);
+          });
 
     const hasPhoto = (p: IProduct) =>
       Boolean(p.productPhoto || p.productPhotoSmall || p.productPhotoLarge);
@@ -112,7 +117,17 @@ const Catalog: FC<IProps> = ({ searchText, selectedCategory = 0 }) => {
         }
       />
       <h2>{t('allDishes')}</h2>
-      {filteredItems.length > 0 ? (
+      {loading ? (
+        <div className='catalog__content'>
+          {Array.from({ length: 8 }).map((_, i) => (
+            <div key={i} className='bg-white rounded-[12px] p-[12px]'>
+              <div className='w-full h-[140px] bg-gray-200 animate-pulse rounded-[8px]' />
+              <div className='mt-[8px] h-[16px] bg-gray-200 animate-pulse rounded' />
+              <div className='mt-[6px] h-[14px] w-1/2 bg-gray-200 animate-pulse rounded' />
+            </div>
+          ))}
+        </div>
+      ) : filteredItems.length > 0 ? (
         <div className='catalog__content'>
           {filteredItems.map((item) => {
             return (

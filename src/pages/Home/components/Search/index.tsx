@@ -20,7 +20,7 @@ const Search: FC<IProps> = ({ onSearchChange, searchText, setSearchText }) => {
   const { venue } = useParams();
   const [isShow, setIsShow] = useState(false);
   const [activeFood, setActiveFood] = useState<IProduct | null>(null);
-  const { data: items } = useGetProductsQuery(
+  const { data: items, isLoading, isFetching, isUninitialized, isError } = useGetProductsQuery(
     {
       category: undefined,
       search: searchText,
@@ -28,10 +28,14 @@ const Search: FC<IProps> = ({ onSearchChange, searchText, setSearchText }) => {
     },
     { skip: !venue }
   );
+  const loading = isUninitialized || isLoading || isFetching;
+  const hasError = !!isError;
 
   const sortedItems = (items ?? []).slice().sort((a, b) => {
-    const ha = (a.productPhoto || a.productPhotoSmall || a.productPhotoLarge) ? 1 : 0;
-    const hb = (b.productPhoto || b.productPhotoSmall || b.productPhotoLarge) ? 1 : 0;
+    const ha =
+      a.productPhoto || a.productPhotoSmall || a.productPhotoLarge ? 1 : 0;
+    const hb =
+      b.productPhoto || b.productPhotoSmall || b.productPhotoLarge ? 1 : 0;
     if (hb !== ha) return hb - ha;
     const an = (a.productName || '').localeCompare(b.productName || '');
     if (an !== 0) return an;
@@ -149,8 +153,25 @@ const Search: FC<IProps> = ({ onSearchChange, searchText, setSearchText }) => {
           </label>
         </div>
 
-        {searchText &&
-          (sortedItems.length > 0 ? (
+        {searchText && (
+          loading ? (
+            <div className='search__catalog'>
+              {Array.from({ length: 8 }).map((_, i) => (
+                <div key={i} className='bg-white rounded-[12px] p-[12px]'>
+                  <div className='w-full h-[140px] bg-gray-200 animate-pulse rounded-[8px]' />
+                  <div className='mt-[8px] h-[16px] bg-gray-200 animate-pulse rounded' />
+                  <div className='mt-[6px] h-[14px] w-1/2 bg-gray-200 animate-pulse rounded' />
+                </div>
+              ))}
+            </div>
+          ) : hasError ? (
+            <div className='mt-[24px]'>
+              <h3 className='text-center text-[24px] font-semibold mb-[24px]'>
+                Увы, ничего не найдено{'('}
+              </h3>
+              <img src={nothing} alt='' className='w-full' />
+            </div>
+          ) : sortedItems.length > 0 ? (
             <div className='search__catalog'>
               {sortedItems.map((item) => (
                 <CatalogCard
@@ -167,7 +188,8 @@ const Search: FC<IProps> = ({ onSearchChange, searchText, setSearchText }) => {
               </h3>
               <img src={nothing} alt='' className='w-full' />
             </div>
-          ))}
+          )
+        )}
       </div>
     </div>
   );
