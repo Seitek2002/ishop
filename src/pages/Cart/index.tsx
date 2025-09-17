@@ -77,6 +77,7 @@ const Cart: React.FC = () => {
   const [wrapperHeight, setWrapperHeight] = useState(0);
   const [clearCartModal, setClearCartModal] = useState(false);
   const [showWorkTimeModal, setShowWorkTimeModal] = useState(false);
+  const [showNoPoints, setShowNoPoints] = useState(false);
 
   const [isPointsModalOpen, setIsPointsModalOpen] = useState(false);
   const { data: bonusData } = useGetClientBonusQuery(
@@ -368,6 +369,9 @@ const Cart: React.FC = () => {
 
   const requestOtpForPoints = async (v: number) => {
     try {
+      if (!v || v <= 0) {
+        return;
+      }
       const orderProducts = cart.map((item) => {
         if (item.modificators?.id) {
           return {
@@ -564,6 +568,35 @@ const Cart: React.FC = () => {
           isShow={showWorkTimeModal}
           onClose={() => setShowWorkTimeModal(false)}
         />
+        {/* No-points info modal */}
+        <div
+          className={showNoPoints ? 'overlay active' : 'overlay'}
+          onClick={() => setShowNoPoints(false)}
+        ></div>
+        <div
+          className={showNoPoints ? 'clear-cart-modal active' : 'clear-cart-modal'}
+          style={{
+            width: 'calc(100vw - 64px)',
+            maxWidth: '520px',
+            height: 'auto',
+            padding: '16px 24px',
+          }}
+        >
+          <div className='w-full px-[16px] md:px-[24px]'>
+            <h3 className='text-[20px] font-medium mb-2 text-center'>
+              К сожалению у вас нет баллов для использования
+            </h3>
+          </div>
+          <div className='clear-cart-modal__btns'>
+            <button
+              className='text-white'
+              style={{ backgroundColor: colorTheme }}
+              onClick={() => setShowNoPoints(false)}
+            >
+              {t('button.close')}
+            </button>
+          </div>
+        </div>
         {isLoading && <CartLoader />}
 
         <header className='cart__header'>
@@ -863,6 +896,10 @@ const Cart: React.FC = () => {
                           aria-pressed={usePoints}
                           aria-label='Оплатить баллами'
                           onClick={() => {
+                            if (availablePoints <= 0) {
+                              setShowNoPoints(true);
+                              return;
+                            }
                             const nv = !usePoints;
                             setUsePoints(nv);
                             if (nv) {
@@ -888,7 +925,13 @@ const Cart: React.FC = () => {
                         <Pencil
                           size={18}
                           className='cursor-pointer'
-                          onClick={() => setIsPointsModalOpen(true)}
+                          onClick={() => {
+                            if (availablePoints <= 0) {
+                              setShowNoPoints(true);
+                            } else {
+                              setIsPointsModalOpen(true);
+                            }
+                          }}
                         />
                       </div>
                     </div>
@@ -983,8 +1026,14 @@ const Cart: React.FC = () => {
             setOtpCode('');
           }}
           onConfirm={(v) => {
+            if (!v || v <= 0) {
+              setUsePoints(false);
+              setBonusPoints(0);
+              setIsPointsModalOpen(false);
+              return;
+            }
             setBonusPoints(v);
-            if (v > 0) setUsePoints(true);
+            setUsePoints(true);
             if (!getHashLS()) {
               requestOtpForPoints(v);
             } else {
