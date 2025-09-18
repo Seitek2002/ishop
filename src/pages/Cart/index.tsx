@@ -888,7 +888,7 @@ const Cart: React.FC = () => {
                       </div>
                     )}
                   </div>
-                  <div className='cart__sum-ress border-[#f3f3f3]'>
+                  <div className='cart__sum-ress border-[#f3f3f3]' style={{ display: availablePoints <= 0 ? 'none' : undefined }}>
                     <div className='flex items-center justify-between w-full'>
                       <span className='flex items-center gap-2'>
                         <button
