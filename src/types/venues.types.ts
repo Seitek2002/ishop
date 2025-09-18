@@ -7,9 +7,10 @@ export interface ISpot {
 export interface IWorkSchedule {
   dayOfWeek: number;
   dayName: string;
-  workStart: string;
-  workEnd: string;
+  workStart: string | null;
+  workEnd: string | null;
   isDayOff?: boolean;
+  is24h?: boolean;
 }
 
 export interface IVenues {
@@ -17,6 +18,8 @@ export interface IVenues {
   companyName: string;
   slug: string;
   logo: string;
+  // Optional description for meta tags (SEO)
+  description?: string | null;
   schedule: string;
   serviceFeePercent: number;
   // Delivery pricing

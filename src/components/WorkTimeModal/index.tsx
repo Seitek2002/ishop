@@ -47,7 +47,7 @@ const WorkTimeModal: FC<IProps> = ({ isShow, onClose }) => {
                 {venue.schedules.map((s) => {
                   const todayApi = ((new Date().getDay() + 6) % 7) + 1; // 1..7
                   const isToday = s.dayOfWeek === todayApi;
-                  const fmt = (t: string | undefined) =>
+                  const fmt = (t?: string | null) =>
                     t ? t.slice(0, 5) : '00:00';
                   const range = s.isDayOff
                     ? t('dayOff')

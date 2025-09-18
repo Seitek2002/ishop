@@ -33,6 +33,16 @@ export function isOutsideWorkTime(schedule: string, now: Date = new Date()): boo
   return !(nowTotal >= startTotal || nowTotal < endTotal);
 }
 
+// Typed schedule item compatible with OpenAPI responses (nullable times, optional is24h)
+export type ScheduleItem = {
+  dayOfWeek: number;
+  dayName?: string;
+  workStart: string | null;
+  workEnd: string | null;
+  isDayOff?: boolean;
+  is24h?: boolean;
+};
+
 /**
  * Derive today's schedule window from optional weekly schedules; falls back to a single schedule string.
  * Returns:
@@ -40,30 +50,37 @@ export function isOutsideWorkTime(schedule: string, now: Date = new Date()): boo
  *  - isClosed: true when today is day-off according to schedules
  */
 export function getTodayScheduleWindow(
-  schedules?: Array<{ dayOfWeek: number; workStart: string; workEnd: string; isDayOff?: boolean }>,
+  schedules?: ScheduleItem[],
   fallbackSchedule?: string
 ): { window: string; isClosed: boolean } {
   const today = new Date();
   // JS: 0=Sun..6=Sat; API: 1=Mon..7=Sun
   const apiDay = ((today.getDay() + 6) % 7) + 1; // convert 0..6 => 1..7
-  if (schedules && schedules.length) {
+
+  if (Array.isArray(schedules) && schedules.length > 0) {
     const item = schedules.find((s) => s.dayOfWeek === apiDay) ?? schedules[0];
     if (item) {
-      const start = (item.workStart || '').slice(0, 5);
-      const end = (item.workEnd || '').slice(0, 5);
+      // 24/7 takes precedence over day-off
+      if (item.is24h) {
+        return { window: '00:00-00:00', isClosed: false };
+      }
       const isClosed = !!item.isDayOff;
-      const window = `${start || '00:00'}-${end || '00:00'}`;
+      const start = (item.workStart || '00:00').slice(0, 5);
+      const end = (item.workEnd || '00:00').slice(0, 5);
+      const window = `${start}-${end}`;
       return { window, isClosed };
     }
   }
-  return { window: (fallbackSchedule && fallbackSchedule.includes('-') ? fallbackSchedule : '00:00-00:00'), isClosed: false };
+
+  const window = fallbackSchedule && fallbackSchedule.includes('-') ? fallbackSchedule : '00:00-00:00';
+  return { window, isClosed: false };
 }
 
 /**
  * Human-friendly text for today's schedule. If day off -> localized or plain "Выходной".
  */
 export function getTodayScheduleText(
-  schedules?: Array<{ dayOfWeek: number; dayName?: string; workStart: string; workEnd: string; isDayOff?: boolean }>,
+  schedules?: ScheduleItem[],
   fallbackSchedule?: string,
   localeDayOffText: string = 'Выходной'
 ): string {
@@ -98,7 +115,7 @@ function getRuDayName(apiDay: number): string {
  * - text: isClosed ? localeDayOffText : window
  */
 export function getTodayScheduleInfo(
-  schedules?: Array<{ dayOfWeek: number; dayName?: string; workStart: string; workEnd: string; isDayOff?: boolean }>,
+  schedules?: ScheduleItem[],
   fallbackSchedule?: string,
   localeDayOffText: string = 'Выходной'
 ): { dayName: string; window: string; isClosed: boolean; text: string } {
@@ -109,14 +126,19 @@ export function getTodayScheduleInfo(
   let window = '00:00-00:00';
   let isClosed = false;
 
-  if (schedules && schedules.length) {
+  if (Array.isArray(schedules) && schedules.length > 0) {
     const item = schedules.find((s) => s.dayOfWeek === apiDay) ?? schedules[0];
     if (item) {
       dayName = item.dayName || getRuDayName(item.dayOfWeek);
-      const start = (item.workStart || '').slice(0, 5);
-      const end = (item.workEnd || '').slice(0, 5);
-      isClosed = !!item.isDayOff;
-      window = `${start || '00:00'}-${end || '00:00'}`;
+      if (item.is24h) {
+        isClosed = false;
+        window = '00:00-00:00';
+      } else {
+        isClosed = !!item.isDayOff;
+        const start = (item.workStart || '00:00').slice(0, 5);
+        const end = (item.workEnd || '00:00').slice(0, 5);
+        window = `${start}-${end}`;
+      }
     }
   } else {
     window = fallbackSchedule && fallbackSchedule.includes('-') ? fallbackSchedule : '00:00-00:00';
