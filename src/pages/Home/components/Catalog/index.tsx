@@ -16,9 +16,14 @@ import { t } from 'i18next';
 interface IProps {
   searchText?: string;
   selectedCategory?: number;
+  categoryTitle?: string;
 }
 
-const Catalog: FC<IProps> = ({ searchText, selectedCategory = 0 }) => {
+const Catalog: FC<IProps> = ({
+  searchText,
+  selectedCategory = 0,
+  categoryTitle,
+}) => {
   const { venue } = useParams();
   const [isShow, setIsShow] = useState(false);
   const [activeFood, setActiveFood] = useState<IProduct | null>(null);
@@ -27,16 +32,21 @@ const Catalog: FC<IProps> = ({ searchText, selectedCategory = 0 }) => {
     (state) => state.yourFeature.venue?.colorTheme
   );
   const navigate = useNavigate();
-  const { data: items, isLoading, isFetching, isUninitialized } = useGetProductsQuery(
+  const {
+    data: items,
+    isLoading,
+    isFetching,
+    isUninitialized,
+  } = useGetProductsQuery(
     {
       search: searchText,
       organizationSlug: venue,
     },
     { skip: !venue }
   );
- 
+
   const loading = isUninitialized || isLoading || isFetching;
- 
+
   const handleClose = () => {
     setIsShow(false);
     document.body.style.height = '';
@@ -116,7 +126,7 @@ const Catalog: FC<IProps> = ({ searchText, selectedCategory = 0 }) => {
           }
         }
       />
-      <h2>{t('allDishes')}</h2>
+      <h2>{categoryTitle || t('allDishes')}</h2>
       {loading ? (
         <div className='catalog__content'>
           {Array.from({ length: 8 }).map((_, i) => (

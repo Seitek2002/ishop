@@ -11,7 +11,8 @@ function App() {
   // Prefetch client bonus via RTKQ hook (cached globally)
   const storedPhone = (loadUsersDataFromStorage()?.phoneNumber || '').trim();
   const phone = (usersPhone || storedPhone).trim();
-  useGetClientBonusQuery({ phone }, { skip: !phone });
+  const organizationSlug = useAppSelector((state) => state.yourFeature.venue?.slug);
+  useGetClientBonusQuery({ phone, organizationSlug }, { skip: !phone || !organizationSlug });
 
   return <AppRoutes />;
 }

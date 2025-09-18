@@ -46,8 +46,8 @@ const SubHeader = () => {
   }, []);
 
   const { data: bonusData } = useGetClientBonusQuery(
-    { phone: phoneForBonus },
-    { skip: !phoneForBonus }
+    { phone: phoneForBonus, organizationSlug: data?.slug || venue },
+    { skip: !phoneForBonus || !(data?.slug || venue) }
   );
 
   const scheduleDisplay = useMemo(() => {

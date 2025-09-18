@@ -25,6 +25,7 @@ const Home = () => {
   const [search, onSearch] = useState(false);
   const userData = loadUsersDataFromStorage();
   const { t } = useTranslation();
+  const [categoryTitle, setCategoryTitle] = useState<string>(t('allDishes'));
   const clearCartHandler = () => {
     setActive(!active);
   };
@@ -33,6 +34,10 @@ const Home = () => {
     onSearch(bool);
     document.body.style.overflow = bool ? 'hidden' : '';
     window.scrollTo(0, 0);
+    if (!bool) {
+      setSelectedCategory(0);
+      setCategoryTitle(t('allDishes'));
+    }
   };
 
   const handleCategoryChange = (categoryId?: number) => {
@@ -73,9 +78,11 @@ const Home = () => {
           <Categories
             onCategoryChange={handleCategoryChange}
             onSearchChange={onSearchChange}
+            selectedCategory={selectedCategory ?? 0}
+            onCategoryTitleChange={(title) => setCategoryTitle(title)}
           />
           <div ref={catalogRef} className='pb-[100px]'>
-            <Catalog selectedCategory={selectedCategory} />
+            <Catalog selectedCategory={selectedCategory} categoryTitle={categoryTitle} />
           </div>
         </>
       ) : (
@@ -85,10 +92,13 @@ const Home = () => {
             <Categories
               onCategoryChange={handleCategoryChange}
               onSearchChange={onSearchChange}
+              selectedCategory={selectedCategory ?? 0}
+              onCategoryTitleChange={(title) => setCategoryTitle(title)}
             />
             <Catalog
               searchText={searchText}
               selectedCategory={selectedCategory}
+              categoryTitle={categoryTitle}
             />
           </div>
           <div className='flex-1 sticky top- z-10'>

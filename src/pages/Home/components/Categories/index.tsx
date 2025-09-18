@@ -1,4 +1,4 @@
-import { FC, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 
@@ -12,9 +12,11 @@ import './style.scss';
 interface IProps {
   onCategoryChange: (id: number | undefined) => void;
   onSearchChange: (bool: boolean) => void;
+  selectedCategory?: number;
+  onCategoryTitleChange?: (title: string) => void;
 }
 
-const Categories: FC<IProps> = ({ onCategoryChange, onSearchChange }) => {
+const Categories: FC<IProps> = ({ onCategoryChange, onSearchChange, selectedCategory, onCategoryTitleChange }) => {
   const params = useParams<{ venue: string }>();
   const [isShow, setIsShow] = useState(false);
   const { data: categories } = useGetCategoriesQuery(
@@ -29,12 +31,38 @@ const Categories: FC<IProps> = ({ onCategoryChange, onSearchChange }) => {
   );
   const { t } = useTranslation();
 
+  // sync active state with parent when selectedCategory is controlled from above
+  useEffect(() => {
+    if (typeof selectedCategory !== 'undefined') {
+      setActive(selectedCategory);
+    }
+  }, [selectedCategory]);
+
+  // sync active state with parent when selectedCategory is controlled from above
+  useEffect(() => {
+    if (typeof selectedCategory !== 'undefined') {
+      setActive(selectedCategory);
+    }
+  }, [selectedCategory]);
+
   const selectCategory = (id: number | undefined) => {
     if (id === -1) {
       onSearchChange(true);
     }
     setActive(id);
     onCategoryChange(id ?? undefined);
+
+    // propagate category title to parent for header
+    if (onCategoryTitleChange) {
+      if (!id || id === 0) {
+        onCategoryTitleChange(t('allDishes'));
+      } else if (id === -1) {
+        onCategoryTitleChange(t('search'));
+      } else {
+        const title = categories?.find((c: { id: number; categoryName: string }) => c.id === id)?.categoryName;
+        onCategoryTitleChange(title || t('allDishes'));
+      }
+    }
 
     if (navigator.vibrate) {
       navigator.vibrate(10);

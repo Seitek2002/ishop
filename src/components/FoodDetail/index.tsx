@@ -27,11 +27,7 @@ const FoodDetail: FC<IProps> = ({ setIsShow, item, isShow }) => {
   const { t } = useTranslation();
   const [counter, setCounter] = useState(1);
   const sizes: IModificator[] = item.modificators || [];
-  const [selectedSize, setSelectedSize] = useState<IModificator>({
-    id: 0,
-    name: '',
-    price: 0,
-  });
+  const [selectedSize, setSelectedSize] = useState<IModificator | null>(null);
   const dispatch = useAppDispatch();
 
   const VibrationClick = useCallback(() => {
@@ -46,12 +42,13 @@ const FoodDetail: FC<IProps> = ({ setIsShow, item, isShow }) => {
 
   const handleDone = useCallback(() => {
     if (item) {
+      const sizeId = selectedSize?.id ?? 0;
       const newItem = {
         ...item,
         // Ensure required cart shape: always provide a single category
         category: item.category ?? item.categories?.[0] ?? { id: 0, categoryName: '' },
-        modificators: selectedSize,
-        id: item.id + ',' + selectedSize.id,
+        modificators: selectedSize ?? undefined,
+        id: item.id + ',' + sizeId,
         quantity: counter,
       };
       dispatch(addToCart(newItem));
@@ -82,32 +79,25 @@ const FoodDetail: FC<IProps> = ({ setIsShow, item, isShow }) => {
   };
 
   useEffect(() => {
-    if (item.modificators[0]) {
+    if (Array.isArray(item.modificators) && item.modificators[0]) {
       setSelectedSize(item.modificators[0]);
-      if (
-        cart.find((cartItem) => cartItem.id === item.id + ',' + selectedSize.id)
-      ) {
-        setCounter(
-          cart.find(
-            (cartItem) => cartItem.id === item.id + ',' + selectedSize.id
-          )?.quantity || 1
-        );
+      const curId = item.id + ',' + (item.modificators[0]?.id ?? 0);
+      const found = cart.find((cartItem) => cartItem.id === curId);
+      if (found) {
+        setCounter(found.quantity || 1);
       }
     }
   }, [item.modificators]);
 
   useEffect(() => {
-    if (
-      cart.find((cartItem) => cartItem.id === item.id + ',' + selectedSize.id)
-    ) {
-      setCounter(
-        cart.find((cartItem) => cartItem.id === item.id + ',' + selectedSize.id)
-          ?.quantity || 1
-      );
+    const curId = item.id + ',' + (selectedSize?.id ?? 0);
+    const found = cart.find((cartItem) => cartItem.id === curId);
+    if (found) {
+      setCounter(found.quantity || 1);
     } else {
       setCounter(1);
     }
-  }, [cart, item.id, selectedSize.id]);
+  }, [cart, item.id, selectedSize?.id]);
 
   useEffect(() => {
     setIsLoaded(false);
@@ -161,11 +151,11 @@ const FoodDetail: FC<IProps> = ({ setIsShow, item, isShow }) => {
                     <div
                       key={index}
                       className={`size__item bg-white ${
-                        selectedSize.name === sizeKey.name ? 'active' : ''
+                        selectedSize?.name === sizeKey.name ? 'active' : ''
                       }`}
                       style={{
                         borderColor:
-                          selectedSize.name === sizeKey.name ? colorTheme : '',
+                          selectedSize?.name === sizeKey.name ? colorTheme : '',
                       }}
                       onClick={() => selectSize(sizeKey)}
                     >
@@ -176,6 +166,7 @@ const FoodDetail: FC<IProps> = ({ setIsShow, item, isShow }) => {
                 </div>
               </div>
             )}
+            {sizes.length !== 0 && (
             <footer className='counter'>
               <div className='counter__left'>
                 <img
@@ -199,6 +190,7 @@ const FoodDetail: FC<IProps> = ({ setIsShow, item, isShow }) => {
                 <button onClick={handleDone}>{t('button.add')}</button>
               </div>
             </footer>
+            )}
           </div>
         </div>
       </div>

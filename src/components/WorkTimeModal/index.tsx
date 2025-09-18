@@ -16,7 +16,6 @@ const WorkTimeModal: FC<IProps> = ({ isShow, onClose }) => {
   const colorTheme = useAppSelector(
     (state) => state.yourFeature.venue?.colorTheme
   );
-  const venue = useAppSelector((state) => state.yourFeature.venue);
 
   return (
     <>
@@ -41,43 +40,8 @@ const WorkTimeModal: FC<IProps> = ({ isShow, onClose }) => {
             {t('nonWorkingTime.description')}
           </p>
 
-          {venue?.schedules?.length ? (
-            <div className='mt-3 w-full'>
-              <div className='grid grid-cols-2 gap-y-1 text-[14px]'>
-                {venue.schedules.map((s) => {
-                  const todayApi = ((new Date().getDay() + 6) % 7) + 1; // 1..7
-                  const isToday = s.dayOfWeek === todayApi;
-                  const fmt = (t?: string | null) =>
-                    t ? t.slice(0, 5) : '00:00';
-                  const range = s.isDayOff
-                    ? t('dayOff')
-                    : `${fmt(s.workStart)}-${fmt(s.workEnd)}`;
-                  return (
-                    <div key={s.dayOfWeek} className='contents'>
-                      <div
-                        className={
-                          isToday
-                            ? 'font-semibold text-black'
-                            : 'text-[#80868B]'
-                        }
-                      >
-                        {s.dayName}
-                      </div>
-                      <div
-                        className={
-                          isToday
-                            ? 'font-semibold text-black'
-                            : 'text-[#80868B]'
-                        }
-                      >
-                        {range}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          ) : null}
+          {/* schedule removed by requirement */}
+          {null}
         </div>
         <div className='clear-cart-modal__btns'>
           <button
