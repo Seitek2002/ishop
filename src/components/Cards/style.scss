@@ -12,12 +12,16 @@
     }
 
     .add-btn {
-      @apply absolute font-bold text-[20px] rounded-tl-[12px] bottom-0 right-0 w-[44px] h-[44px] bg-[#fff] flex items-center justify-center cursor-pointer;
+      @apply duration-[500ms] ease-in-out rounded-tl-[12px] ml-auto absolute overflow-hidden font-bold text-[20px] bottom-0 right-0 w-[25%] h-[44px] bg-[#fff] cursor-pointer;
 
       &.active {
-        @apply rounded-none left-0 right-0 bottom-0 w-auto h-[44px] flex justify-between items-center px-[12px];
+        @apply left-0 right-0 bottom-0 w-[100%] h-[44px] px-[12px];
         color: #fff;
       }
+    }
+
+    .wrapper-btn {
+      @apply absolute bottom-0 right-[7%] mx-auto w-[90%] h-[44px] flex justify-between items-center;
     }
   }
 

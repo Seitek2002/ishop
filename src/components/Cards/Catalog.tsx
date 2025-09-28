@@ -87,43 +87,13 @@ const CatalogCard: FC<IProps> = ({ item, foodDetail }) => {
           }`}
           onClick={openFoodDetail}
         />
-        {item.modificators.length ? (
-          <div
-            className='add-btn'
-            style={{ backgroundColor: colorTheme }}
-            onClick={openFoodDetail}
-          >
-            <img
-              onClick={(e) => {
-                e.stopPropagation();
-                handleClick();
-              }}
-              src={whitePlus}
-              alt='plus'
-              style={{ width: 18, height: 18 }}
-            />
-          </div>
-        ) : !foundCartItem ? (
-          <div
-            className='add-btn'
-            style={{ backgroundColor: colorTheme }}
-            onClick={handleClick}
-          >
-            <img
-              onClick={(e) => {
-                e.stopPropagation();
-                handleClick();
-              }}
-              src={whitePlus}
-              alt='plus'
-              style={{ width: 18, height: 18 }}
-            />
-          </div>
-        ) : (
-          <div
-            className='add-btn active opacity-90'
-            style={{ backgroundColor: colorTheme }}
-          >
+        <div
+          className={
+            foundCartItem ? 'add-btn active opacity-90' : 'add-btn opacity-90'
+          }
+          style={{ backgroundColor: colorTheme }}
+        >
+          <div className='wrapper-btn'>
             <img
               onClick={(e) => {
                 e.stopPropagation();
@@ -131,22 +101,41 @@ const CatalogCard: FC<IProps> = ({ item, foodDetail }) => {
               }}
               src={whiteMinus}
               alt='minus'
-              style={{ width: 18, height: 18 }}
+              className='abosulute left-0'
+              style={{
+                width: foundCartItem?.quantity ? 18 : 0,
+                height: 18,
+                translate: foundCartItem?.quantity ? '0 0' : '-500% 0',
+                transition: '0.5s',
+              }}
             />
-            <span className='cart-count text-[#fff] text-[18px]'>
+            <span
+              className='cart-count text-[#fff] text-center'
+              style={{
+                transition: '0.5s',
+                overflow: 'hidden',
+              }}
+            >
               {foundCartItem?.quantity}
             </span>
+            <div></div>
+          </div>
+          <div className='absolute right-0 flex justify-center items-center h-full w-[44px]'>
             <img
               onClick={(e) => {
                 e.stopPropagation();
                 handleClick();
               }}
+              style={{
+                height: 18,
+                width: 18,
+              }}
               src={whitePlus}
               alt='plus'
-              style={{ width: 18, height: 18 }}
+              className=' z-10'
             />
           </div>
-        )}
+        </div>
       </div>
       {item.modificators.length ? (
         <div className='cart-info'>
