@@ -90,6 +90,7 @@ const Hero = () => {
     navigate(`/orders/${orderId}`);
   };
 
+  if(!orders) return
 
   return (
     <section className='hero'>

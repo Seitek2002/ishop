@@ -16,7 +16,7 @@
     }
 
     .name {
-        @apply font-bold text-[12px] max-w-[180px] md:max-w-[260px] truncate;
+        @apply font-bold text-[16px] max-w-[180px] md:max-w-[260px] truncate;
     }
 
     .schedule {
@@ -29,6 +29,6 @@
 
     .call,
     .check {
-        @apply bg-[#F9F9F9] p-[8px] rounded-[8px] flex items-center gap-[4px] text-[12px];
+        @apply bg-[#F9F9F9] p-[8px] h-full rounded-[8px] flex items-center gap-[4px] text-[12px] ml-[4px];
     }
 }

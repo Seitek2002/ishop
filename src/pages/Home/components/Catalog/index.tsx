@@ -151,7 +151,7 @@ const Catalog: FC<IProps> = ({
                 style={{ backgroundColor: colorTheme }}
               >
                 {t('basket.order')}
-                <span className='font-light absolute right-[30px]'>
+                <span className='font-bold absolute right-[30px]'>
                   {subtotal} с
                 </span>
               </button>

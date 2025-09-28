@@ -259,7 +259,8 @@ const FoodDetail: FC<IProps> = ({ setIsShow, item, isShow }) => {
               <div className='food-detail__actions'>
                 {!foundCartItem ? (
                   <button
-                    className='cart-btn bg-[#F1F2F3] text-[#000]'
+                    className='cart-btn text-[#fff]'
+                    style={{ backgroundColor: colorTheme }}
                     onClick={handleAddNoMods}
                   >
                     {t('button.add')}

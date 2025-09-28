@@ -753,11 +753,11 @@ const Cart: React.FC = () => {
 
                 <div className='cart__contacts'>
                   <div className='flex items-center justify-between mb-[12px]'>
-                    <h4>{t('empty.contact')}</h4>
+                    {/* <h4>{t('empty.contact')}</h4> */}
                   </div>
 
                   <label htmlFor='phoneNumber'>
-                    <span className='text-[14px]'>
+                    <span className='text-[16px]'>
                       {t('phoneNumber')}{' '}
                       <span className='required' style={{ color: colorTheme }}>
                         {t('necessarily')}
@@ -770,6 +770,7 @@ const Cart: React.FC = () => {
                       ref={inputRef}
                       value={phoneNumber}
                       onChange={(e) => handlePhoneChange(e.target.value)}
+                      className='text-[16px]'
                     />
                     {phoneError && (
                       <div className='error-message'>{phoneError}</div>
@@ -868,7 +869,7 @@ const Cart: React.FC = () => {
                       src={priceArrow}
                       alt='arrow'
                       className={
-                        active ? 'cart__sum-img active' : 'cart__sum-img'
+                        active ? 'cart__sum-img' : 'cart__sum-img active'
                       }
                     />
                   </div>
@@ -887,12 +888,12 @@ const Cart: React.FC = () => {
                         {subtotal} c
                       </div>
                     </div>
-                    <div className='cart__sum-item text-[#80868B]'>
+                    {/* <div className='cart__sum-item text-[#80868B]'>
                       {t('services')}
                       <div className='cart__sum-total service'>
                         {venueData.serviceFeePercent}%
                       </div>
-                    </div>
+                    </div> */}
                     <div className='cart__sum-item text-[#80868B]'>
                       {t('deliveryFee')}
                       <div className='cart__sum-total delivery'>
@@ -1030,7 +1031,7 @@ const Cart: React.FC = () => {
               style={{ backgroundColor: colorTheme }}
               onClick={handleOrder}
             >
-              {t('button.next') || 'Далее'}
+              {'Оплатить'}
             </button>
           </footer>
         )}

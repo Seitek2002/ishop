@@ -73,9 +73,9 @@ const SubHeader = () => {
             <div className='name' title={data?.companyName}>
               {data?.companyName}
             </div>
-            <span className='schedule' title={scheduleDisplay}>
+            {/* <span className='schedule' title={scheduleDisplay}>
               {scheduleDisplay}
-            </span>
+            </span> */}
           </div>
         </div>
         <div className='flex items-center justify-between md:gap-[12px] md:flex-initial'>
@@ -91,7 +91,7 @@ const SubHeader = () => {
             aria-label='График работы'
             onClick={() => setIsScheduleOpen(true)}
           >
-            <Calendar size={20} />
+            <Calendar size={24} />
           </div>
           {data?.table?.tableNum && (
             <div className='table'>Стол №{data.table.tableNum}</div>
