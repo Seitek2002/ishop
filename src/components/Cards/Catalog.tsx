@@ -120,7 +120,7 @@ const CatalogCard: FC<IProps> = ({ item, foodDetail }) => {
             </span>
             <div></div>
           </div>
-          <div className='absolute right-0 flex justify-center items-center h-full w-[44px]'>
+          <div className='absolute right-2 flex justify-center items-center h-full'>
             <img
               onClick={(e) => {
                 e.stopPropagation();

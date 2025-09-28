@@ -5,7 +5,10 @@ import { useDispatch } from 'react-redux';
 
 import { useGetClientBonusQuery } from 'api/Client.api';
 import { useGetVenueQuery } from 'api/Venue.api';
-import { loadUsersDataFromStorage,loadVenueFromStorage } from 'utils/storageUtils';
+import {
+  loadUsersDataFromStorage,
+  loadVenueFromStorage,
+} from 'utils/storageUtils';
 import { getTodayScheduleInfo } from 'utils/timeUtils';
 import WeeklyScheduleModal from 'components/WeeklyScheduleModal';
 
@@ -56,7 +59,7 @@ const SubHeader = () => {
       data?.schedule,
       t('dayOff')
     );
-    return `${info.dayName}: ${info.text}`;
+    return `${info.text}`;
   }, [data?.schedules, data?.schedule, t]);
 
   return (
