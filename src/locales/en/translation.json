@@ -93,5 +93,11 @@
   "nonWorkingTime": {
     "title": "Currently non-working hours",
     "description": "Ordering is temporarily unavailable. Please try during working hours."
+  },
+  "notFoundPage": {
+    "title": "Page not found",
+    "description": "The page is not available or has been moved.",
+    "goHome": "Go home",
+    "tryAgain": "Try again"
   }
 }

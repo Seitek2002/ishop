@@ -1,4 +1,4 @@
-import { FC, useCallback, useEffect, useState } from 'react';
+import { FC, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { IModificator, IProduct } from 'types/products.types';
@@ -103,6 +103,46 @@ const FoodDetail: FC<IProps> = ({ setIsShow, item, isShow }) => {
     setIsLoaded(false);
   }, [item?.productPhoto]);
 
+  const descriptionNodes = useMemo(() => {
+    const desc = item?.productDescription ?? '';
+    const trimmed = desc.trim();
+    if (!trimmed) return null;
+
+    const lines = trimmed
+      .split(/\r\n|\n|\r/)
+      .map((l) => l.trim())
+      .filter(Boolean);
+
+    const nodes: JSX.Element[] = [];
+    let list: string[] = [];
+
+    const pushList = () => {
+      if (list.length) {
+        nodes.push(
+          <ul key={`ul-${nodes.length}`} className="desc-list">
+            {list.map((li, idx) => (
+              <li key={idx}>{li}</li>
+            ))}
+          </ul>
+        );
+        list = [];
+      }
+    };
+
+    for (const line of lines) {
+      if (/^-/.test(line)) {
+        const text = line.replace(/^-\s*/, '').trim();
+        if (text) list.push(text);
+      } else {
+        pushList();
+        nodes.push(<p key={`p-${nodes.length}`}>{line}</p>);
+      }
+    }
+
+    pushList();
+    return nodes;
+  }, [item?.productDescription]);
+
   return (
     <>
       <div
@@ -136,7 +176,7 @@ const FoodDetail: FC<IProps> = ({ setIsShow, item, isShow }) => {
           <div className='food-detail__content'>
             <div className='description'>
               <h2>{item?.productName}</h2>
-              <p>{item?.productDescription}</p>
+              <div className='product-description'>{descriptionNodes}</div>
             </div>
             {sizes.length !== 0 && (
               <div className='size'>

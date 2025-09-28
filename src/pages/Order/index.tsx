@@ -133,7 +133,7 @@ const Order = () => {
         <div></div>
       </header>
 
-      <div className='md:flex flex-row-reverse items-start gap-[24px]'>
+      <div className='md:flex flex-row-reverse items-start gap-[24px] mt-[80px]'>
         {/* Левая часть (или верхняя в мобильной верстке) */}
         <div className='order__content'>
           <div className='order__top'>
