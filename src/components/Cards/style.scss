@@ -10,6 +10,15 @@
     img {
       @apply object-cover w-full h-full;
     }
+
+    .add-btn {
+      @apply absolute font-bold text-[20px] rounded-tl-[12px] bottom-0 right-0 w-[44px] h-[44px] bg-[#fff] flex items-center justify-center cursor-pointer;
+
+      &.active {
+        @apply rounded-none left-0 right-0 bottom-0 w-auto h-[44px] flex justify-between items-center px-[12px];
+        color: #fff;
+      }
+    }
   }
 
   &-info {
@@ -33,10 +42,10 @@
   }
 
   &-btn {
-    @apply w-full mt-[10px] rounded-[8px] py-[4.5px] px-[16px] flex items-center justify-center font-[500] text-[16px];
+    @apply w-full mt-[10px] rounded-[8px] py-[12px] px-[16px] flex items-center justify-center font-[500] text-[18px];
 
     &.active {
-      @apply flex justify-between items-center py-[4px];
+      @apply flex justify-between items-center;
     }
   }
 }

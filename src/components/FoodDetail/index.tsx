@@ -8,9 +8,13 @@ import { useAppSelector } from 'hooks/useAppSelector';
 import close from './close.svg';
 import minus from 'assets/icons/Busket/minus.svg';
 import plus from 'assets/icons/Busket/plus.svg';
+import whiteMinus from 'assets/icons/CatalogCard/white-minus.svg';
+import whitePlus from 'assets/icons/CatalogCard/white-plus.svg';
+
+import '../Cards/style.scss';
 
 import { useGesture } from '@use-gesture/react';
-import { addToCart } from 'src/store/yourFeatureSlice';
+import { addToCart, incrementFromCart } from 'src/store/yourFeatureSlice';
 
 interface IProps {
   item: IProduct;
@@ -46,7 +50,8 @@ const FoodDetail: FC<IProps> = ({ setIsShow, item, isShow }) => {
       const newItem = {
         ...item,
         // Ensure required cart shape: always provide a single category
-        category: item.category ?? item.categories?.[0] ?? { id: 0, categoryName: '' },
+        category: item.category ??
+          item.categories?.[0] ?? { id: 0, categoryName: '' },
         modificators: selectedSize ?? undefined,
         id: item.id + ',' + sizeId,
         quantity: counter,
@@ -77,6 +82,26 @@ const FoodDetail: FC<IProps> = ({ setIsShow, item, isShow }) => {
     setIsShow();
     VibrationClick();
   };
+
+  const foundCartItem = cart.find(
+    (cartItem) => +cartItem.id.split(",")[0] == item.id
+  );
+
+  const handleAddNoMods = useCallback(() => {
+    const newItem = {
+      ...item,
+      // Ensure cart item always has a single category (fallback to first categories[] or empty)
+      category: item.category ?? item.categories?.[0] ?? { id: 0, categoryName: '' },
+      id: String(item.id),
+      modificators: undefined,
+      quantity: 1,
+    };
+    dispatch(addToCart(newItem));
+  }, [dispatch, item]);
+
+  const handleDecrementNoMods = useCallback(() => {
+    dispatch(incrementFromCart(item));
+  }, [dispatch, item]);
 
   useEffect(() => {
     if (Array.isArray(item.modificators) && item.modificators[0]) {
@@ -119,7 +144,7 @@ const FoodDetail: FC<IProps> = ({ setIsShow, item, isShow }) => {
     const pushList = () => {
       if (list.length) {
         nodes.push(
-          <ul key={`ul-${nodes.length}`} className="desc-list">
+          <ul key={`ul-${nodes.length}`} className='desc-list'>
             {list.map((li, idx) => (
               <li key={idx}>{li}</li>
             ))}
@@ -206,30 +231,59 @@ const FoodDetail: FC<IProps> = ({ setIsShow, item, isShow }) => {
                 </div>
               </div>
             )}
-            {sizes.length !== 0 && (
-            <footer className='counter'>
-              <div className='counter__left'>
-                <img
-                  src={minus}
-                  alt=''
-                  onClick={() => handleCounterChange(-1)}
-                  className='cursor-pointer'
-                />
-                <span>{counter}</span>
-                <img
-                  src={plus}
-                  alt=''
-                  onClick={() => handleCounterChange(1)}
-                  className='cursor-pointer'
-                />
+            {sizes.length !== 0 ? (
+              <footer className='counter'>
+                <div className='counter__left'>
+                  <img
+                    src={minus}
+                    alt=''
+                    onClick={() => handleCounterChange(-1)}
+                    className='cursor-pointer'
+                  />
+                  <span>{counter}</span>
+                  <img
+                    src={plus}
+                    alt=''
+                    onClick={() => handleCounterChange(1)}
+                    className='cursor-pointer'
+                  />
+                </div>
+                <div
+                  className='counter__right'
+                  style={{ backgroundColor: colorTheme, color: '#fff' }}
+                >
+                  <button onClick={handleDone}>{t('button.add')}</button>
+                </div>
+              </footer>
+            ) : (
+              <div className='food-detail__actions'>
+                {!foundCartItem ? (
+                  <button
+                    className='cart-btn bg-[#F1F2F3] text-[#000]'
+                    onClick={handleAddNoMods}
+                  >
+                    {t('button.add')}
+                  </button>
+                ) : foundCartItem.modificators && foundCartItem.modificators.name ? (
+                  <button
+                    className='cart-btn bg-[#F1F2F3] text-[#000]'
+                    onClick={handleAddNoMods}
+                  >
+                    {t('button.add')}
+                  </button>
+                ) : (
+                  <div
+                    className='cart-btn active'
+                    style={{ backgroundColor: colorTheme }}
+                  >
+                    <img onClick={handleDecrementNoMods} src={whiteMinus} alt='minus' />
+                    <span className='cart-count text-[#fff]'>
+                      {foundCartItem?.quantity}
+                    </span>
+                    <img onClick={handleAddNoMods} src={whitePlus} alt='plus' />
+                  </div>
+                )}
               </div>
-              <div
-                className='counter__right'
-                style={{ backgroundColor: colorTheme, color: '#fff' }}
-              >
-                <button onClick={handleDone}>{t('button.add')}</button>
-              </div>
-            </footer>
             )}
           </div>
         </div>

@@ -1,17 +1,16 @@
-import { FC, useMemo, useState } from "react";
-import { useTranslation } from "react-i18next";
+import { FC, useMemo, useState } from 'react';
 
-import { IProduct } from "types/products.types";
-import { useAppDispatch } from "hooks/useAppDispatch";
-import { useAppSelector } from "hooks/useAppSelector";
+import { IProduct } from 'types/products.types';
+import { useAppDispatch } from 'hooks/useAppDispatch';
+import { useAppSelector } from 'hooks/useAppSelector';
 
-import whiteMinus from "assets/icons/CatalogCard/white-minus.svg";
-import whitePlus from "assets/icons/CatalogCard/white-plus.svg";
-import defaultProduct from "assets/images/default-product.svg";
+import whiteMinus from 'assets/icons/CatalogCard/white-minus.svg';
+import whitePlus from 'assets/icons/CatalogCard/white-plus.svg';
+import defaultProduct from 'assets/images/default-product.svg';
 
-import "./style.scss";
+import './style.scss';
 
-import { addToCart, incrementFromCart } from "src/store/yourFeatureSlice";
+import { addToCart, incrementFromCart } from 'src/store/yourFeatureSlice';
 
 interface IProps {
   item: IProduct;
@@ -46,15 +45,15 @@ const CatalogCard: FC<IProps> = ({ item, foodDetail }) => {
       const newItem = {
         ...item,
         // Ensure cart item always has a single category (fallback to first categories[] or empty)
-        category: item.category ?? item.categories?.[0] ?? { id: 0, categoryName: "" },
-        id: item.id + "",
+        category: item.category ??
+          item.categories?.[0] ?? { id: 0, categoryName: '' },
+        id: item.id + '',
         modificators: undefined,
         quantity: 1,
       };
       dispatch(addToCart(newItem));
     }
   };
-  const { t } = useTranslation();
   const handleDecrement = () => {
     if (item.modificators.length) {
       openFoodDetail();
@@ -64,18 +63,18 @@ const CatalogCard: FC<IProps> = ({ item, foodDetail }) => {
   };
 
   const foundCartItem = cart.find(
-    (cartItem) => +cartItem.id.split(",")[0] == item.id
+    (cartItem) => +cartItem.id.split(',')[0] == item.id
   );
 
   return (
-    <div className="cart-block bg-white">
-      <div className="cart-img">
+    <div className='cart-block bg-white'>
+      <div className='cart-img'>
         {!isLoaded && (
-          <div className="cart-img-skeleton absolute top-0 left-0 w-full h-full bg-gray-300 animate-pulse"></div>
+          <div className='cart-img-skeleton absolute top-0 left-0 w-full h-full bg-gray-300 animate-pulse'></div>
         )}
         <img
           src={srcCandidate}
-          alt={item.productName || "product"}
+          alt={item.productName || 'product'}
           onLoad={() => setIsLoaded(true)}
           onError={(e) => {
             if (e.currentTarget.src !== defaultProduct) {
@@ -84,55 +83,85 @@ const CatalogCard: FC<IProps> = ({ item, foodDetail }) => {
             }
           }}
           className={`transition-opacity duration-300 cursor-pointer ${
-            isLoaded ? "opacity-100" : "opacity-0"
+            isLoaded ? 'opacity-100' : 'opacity-0'
           }`}
           onClick={openFoodDetail}
         />
+        {item.modificators.length ? (
+          <div
+            className='add-btn'
+            style={{ backgroundColor: colorTheme }}
+            onClick={openFoodDetail}
+          >
+            <img
+              onClick={(e) => {
+                e.stopPropagation();
+                handleClick();
+              }}
+              src={whitePlus}
+              alt='plus'
+              style={{ width: 18, height: 18 }}
+            />
+          </div>
+        ) : !foundCartItem ? (
+          <div
+            className='add-btn'
+            style={{ backgroundColor: colorTheme }}
+            onClick={handleClick}
+          >
+            <img
+              onClick={(e) => {
+                e.stopPropagation();
+                handleClick();
+              }}
+              src={whitePlus}
+              alt='plus'
+              style={{ width: 18, height: 18 }}
+            />
+          </div>
+        ) : (
+          <div
+            className='add-btn active opacity-90'
+            style={{ backgroundColor: colorTheme }}
+          >
+            <img
+              onClick={(e) => {
+                e.stopPropagation();
+                handleDecrement();
+              }}
+              src={whiteMinus}
+              alt='minus'
+              style={{ width: 18, height: 18 }}
+            />
+            <span className='cart-count text-[#fff] text-[18px]'>
+              {foundCartItem?.quantity}
+            </span>
+            <img
+              onClick={(e) => {
+                e.stopPropagation();
+                handleClick();
+              }}
+              src={whitePlus}
+              alt='plus'
+              style={{ width: 18, height: 18 }}
+            />
+          </div>
+        )}
       </div>
       {item.modificators.length ? (
-        <div className="cart-info">
-          <span className="cart-price" style={{ color: colorTheme }}>
+        <div className='cart-info'>
+          <span className='cart-price' style={{ color: colorTheme }}>
             от {+item.modificators[0].price} с
           </span>
         </div>
       ) : (
-        <div className="cart-info">
-          <span className="cart-price" style={{ color: colorTheme }}>
+        <div className='cart-info'>
+          <span className='cart-price' style={{ color: colorTheme }}>
             {+item.productPrice} с
           </span>
         </div>
       )}
-      <h4 className="cart-name">{item.productName}</h4>
-      {!foundCartItem && (
-        <button
-          className="cart-btn bg-[#F1F2F3] text-[#000]"
-          onClick={handleClick}
-        >
-          {t("button.add")}
-        </button>
-      )}
-      {foundCartItem &&
-        foundCartItem.modificators &&
-        foundCartItem.modificators.name && (
-          <button
-            className="cart-btn bg-[#F1F2F3] text-[#000]"
-            onClick={handleClick}
-          >
-            {t("button.add")}
-          </button>
-        )}
-      {foundCartItem && !foundCartItem?.modificators?.name && (
-        <div
-          className="cart-btn active"
-          style={{ backgroundColor: colorTheme }}
-        >
-          <img onClick={handleDecrement} src={whiteMinus} alt="minus" />
-          <span className="cart-count text-[#fff]">
-            {foundCartItem?.quantity}
-          </span>
-          <img onClick={handleClick} src={whitePlus} alt="plus" />
-        </div>
-      )}
+      <h4 className='cart-name'>{item.productName}</h4>
     </div>
   );
 };
