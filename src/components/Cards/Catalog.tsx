@@ -4,8 +4,6 @@ import { IProduct } from 'types/products.types';
 import { useAppDispatch } from 'hooks/useAppDispatch';
 import { useAppSelector } from 'hooks/useAppSelector';
 
-import whiteMinus from 'assets/icons/CatalogCard/white-minus.svg';
-import whitePlus from 'assets/icons/CatalogCard/white-plus.svg';
 import defaultProduct from 'assets/images/default-product.svg';
 
 import './style.scss';
@@ -94,21 +92,24 @@ const CatalogCard: FC<IProps> = ({ item, foodDetail }) => {
           style={{ backgroundColor: colorTheme }}
         >
           <div className='wrapper-btn'>
-            <img
+            <button
               onClick={(e) => {
                 e.stopPropagation();
                 handleDecrement();
               }}
-              src={whiteMinus}
-              alt='minus'
-              className='abosulute left-0'
+              className='absolute flex items-center justify-center'
               style={{
                 width: foundCartItem?.quantity ? 18 : 0,
                 height: 18,
-                translate: foundCartItem?.quantity ? '0 0' : '-500% 0',
+                left: foundCartItem?.quantity ? 0 : 100,
                 transition: '0.5s',
+                color: '#fff',
+                lineHeight: '18px',
               }}
-            />
+              aria-label='minus'
+            >
+              -
+            </button>
             <span
               className='cart-count text-[#fff] text-center'
               style={{
@@ -121,7 +122,7 @@ const CatalogCard: FC<IProps> = ({ item, foodDetail }) => {
             <div></div>
           </div>
           <div className='absolute right-2 flex justify-center items-center h-full'>
-            <img
+            <button
               onClick={(e) => {
                 e.stopPropagation();
                 handleClick();
@@ -129,11 +130,14 @@ const CatalogCard: FC<IProps> = ({ item, foodDetail }) => {
               style={{
                 height: 18,
                 width: 18,
+                color: '#fff',
+                lineHeight: '18px',
               }}
-              src={whitePlus}
-              alt='plus'
-              className=' z-10'
-            />
+              className=' z-10 flex items-center justify-center'
+              aria-label='plus'
+            >
+              +
+            </button>
           </div>
         </div>
       </div>

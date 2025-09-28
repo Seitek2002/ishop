@@ -45,11 +45,24 @@ const Cart: React.FC = () => {
     (state) => state.yourFeature.venue?.colorTheme
   );
   const venueData = useAppSelector((state) => state.yourFeature.venue);
+  const usersType = useAppSelector((state) => state.yourFeature.usersData?.type);
+  const usersActiveSpot = useAppSelector((state) => state.yourFeature.usersData?.activeSpot);
 
   const [activeIndex, setActiveIndex] = useState(0);
   const defaultSpotId =
     venueData?.defaultDeliverySpot ?? venueData?.spots?.[0]?.id ?? 0;
   const [selectedSpot, setSelectedSpot] = useState(defaultSpotId);
+  
+  // Sync selectedSpot with activeSpot derived from pickup URL (/:venue/:venueId/s)
+  useEffect(() => {
+    if (
+      typeof usersActiveSpot === 'number' &&
+      usersActiveSpot > 0 &&
+      usersActiveSpot !== selectedSpot
+    ) {
+      setSelectedSpot(usersActiveSpot);
+    }
+  }, [usersActiveSpot]);
 
   const [phoneNumber, setPhoneNumber] = useState(
     `+996${userData.phoneNumber.replace('996', '')}`
@@ -119,8 +132,11 @@ const Cart: React.FC = () => {
   });
 
   const orderTypes = useMemo(
-    () => [{ text: t('empty.delivery'), value: 3 }],
-    [t]
+    () =>
+      usersType === 2
+        ? [{ text: t('myself'), value: 2 }]
+        : [{ text: t('empty.delivery'), value: 3 }],
+    [t, usersType]
   );
 
   const handleClick = (index: number) => {
@@ -361,11 +377,15 @@ const Cart: React.FC = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
 
-    if (userData.type) {
-      const idx = orderTypes.findIndex((it) => it.value === userData.type);
+    const tVal = usersType;
+    if (tVal) {
+      const idx = orderTypes.findIndex((it) => it.value === tVal);
       if (idx >= 0) setActiveIndex(idx);
+      else setActiveIndex(0);
+    } else {
+      setActiveIndex(0);
     }
-  }, [userData.type, orderTypes]);
+  }, [usersType, orderTypes]);
 
   const requestOtpForPoints = async (v: number) => {
     try {

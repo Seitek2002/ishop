@@ -40,8 +40,9 @@ const AppRoutes = () => {
         <Route path='/' element={<Main />} />
         {/* <Route path='/:venue' element={<SelectOrderType />} /> */}
         <Route path='/:venue' element={<VenueGate />} />
+        <Route path='/:venue/s' element={<VenueGate />} />
         <Route path='/:venue/ref/:ref' element={<SaveRefPage />} />
-        <Route path='/:venue/:venueId/:id' element={<VenueGate />} />
+        <Route path='/:venue/:venueId/s' element={<VenueGate />} />
 
         <Route element={<ProtectedRoute />}>
           <Route path='/cart' element={<Cart />} />
