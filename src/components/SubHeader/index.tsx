@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useTranslation } from 'react-i18next';
+// import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 
@@ -9,7 +9,7 @@ import {
   loadUsersDataFromStorage,
   loadVenueFromStorage,
 } from 'utils/storageUtils';
-import { getTodayScheduleInfo } from 'utils/timeUtils';
+// import { getTodayScheduleInfo } from 'utils/timeUtils';
 import WeeklyScheduleModal from 'components/WeeklyScheduleModal';
 
 import './style.scss';
@@ -20,7 +20,7 @@ import { clearCart, setVenue } from 'src/store/yourFeatureSlice';
 const SubHeader = () => {
   const { venue, id } = useParams();
   const dispatch = useDispatch();
-  const { t } = useTranslation();
+  // const { t } = useTranslation();
   const { data } = useGetVenueQuery({
     venueSlug: venue || '',
     tableId: Number(id) || undefined,
@@ -53,14 +53,14 @@ const SubHeader = () => {
     { skip: !phoneForBonus || !(data?.slug || venue) }
   );
 
-  const scheduleDisplay = useMemo(() => {
-    const info = getTodayScheduleInfo(
-      data?.schedules,
-      data?.schedule,
-      t('dayOff')
-    );
-    return `${info.text}`;
-  }, [data?.schedules, data?.schedule, t]);
+  // const scheduleDisplay = useMemo(() => {
+  //   const info = getTodayScheduleInfo(
+  //     data?.schedules,
+  //     data?.schedule,
+  //     t('dayOff')
+  //   );
+  //   return `${info.text}`;
+  // }, [data?.schedules, data?.schedule, t]);
 
   return (
     <div className='sub-header'>
