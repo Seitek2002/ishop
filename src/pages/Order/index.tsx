@@ -207,7 +207,7 @@ const Order = () => {
                 </span>
               )}
               {data?.serviceMode == 2 && (
-                <span style={{ color: colorTheme }}>{t('empty.takeAway')}</span>
+                <span style={{ color: colorTheme }}>{t('orders.takeAway')}</span>
               )}
               {data?.serviceMode == 3 && (
                 <span style={{ color: colorTheme }}>{t('empty.delivery')}</span>
