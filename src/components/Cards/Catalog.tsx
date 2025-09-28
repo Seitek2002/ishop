@@ -121,7 +121,7 @@ const CatalogCard: FC<IProps> = ({ item, foodDetail }) => {
             </span>
             <div></div>
           </div>
-          <div className='absolute right-2 flex justify-center items-center h-full'>
+          <div className='absolute right-[10px] md:right-4 flex justify-center items-center h-full'>
             <button
               onClick={(e) => {
                 e.stopPropagation();
