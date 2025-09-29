@@ -112,7 +112,7 @@
     @apply my-[20px];
 
     &-wrapper {
-      @apply grid grid-cols-3 gap-[8px] mt-[12px] md:grid-cols-4;
+      @apply grid grid-cols-2 gap-[8px] mt-[12px] md:grid-cols-4;
     }
 
     &-cart {
