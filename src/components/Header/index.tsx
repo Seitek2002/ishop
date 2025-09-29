@@ -1,11 +1,17 @@
 import { FC, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useParams } from 'react-router-dom';
+
+import { loadUsersDataFromStorage } from 'src/utils/storageUtils';
 
 import arrowIcon from 'assets/icons/Header/arrow.svg';
 import search from 'assets/icons/Header/search.svg';
 import logoIcon from 'assets/icons/header-logo.svg';
 
 import './style.scss';
+
+import { Coins } from 'lucide-react';
+import { useGetClientBonusQuery, useGetVenueQuery } from 'src/api';
 
 const LANGUAGES = ['RU', 'KG', 'ENG'];
 const LANGUAGE_MAP: Record<string, string> = {
@@ -21,6 +27,7 @@ interface IProps {
 
 const Header: FC<IProps> = ({ searchText, setSearchText }) => {
   const { i18n } = useTranslation();
+  const { venue, id } = useParams();
   const [isLanguageOpen, setIsLanguageOpen] = useState(false);
 
   const activeLang = useMemo(
@@ -29,6 +36,10 @@ const Header: FC<IProps> = ({ searchText, setSearchText }) => {
   );
   const { t } = useTranslation();
   const toggleLanguageMenu = () => setIsLanguageOpen((prev) => !prev);
+  const { data } = useGetVenueQuery({
+    venueSlug: venue || '',
+    tableId: Number(id) || undefined,
+  });
 
   const selectLanguage = (language: string) => {
     const langCode = language === 'RU' ? 'ru' : language === 'KG' ? 'kg' : 'en';
@@ -39,6 +50,20 @@ const Header: FC<IProps> = ({ searchText, setSearchText }) => {
     if (navigator.vibrate) navigator.vibrate(50);
     window.location.reload();
   };
+
+  const phoneForBonus = useMemo(() => {
+    try {
+      const u = loadUsersDataFromStorage();
+      return (u?.phoneNumber || '').trim();
+    } catch {
+      return '';
+    }
+  }, []);
+
+  const { data: bonusData } = useGetClientBonusQuery(
+    { phone: phoneForBonus, organizationSlug: data?.slug || venue },
+    { skip: !phoneForBonus || !(data?.slug || venue) }
+  );
 
   return (
     <header className='header'>
@@ -61,6 +86,12 @@ const Header: FC<IProps> = ({ searchText, setSearchText }) => {
           </label>
         )}
 
+        <div className='call' title='Баллы'>
+          <span className='text-[14px] font-bold text-center flex items-center gap-[8px]'>
+            <Coins size={20} />
+            <span className='mt-[4px]'>{bonusData?.bonus ?? 0} <span className='hidden md:inline'>б.</span></span>
+          </span>
+        </div>
         <div className='language'>
           <button
             className={`language-selected bg-gray-100 ${

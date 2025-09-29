@@ -1,20 +1,16 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 // import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 
-import { useGetClientBonusQuery } from 'api/Client.api';
 import { useGetVenueQuery } from 'api/Venue.api';
-import {
-  loadUsersDataFromStorage,
-  loadVenueFromStorage,
-} from 'utils/storageUtils';
+import { loadVenueFromStorage } from 'utils/storageUtils';
 // import { getTodayScheduleInfo } from 'utils/timeUtils';
 import WeeklyScheduleModal from 'components/WeeklyScheduleModal';
 
 import './style.scss';
 
-import { Calendar, Coins } from 'lucide-react';
+import { Calendar } from 'lucide-react';
 import { clearCart, setVenue } from 'src/store/yourFeatureSlice';
 
 const SubHeader = () => {
@@ -38,20 +34,6 @@ const SubHeader = () => {
   }, [venue, dispatch]);
 
   const [isScheduleOpen, setIsScheduleOpen] = useState(false);
-
-  const phoneForBonus = useMemo(() => {
-    try {
-      const u = loadUsersDataFromStorage();
-      return (u?.phoneNumber || '').trim();
-    } catch {
-      return '';
-    }
-  }, []);
-
-  const { data: bonusData } = useGetClientBonusQuery(
-    { phone: phoneForBonus, organizationSlug: data?.slug || venue },
-    { skip: !phoneForBonus || !(data?.slug || venue) }
-  );
 
   // const scheduleDisplay = useMemo(() => {
   //   const info = getTodayScheduleInfo(
@@ -79,12 +61,6 @@ const SubHeader = () => {
           </div>
         </div>
         <div className='flex items-center justify-between md:gap-[12px] md:flex-initial'>
-          <div className='call' title='Баллы'>
-            <span className='text-[14px] font-bold text-center flex items-center gap-[8px]'>
-              <Coins size={20} />
-              <span className='mt-[4px]'>{bonusData?.bonus ?? 0} б.</span>
-            </span>
-          </div>
           <div
             className='call cursor-pointer'
             role='button'
