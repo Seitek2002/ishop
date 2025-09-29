@@ -10,7 +10,7 @@
   }
 
   &__footer {
-    @apply bg-white rounded-[12px] p-[12px] mt-[12px] fixed bottom-0 left-0 w-full z-[5];
+    @apply bg-white rounded-[12px] p-[12px] pb-[30px] mt-[12px] fixed bottom-0 left-0 w-full z-[5];
 
     button {
       @apply w-full py-[16px] rounded-[12px] text-white;

@@ -145,7 +145,7 @@
   }
 
   &__footer {
-    @apply bg-white p-[12px] rounded-[12px] mt-[20px] fixed bottom-0 left-0 w-full z-[5];
+    @apply bg-white p-[12px] pb-[30px] rounded-[12px] mt-[20px] fixed bottom-0 left-0 w-full z-[5];
 
     button {
       @apply w-full py-[16px] rounded-[12px] text-white;
