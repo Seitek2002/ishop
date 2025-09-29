@@ -3,17 +3,15 @@ import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router-dom';
 
 import { loadUsersDataFromStorage } from 'utils/storageUtils';
+import Adaptivement from './components/Adaptivement';
 import Catalog from './components/Catalog';
 import Categories from './components/Categories';
-import Search from './components/Search';
-import BusketDesktop from 'components/BusketDesktop';
 import ClearCartModal from 'components/ClearCartModal';
 import Hero from 'components/Hero';
 import Header from 'src/components/Header';
 
-import clearCartIcon from 'assets/icons/Busket/clear-cart.svg';
-
 const Home = () => {
+  const { t } = useTranslation();
   const [searchText, setSearchText] = useState('');
   const location = useLocation();
   const [active, setActive] = useState<boolean>(false);
@@ -25,7 +23,6 @@ const Home = () => {
   const [debouncedSearchText, setDebouncedSearchText] = useState(searchText);
 
   const userData = loadUsersDataFromStorage();
-  const { t } = useTranslation();
   const [categoryTitle, setCategoryTitle] = useState<string>(t('allDishes'));
   const clearCartHandler = () => {
     setActive(!active);
@@ -85,32 +82,13 @@ const Home = () => {
             />
           </div>
         </div>
-        {window.innerWidth < 768 ? (
-          <>
-            {search && (
-              <Search
-                onSearchChange={onSearchChange}
-                searchText={searchText}
-                setSearchText={setSearchText}
-              />
-            )}
-          </>
-        ) : (
-          <div className='flex-1 sticky z-10'>
-            <div className='busket'>
-              <header className='busket__header'>
-                <h2>{t('basket.title')}</h2>
-                <img
-                  onClick={clearCartHandler}
-                  src={clearCartIcon}
-                  alt=''
-                  className='cursor-pointer'
-                />
-              </header>
-              <BusketDesktop to='/cart' />
-            </div>
-          </div>
-        )}
+        <Adaptivement
+          clearCartHandler={clearCartHandler}
+          search={search}
+          setSearchText={setSearchText}
+          searchText={searchText}
+          onSearchChange={onSearchChange}
+        />
       </div>
     </div>
   );
