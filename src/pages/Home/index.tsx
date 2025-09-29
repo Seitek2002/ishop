@@ -8,9 +8,8 @@ import Categories from './components/Categories';
 import Search from './components/Search';
 import BusketDesktop from 'components/BusketDesktop';
 import ClearCartModal from 'components/ClearCartModal';
-import Header from 'components/Header';
 import Hero from 'components/Hero';
-import SupHeader from 'components/SubHeader';
+import Header from 'src/components/Header';
 
 import clearCartIcon from 'assets/icons/Busket/clear-cart.svg';
 
@@ -23,6 +22,8 @@ const Home = () => {
   );
   const catalogRef = useRef<HTMLDivElement>(null);
   const [search, onSearch] = useState(false);
+  const [debouncedSearchText, setDebouncedSearchText] = useState(searchText);
+
   const userData = loadUsersDataFromStorage();
   const { t } = useTranslation();
   const [categoryTitle, setCategoryTitle] = useState<string>(t('allDishes'));
@@ -57,23 +58,17 @@ const Home = () => {
     );
   }, []);
 
+  useEffect(() => {
+    const h = setTimeout(() => setDebouncedSearchText(searchText), 300);
+    return () => clearTimeout(h);
+  }, [searchText]);
+
   return (
     <div className='relative font-inter bg-[#F1F2F3] px-[16px] pt-[12px] lg:max-w-[1140px] lg:mx-auto'>
       <ClearCartModal isShow={active} setActive={setActive} />
-      <div className='bg-white rounded-[12px] p-[12px]'>
-        <Header searchText={searchText} setSearchText={setSearchText} />
-        <hr className='my-[10px]' />
-        <SupHeader />
-      </div>
-      {window.innerWidth < 768 ? (
-        <>
-          {search && (
-            <Search
-              onSearchChange={onSearchChange}
-              searchText={searchText}
-              setSearchText={setSearchText}
-            />
-          )}
+      <Header searchText={searchText} setSearchText={setSearchText} />
+      <div className='flex gap-[30px] items-start pb-[50px] w-full'>
+        <div className='w-full md:w-[58%]'>
           <Hero />
           <Categories
             onCategoryChange={handleCategoryChange}
@@ -81,26 +76,26 @@ const Home = () => {
             selectedCategory={selectedCategory ?? 0}
             onCategoryTitleChange={(title) => setCategoryTitle(title)}
           />
-          <div ref={catalogRef} className='pb-[100px]'>
-            <Catalog selectedCategory={selectedCategory} categoryTitle={categoryTitle} />
-          </div>
-        </>
-      ) : (
-        <div className='flex gap-[30px] items-start pb-[50px] w-full'>
-          <div className='w-[60%]'>
-            <Hero />
-            <Categories
-              onCategoryChange={handleCategoryChange}
-              onSearchChange={onSearchChange}
-              selectedCategory={selectedCategory ?? 0}
-              onCategoryTitleChange={(title) => setCategoryTitle(title)}
-            />
+          <div ref={catalogRef} className='md:pb-[100px]'>
             <Catalog
-              searchText={searchText}
+              searchText={debouncedSearchText}
               selectedCategory={selectedCategory}
               categoryTitle={categoryTitle}
+              isSearchOpenOnMobile={search}
             />
           </div>
+        </div>
+        {window.innerWidth < 768 ? (
+          <>
+            {search && (
+              <Search
+                onSearchChange={onSearchChange}
+                searchText={searchText}
+                setSearchText={setSearchText}
+              />
+            )}
+          </>
+        ) : (
           <div className='flex-1 sticky top- z-10'>
             <div className='busket'>
               <header className='busket__header'>
@@ -115,8 +110,8 @@ const Home = () => {
               <BusketDesktop to='/cart' />
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };

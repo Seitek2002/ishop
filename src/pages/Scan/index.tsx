@@ -1,7 +1,7 @@
 import { FC, useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import Header from 'components/Header';
+import Header from 'src/components/Header/SupHeader';
 
 import { IDetectedBarcode, Scanner } from '@yudiel/react-qr-scanner';
 
@@ -42,7 +42,7 @@ const Scan: FC = () => {
     (data: IDetectedBarcode[]) => {
       if (!data.length) return;
       const route = data[0].rawValue.split('/').slice(3).join('/');
-      console.log(route.split('/').filter(item => item));
+      console.log(route.split('/').filter((item) => item));
       localStorage.setItem('currentUrl', route);
       navigate(`/${route}`);
     },
@@ -94,7 +94,12 @@ const Scan: FC = () => {
             </div>
           )}
         </div>
-        <button className='py-[15px] px-[30px] bg-[#854C9D] text-white rounded-[12px] mt-[30px]' onClick={() => navigate('https://ishop.kg/admin/login/')}>Вход для заведения</button>
+        <button
+          className='py-[15px] px-[30px] bg-[#854C9D] text-white rounded-[12px] mt-[30px]'
+          onClick={() => navigate('https://ishop.kg/admin/login/')}
+        >
+          Вход для заведения
+        </button>
       </div>
     </div>
   );

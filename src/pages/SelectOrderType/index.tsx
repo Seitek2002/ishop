@@ -6,7 +6,7 @@ import { useGetVenueQuery } from 'api/Venue.api';
 import { useAppDispatch } from 'hooks/useAppDispatch';
 import { useAppSelector } from 'hooks/useAppSelector';
 import { loadVenueFromStorage } from 'utils/storageUtils';
-import Header from 'components/Header';
+import Header from 'src/components/Header/SupHeader';
 
 import './style.scss';
 
@@ -24,11 +24,11 @@ const SelectOrderType = () => {
 
   useEffect(() => {
     const loadedVenue = loadVenueFromStorage();
-  
+
     if (loadedVenue.companyName !== venue) {
       dispatch(clearCart());
     }
-  
+
     if (data) {
       dispatch(setVenue(data));
       // Теперь только доставка: всегда переходим на /deliver/:venue

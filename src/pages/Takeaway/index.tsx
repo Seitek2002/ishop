@@ -4,7 +4,7 @@ import { ISpot } from 'types/venues.types';
 import { useAppDispatch } from 'hooks/useAppDispatch';
 import { useAppSelector } from 'hooks/useAppSelector';
 import { loadUsersDataFromStorage } from 'utils/storageUtils';
-import Header from 'components/Header';
+import Header from 'src/components/Header';
 
 import geoIcon from 'assets/icons/Order/geo.svg';
 
@@ -26,22 +26,7 @@ const Takeaway = () => {
 
   return (
     <div className='h-[98dvh] tabs relative font-inter bg-[#F1F2F3] px-[16px] pt-[12px] lg:max-w-[1140px] lg:mx-auto'>
-      <div className='header bg-white rounded-[12px] p-[12px]'>
-        <Header searchText='' />
-        <hr className='my-[10px]' />
-        <div className='sub-header'>
-          <div className='sub-header__content'>
-            <div className='venue'>
-              <div className='logo'>
-                <img src={data?.logo} alt='' />
-              </div>
-              <div>
-                <div className='text-[20px] font-bold'>{data?.companyName}</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      <Header searchText={''} />
       <div className='tabs__pickup bg-white rounded-[12px] p-[12px]'>
         {data.spots?.map((spot) => {
           if (spot.address) {

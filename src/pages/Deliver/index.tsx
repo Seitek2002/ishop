@@ -5,7 +5,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useAppDispatch } from 'hooks/useAppDispatch';
 import { useAppSelector } from 'hooks/useAppSelector';
 import { loadUsersDataFromStorage } from 'utils/storageUtils';
-import Header from 'components/Header';
+import Header from 'src/components/Header';
 
 import { useMask } from '@react-input/mask';
 import { setUsersData } from 'src/store/yourFeatureSlice';
@@ -58,24 +58,7 @@ const Deliver = () => {
 
   return (
     <div className='h-[98dvh] relative font-inter bg-[#F1F2F3] px-[16px] pt-[12px] lg:max-w-[1140px] lg:mx-auto'>
-      <div className='header bg-white rounded-[12px] p-[12px]'>
-        <Header searchText='' />
-        <hr className='my-[10px]' />
-        <div className='sub-header'>
-          <div className='sub-header__content'>
-            <div className='venue'>
-              <div className='logo'>
-                <img src={venueData?.logo} alt='' />
-              </div>
-              <div>
-                <div className='text-[20px] font-bold'>
-                  {venueData?.companyName}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      <Header searchText={''} />
       <div className='tabs__content'>
         <form className='cart__contacts' onSubmit={handleClick}>
           <div className='flex items-center justify-between mb-[12px]'>

@@ -17,12 +17,14 @@ interface IProps {
   searchText?: string;
   selectedCategory?: number;
   categoryTitle?: string;
+  isSearchOpenOnMobile?: boolean;
 }
 
 const Catalog: FC<IProps> = ({
   searchText,
   selectedCategory = 0,
   categoryTitle,
+  isSearchOpenOnMobile = false,
 }) => {
   const { venue } = useParams();
   const [isShow, setIsShow] = useState(false);
@@ -32,6 +34,7 @@ const Catalog: FC<IProps> = ({
     (state) => state.yourFeature.venue?.colorTheme
   );
   const navigate = useNavigate();
+  const effectiveSearch = (searchText || '').trim();
   const {
     data: items,
     isLoading,
@@ -39,10 +42,10 @@ const Catalog: FC<IProps> = ({
     isUninitialized,
   } = useGetProductsQuery(
     {
-      search: searchText,
+      search: effectiveSearch || undefined,
       organizationSlug: venue,
     },
-    { skip: !venue }
+    { skip: !venue || isSearchOpenOnMobile }
   );
 
   const loading = isUninitialized || isLoading || isFetching;
