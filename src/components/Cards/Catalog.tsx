@@ -137,7 +137,7 @@ const CatalogCard: FC<IProps> = ({ item, foodDetail }) => {
                 color: '#fff',
                 lineHeight: '18px',
               }}
-              className=' z-10 flex items-center justify-center'
+              className='z-10 flex items-center justify-center'
               aria-label='plus'
             >
               +
