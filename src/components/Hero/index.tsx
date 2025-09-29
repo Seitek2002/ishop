@@ -91,7 +91,7 @@ const Hero = () => {
   };
 
   return (
-    !!orders && (<section className='hero'>
+    orders?.length && (<section className='hero'>
       <Swiper
         pagination={{ dynamicBullets: true }}
         modules={[Pagination]}
