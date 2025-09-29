@@ -121,15 +121,19 @@ const CatalogCard: FC<IProps> = ({ item, foodDetail }) => {
             </span>
             <div></div>
           </div>
-          <div className='fixed-plus'>
+          <div className='fixed-plus' style={{
+            width: foundCartItem?.quantity ? '25%' : '100%',
+            right: 0,
+            transition: '1.0s',
+          }}>
             <button
               onClick={(e) => {
                 e.stopPropagation();
                 handleClick();
               }}
               style={{
-                height: 18,
-                width: 18,
+                height: '100%',
+                width: '100%',
                 color: '#fff',
                 lineHeight: '18px',
               }}
