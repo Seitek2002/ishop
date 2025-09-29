@@ -71,11 +71,15 @@ const Cart: React.FC = () => {
   const [address, setAddress] = useState(userData.address || '');
   const [promoCode, setPromoCode] = useState('');
   const [showCommentInput, setShowCommentInput] = useState(false);
+  const [showPromoInput, setShowPromoInput] = useState(false);
 
   useEffect(() => {
     try {
       const storedPromo = localStorage.getItem('promoCode') || '';
-      if (storedPromo) setPromoCode(storedPromo);
+      if (storedPromo) {
+        setPromoCode(storedPromo);
+        setShowPromoInput(true);
+      }
     } catch {
       /* ignore */
     }
@@ -962,31 +966,42 @@ const Cart: React.FC = () => {
                   </div>
                 </div>
 
-                <div className='cart__promo bg-[#fff] p-[12px] rounded-[12px] mt-[12px]'>
-                  <label htmlFor='promoCode' className='block'>
-                    <span className='text-[14px] flex items-center justify-between mb-[8px]'>
-                      {t('promoCode')}
-                      <span className='text-[12px] text-[#ccc]'>
-                        Необязательно
+                {!showPromoInput ? (
+                  <button
+                    type='button'
+                    className='text-[14px] block underline mb-3'
+                    style={{ color: colorTheme }}
+                    onClick={() => setShowPromoInput(true)}
+                  >
+                    {t('addPromoCode')}
+                  </button>
+                ) : (
+                  <div className='cart__promo bg-[#fff] p-[12px] rounded-[12px] mt-[12px]'>
+                    <label htmlFor='promoCode' className='block'>
+                      <span className='text-[14px] flex items-center justify-between mb-[8px]'>
+                        {t('promoCode')}
+                        <span className='text-[12px] text-[#ccc]'>
+                          Необязательно
+                        </span>
                       </span>
-                    </span>
-                    <input
-                      id='promoCode'
-                      type='text'
-                      placeholder={t('promoCode')}
-                      value={promoCode}
-                      onChange={(e) => {
-                        const v = e.target.value;
-                        setPromoCode(v);
-                        try {
-                          localStorage.setItem('promoCode', v);
-                        } catch {
-                          /* ignore */
-                        }
-                      }}
-                    />
-                  </label>
-                </div>
+                      <input
+                        id='promoCode'
+                        type='text'
+                        placeholder={t('promoCode')}
+                        value={promoCode}
+                        onChange={(e) => {
+                          const v = e.target.value;
+                          setPromoCode(v);
+                          try {
+                            localStorage.setItem('promoCode', v);
+                          } catch {
+                            /* ignore */
+                          }
+                        }}
+                      />
+                    </label>
+                  </div>
+                )}
               </>
             ) : (
               <Empty />
