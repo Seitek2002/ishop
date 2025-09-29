@@ -1,9 +1,10 @@
-import AppRoutes from './router';
 import { useEffect } from 'react';
+
+import AppRoutes from './router';
 import { useGetClientBonusQuery } from 'api/Client.api';
 import { useAppSelector } from 'hooks/useAppSelector';
-import { loadUsersDataFromStorage } from 'utils/storageUtils';
 import { addGlobalHaptics } from 'utils/haptics';
+import { loadUsersDataFromStorage } from 'utils/storageUtils';
 
 import './App.scss';
 
