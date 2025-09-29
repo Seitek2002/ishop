@@ -87,7 +87,7 @@ const CatalogCard: FC<IProps> = ({ item, foodDetail }) => {
         />
         <div
           className={
-            foundCartItem ? 'add-btn active opacity-90' : 'add-btn opacity-90'
+            foundCartItem ? 'add-btn opacity-90 active' : 'add-btn opacity-90'
           }
           style={{ backgroundColor: colorTheme }}
         >
@@ -121,7 +121,7 @@ const CatalogCard: FC<IProps> = ({ item, foodDetail }) => {
             </span>
             <div></div>
           </div>
-          <div className='absolute right-[10px] md:right-4 flex justify-center items-center h-full'>
+          <div className='fixed-plus'>
             <button
               onClick={(e) => {
                 e.stopPropagation();

@@ -23,6 +23,27 @@
     .wrapper-btn {
       @apply absolute bottom-0 right-[7%] mx-auto w-[90%] h-[44px] flex justify-center items-center;
     }
+
+    .fixed-plus {
+      @apply absolute md:right-4 flex justify-center items-center h-full;
+      right: 8px;
+
+      @media screen and (min-width: 410px) {
+        right: 10px;
+      }
+
+      @media screen and (min-width: 422px) {
+        right: 10px;
+      }
+
+      @media screen and (min-width: 767px) {
+        right: 8px;
+      }
+
+      @media screen and (min-width: 1024px) {
+        right: 16px;
+      }
+    }
   }
 
   &-info {
