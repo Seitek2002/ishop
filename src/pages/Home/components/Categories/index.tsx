@@ -64,9 +64,6 @@ const Categories: FC<IProps> = ({ onCategoryChange, onSearchChange, selectedCate
       }
     }
 
-    if (navigator.vibrate) {
-      navigator.vibrate(10);
-    }
   };
 
   return (

@@ -34,11 +34,6 @@ const FoodDetail: FC<IProps> = ({ setIsShow, item, isShow }) => {
   const [selectedSize, setSelectedSize] = useState<IModificator | null>(null);
   const dispatch = useAppDispatch();
 
-  const VibrationClick = useCallback(() => {
-    if (navigator.vibrate) {
-      navigator.vibrate(50);
-    }
-  }, []);
 
   const handleCounterChange = useCallback((delta: number) => {
     setCounter((prev) => Math.max(1, prev + delta));
@@ -65,9 +60,8 @@ const FoodDetail: FC<IProps> = ({ setIsShow, item, isShow }) => {
   const selectSize = useCallback(
     (sizeKey: IModificator) => {
       setSelectedSize(sizeKey);
-      VibrationClick();
     },
-    [VibrationClick]
+    []
   );
 
   const bind = useGesture({
@@ -80,7 +74,6 @@ const FoodDetail: FC<IProps> = ({ setIsShow, item, isShow }) => {
 
   const handleImageClick = () => {
     setIsShow();
-    VibrationClick();
   };
 
   const foundCartItem = cart.find(
