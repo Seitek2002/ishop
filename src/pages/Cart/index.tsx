@@ -138,8 +138,13 @@ const Cart: React.FC = () => {
 
   const isSelfPickupRoute = useMemo(() => {
     try {
-      const parts = window.location.pathname.split('/').filter(Boolean);
-      return parts[parts.length - 1] === 's';
+      const mp = (localStorage.getItem('mainPage') || '').toLowerCase();
+      const parts = mp.split('/').filter(Boolean);
+      if (parts.length) {
+        // Самовывоз: наличие отдельного сегмента "s" (например, /:venue/:spotId/s/)
+        return parts[parts.length - 1] === 's' || parts.includes('s');
+      }
+      return false;
     } catch {
       return false;
     }
