@@ -920,12 +920,14 @@ const Cart: React.FC = () => {
                         {venueData.serviceFeePercent}%
                       </div>
                     </div> */}
-                    <div className='cart__sum-item text-[#80868B]'>
-                      {t('deliveryFee')}
-                      <div className='cart__sum-total delivery'>
-                        {deliveryFee} c
+                    {isDeliveryType && (
+                      <div className='cart__sum-item text-[#80868B]'>
+                        {t('deliveryFee')}
+                        <div className='cart__sum-total delivery'>
+                          {deliveryFee} c
+                        </div>
                       </div>
-                    </div>
+                    )}
                     {hasFreeDeliveryHint && (
                       <div className='cart__sum-item text-[#80868B]'>
                         <span className=''>{t('freeDeliveryFrom')}</span>
