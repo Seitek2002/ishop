@@ -122,6 +122,16 @@ const Cart: React.FC = () => {
     }
   };
 
+  const getRefAgentLS = () => {
+    try {
+      const raw = localStorage.getItem('refId') || localStorage.getItem('ref');
+      const n = raw ? parseInt(raw, 10) : NaN;
+      return Number.isFinite(n) && n > 0 ? n : undefined;
+    } catch {
+      return undefined;
+    }
+  };
+
   const { data } = useGetProductsQuery(
     {
       organizationSlug: venueData?.slug,
@@ -314,6 +324,7 @@ const Cart: React.FC = () => {
       bonus: usePoints ? Math.min(bonusPoints, maxUsablePoints) : undefined,
       code: promoCode?.trim() || otpCode || undefined,
       hash: hashLS,
+      refAgent: getRefAgentLS(),
     };
     lastOrderBaseRef.current = payloadBase;
 
@@ -461,6 +472,7 @@ const Cart: React.FC = () => {
         useBonus: true,
         bonus: Math.min(v, maxUsablePoints),
         hash: hashLS,
+        refAgent: getRefAgentLS(),
       };
       lastOrderBaseRef.current = payloadBase;
 
@@ -546,6 +558,7 @@ const Cart: React.FC = () => {
         bonus: Math.min(v, maxUsablePoints),
         code,
         hash: hashLS,
+        refAgent: getRefAgentLS(),
       };
 
       lastOrderBaseRef.current = payloadBase;
