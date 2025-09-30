@@ -136,12 +136,23 @@ const Cart: React.FC = () => {
     replacement: { _: /\d/ },
   });
 
+  const isSelfPickupRoute = useMemo(() => {
+    try {
+      const parts = window.location.pathname.split('/').filter(Boolean);
+      return parts[parts.length - 1] === 's';
+    } catch {
+      return false;
+    }
+  }, []);
+
+  const effectiveUsersType = isSelfPickupRoute ? 2 : usersType;
+
   const orderTypes = useMemo(
     () =>
-      usersType === 2
+      effectiveUsersType === 2
         ? [{ text: t('myself'), value: 2 }]
         : [{ text: t('empty.delivery'), value: 3 }],
-    [t, usersType]
+    [t, effectiveUsersType]
   );
 
   const handleClick = (index: number) => {
@@ -382,7 +393,7 @@ const Cart: React.FC = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
 
-    const tVal = usersType;
+    const tVal = effectiveUsersType;
     if (tVal) {
       const idx = orderTypes.findIndex((it) => it.value === tVal);
       if (idx >= 0) setActiveIndex(idx);
@@ -390,7 +401,7 @@ const Cart: React.FC = () => {
     } else {
       setActiveIndex(0);
     }
-  }, [usersType, orderTypes]);
+  }, [effectiveUsersType, orderTypes]);
 
   const requestOtpForPoints = async (v: number) => {
     try {
