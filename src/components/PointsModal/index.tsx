@@ -1,6 +1,7 @@
 import { FC, useEffect, useState } from 'react';
 
 import { useAppSelector } from 'hooks/useAppSelector';
+import { vibrateClick } from 'utils/haptics';
 
 import './index.scss';
 
@@ -55,7 +56,10 @@ const PointsModal: FC<Props> = ({
     <>
       <div
         className={isShow ? 'overlay active' : 'overlay'}
-        onClick={onCancel}
+        onClick={() => {
+          vibrateClick();
+          onCancel();
+        }}
       />
       <div className={isShow ? 'points-modal active' : 'points-modal'}>
         <h3 className='title'>Сколько баллов хотите потратить?</h3>
@@ -94,13 +98,22 @@ const PointsModal: FC<Props> = ({
           )}
         </div>
         <div className='actions'>
-          <button className='cancel' onClick={onCancel}>
+          <button
+            className='cancel'
+            onClick={() => {
+              vibrateClick();
+              onCancel();
+            }}
+          >
             Отмена
           </button>
           <button
             className='ok'
             style={{ backgroundColor: colorTheme }}
-            onClick={step === 'points' ? handlePointsOk : handleOtpOk}
+            onClick={() => {
+              vibrateClick();
+              (step === 'points' ? handlePointsOk : handleOtpOk)();
+            }}
           >
             Ок
           </button>

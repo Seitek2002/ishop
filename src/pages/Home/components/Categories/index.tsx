@@ -4,6 +4,7 @@ import { useParams } from 'react-router-dom';
 
 import { useGetCategoriesQuery } from 'api/Categories.api';
 import { useAppSelector } from 'hooks/useAppSelector';
+import { vibrateClick } from 'utils/haptics';
 
 import Item from './Item';
 
@@ -46,6 +47,7 @@ const Categories: FC<IProps> = ({ onCategoryChange, onSearchChange, selectedCate
   }, [selectedCategory]);
 
   const selectCategory = (id: number | undefined) => {
+    vibrateClick();
     if (id === -1) {
       onSearchChange(true);
     }
@@ -71,7 +73,10 @@ const Categories: FC<IProps> = ({ onCategoryChange, onSearchChange, selectedCate
       {categories && categories.length > 7 && (
         <span
           className={`dropdown-arrow`}
-          onClick={() => setIsShow(!isShow)}
+          onClick={() => {
+            vibrateClick();
+            setIsShow(!isShow);
+          }}
         >
           {isShow ? t('hidden') : t('all')} {t('category')}
         </span>

@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { IModificator, IProduct } from 'types/products.types';
 import { useAppDispatch } from 'hooks/useAppDispatch';
 import { useAppSelector } from 'hooks/useAppSelector';
+import { vibrateClick } from 'utils/haptics';
 
 import close from './close.svg';
 import minus from 'assets/icons/Busket/minus.svg';
@@ -36,10 +37,12 @@ const FoodDetail: FC<IProps> = ({ setIsShow, item, isShow }) => {
 
 
   const handleCounterChange = useCallback((delta: number) => {
+    vibrateClick();
     setCounter((prev) => Math.max(1, prev + delta));
   }, []);
 
   const handleDone = useCallback(() => {
+    vibrateClick();
     if (item) {
       const sizeId = selectedSize?.id ?? 0;
       const newItem = {
@@ -59,6 +62,7 @@ const FoodDetail: FC<IProps> = ({ setIsShow, item, isShow }) => {
 
   const selectSize = useCallback(
     (sizeKey: IModificator) => {
+      vibrateClick();
       setSelectedSize(sizeKey);
     },
     []
@@ -73,6 +77,7 @@ const FoodDetail: FC<IProps> = ({ setIsShow, item, isShow }) => {
   });
 
   const handleImageClick = () => {
+    vibrateClick();
     setIsShow();
   };
 
@@ -81,6 +86,7 @@ const FoodDetail: FC<IProps> = ({ setIsShow, item, isShow }) => {
   );
 
   const handleAddNoMods = useCallback(() => {
+    vibrateClick();
     const newItem = {
       ...item,
       // Ensure cart item always has a single category (fallback to first categories[] or empty)
@@ -93,17 +99,15 @@ const FoodDetail: FC<IProps> = ({ setIsShow, item, isShow }) => {
   }, [dispatch, item]);
 
   const handleDecrementNoMods = useCallback(() => {
+    vibrateClick();
     dispatch(incrementFromCart(item));
   }, [dispatch, item]);
 
   useEffect(() => {
     if (Array.isArray(item.modificators) && item.modificators[0]) {
       setSelectedSize(item.modificators[0]);
-      const curId = item.id + ',' + (item.modificators[0]?.id ?? 0);
-      const found = cart.find((cartItem) => cartItem.id === curId);
-      if (found) {
-        setCounter(found.quantity || 1);
-      }
+    } else {
+      setSelectedSize(null);
     }
   }, [item.modificators]);
 

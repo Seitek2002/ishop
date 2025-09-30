@@ -6,6 +6,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useGetOrdersByIdQuery } from 'api/Orders.api';
 import { IOrderById } from 'types/orders.types';
 import { useAppSelector } from 'hooks/useAppSelector';
+import { vibrateClick } from 'utils/haptics';
 import Item from './components/Item';
 
 import { statusMessages } from './enums';
@@ -108,6 +109,7 @@ const Order = () => {
   }, [params.id, user.phoneNumber]);
 
   const handleNavigate = () => {
+    vibrateClick();
     navigate(mainPage?.toString() ?? '/');
   };
 
@@ -309,7 +311,10 @@ const Order = () => {
         <div className='flex-1'>
           <div className='cart__sum bg-[#fff]'>
             <div
-              onClick={() => setActive(!active)}
+              onClick={() => {
+                vibrateClick();
+                setActive(!active);
+              }}
               className='cart__sum-top text-[#80868B]'
             >
               {t('empty.deteil')}

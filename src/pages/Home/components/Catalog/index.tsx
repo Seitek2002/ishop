@@ -4,6 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useGetProductsQuery } from 'api/Products.api';
 import { IFoodCart, IProduct } from 'types/products.types';
 import { useAppSelector } from 'hooks/useAppSelector';
+import { vibrateClick } from 'utils/haptics';
 import CatalogCard from 'components/Cards/Catalog';
 import FoodDetail from 'components/FoodDetail';
 
@@ -150,7 +151,10 @@ const Catalog: FC<IProps> = ({
           {window.innerWidth < 768 && cart.length !== 0 && (
             <div className='catalog__footer'>
               <button
-                onClick={() => navigate('/cart')}
+                onClick={() => {
+                  vibrateClick();
+                  navigate('/cart');
+                }}
                 style={{ backgroundColor: colorTheme }}
               >
                 {t('basket.order')}

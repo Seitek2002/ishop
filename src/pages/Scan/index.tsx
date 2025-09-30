@@ -1,6 +1,7 @@
 import { FC, useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+import { vibrateClick } from 'utils/haptics';
 import Header from 'src/components/Header/SupHeader';
 
 import { IDetectedBarcode, Scanner } from '@yudiel/react-qr-scanner';
@@ -79,7 +80,10 @@ const Scan: FC = () => {
                 Дайте разрешение на использование камеры
               </p>
               <button
-                onClick={() => window.location.reload()}
+                onClick={() => {
+                  vibrateClick();
+                  window.location.reload();
+                }}
                 className='mt-2 bg-blue-500 text-white p-2 rounded-md'
               >
                 Повторить запрос
@@ -96,7 +100,10 @@ const Scan: FC = () => {
         </div>
         <button
           className='py-[15px] px-[30px] bg-[#854C9D] text-white rounded-[12px] mt-[30px]'
-          onClick={() => navigate('https://ishop.kg/admin/login/')}
+          onClick={() => {
+            vibrateClick();
+            navigate('https://ishop.kg/admin/login/');
+          }}
         >
           Вход для заведения
         </button>

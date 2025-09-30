@@ -5,6 +5,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useGetVenueQuery } from 'api/Venue.api';
 import { useAppDispatch } from 'hooks/useAppDispatch';
 import { useAppSelector } from 'hooks/useAppSelector';
+import { vibrateClick } from 'utils/haptics';
 import { loadVenueFromStorage } from 'utils/storageUtils';
 import Header from 'src/components/Header/SupHeader';
 
@@ -37,6 +38,7 @@ const SelectOrderType = () => {
   }, [data, dispatch, navigate, venue]);
 
   const handleNavigate = (path: string) => {
+    vibrateClick();
     navigate(path);
   };
 

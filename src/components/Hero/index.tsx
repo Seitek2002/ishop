@@ -6,6 +6,7 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import { statusMessages } from 'pages/Order/enums';
 import { useGetOrdersQuery } from 'api/Orders.api';
 import { IOrder } from 'types/orders.types';
+import { vibrateClick } from 'utils/haptics';
 import { isOutsideWorkTime } from 'utils/timeUtils';
 
 import offer1 from 'assets/images/OrderStatus/Offer-1.png';
@@ -87,6 +88,7 @@ const Hero = () => {
   };
 
   const handleOrderClick = (orderId: number | undefined) => {
+    vibrateClick();
     navigate(`/orders/${orderId}`);
   };
 

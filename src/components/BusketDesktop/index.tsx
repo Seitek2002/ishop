@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import { useAppSelector } from 'hooks/useAppSelector';
+import { vibrateClick } from 'utils/haptics';
 import { getTodayScheduleWindow, isOutsideWorkTime } from 'utils/timeUtils';
 import BusketCard from 'components/Cards/Cart';
 import WorkTimeModal from 'components/WorkTimeModal';
@@ -30,6 +31,7 @@ const BusketDesktop = ({
   const [showWorkTimeModal, setShowWorkTimeModal] = useState(false);
 
   const handleClick = () => {
+    vibrateClick();
     const { window: todayWindow, isClosed } = getTodayScheduleWindow(
       venueData?.schedules,
       venueData?.schedule

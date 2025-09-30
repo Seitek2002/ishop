@@ -7,7 +7,7 @@ const SaveRefPage = () => {
   useEffect(() => {
     localStorage.setItem('ref', params.ref || '');
     navigate('/' + params.venue);
-  }, []);
+  }, [navigate, params.ref, params.venue]);
 
   return <div></div>;
 };

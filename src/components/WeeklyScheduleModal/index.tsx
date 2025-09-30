@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 
 import { IWorkSchedule } from 'types/venues.types';
 import { useAppSelector } from 'hooks/useAppSelector';
+import { vibrateClick } from 'utils/haptics';
 
 import './index.scss';
 
@@ -68,7 +69,13 @@ const WeeklyScheduleModal: FC<Props> = ({ isShow, onClose, schedules, fallbackSc
 
   return (
     <>
-      <div className={isShow ? 'overlay active' : 'overlay'} onClick={onClose} />
+      <div
+        className={isShow ? 'overlay active' : 'overlay'}
+        onClick={() => {
+          vibrateClick();
+          onClose();
+        }}
+      />
       <div className={isShow ? 'weekly-modal active' : 'weekly-modal'}>
         <h3 className='title'>
           {t('closed.scheduleTitle', { defaultValue: 'График работы' })}
@@ -86,7 +93,10 @@ const WeeklyScheduleModal: FC<Props> = ({ isShow, onClose, schedules, fallbackSc
         <button
           style={{ backgroundColor: colorTheme }}
           className='action'
-          onClick={onClose}
+          onClick={() => {
+            vibrateClick();
+            onClose();
+          }}
         >
           {t('closed.ok', { defaultValue: 'Ок' })}
         </button>

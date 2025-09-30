@@ -9,6 +9,7 @@ import { IReqCreateOrder } from 'types/orders.types';
 import { IFoodCart, IProduct } from 'types/products.types';
 import { useAppDispatch } from 'hooks/useAppDispatch';
 import { useAppSelector } from 'hooks/useAppSelector';
+import { vibrateClick } from 'utils/haptics';
 import { loadUsersDataFromStorage } from 'utils/storageUtils';
 import { getTodayScheduleWindow, isOutsideWorkTime } from 'utils/timeUtils';
 import Empty from './components/Empty';
@@ -62,7 +63,7 @@ const Cart: React.FC = () => {
     ) {
       setSelectedSpot(usersActiveSpot);
     }
-  }, [usersActiveSpot]);
+  }, [usersActiveSpot, selectedSpot]);
 
   const [phoneNumber, setPhoneNumber] = useState(
     `+996${userData.phoneNumber.replace('996', '')}`
@@ -595,7 +596,10 @@ const Cart: React.FC = () => {
         {/* No-points info modal */}
         <div
           className={showNoPoints ? 'overlay active' : 'overlay'}
-          onClick={() => setShowNoPoints(false)}
+          onClick={() => {
+            vibrateClick();
+            setShowNoPoints(false);
+          }}
         ></div>
         <div
           className={showNoPoints ? 'clear-cart-modal active' : 'clear-cart-modal'}
@@ -615,7 +619,10 @@ const Cart: React.FC = () => {
             <button
               className='text-white'
               style={{ backgroundColor: colorTheme }}
-              onClick={() => setShowNoPoints(false)}
+              onClick={() => {
+                vibrateClick();
+                setShowNoPoints(false);
+              }}
             >
               {t('button.close')}
             </button>
@@ -627,14 +634,20 @@ const Cart: React.FC = () => {
           <img
             src={headerArrowIcon}
             alt=''
-            onClick={() => navigate(-1)}
+            onClick={() => {
+              vibrateClick();
+              navigate(-1);
+            }}
             className='cursor-pointer'
           />
           <h3>{t('basket.title')}</h3>
           <img
             src={clearCartIcon}
             alt=''
-            onClick={() => setClearCartModal(true)}
+            onClick={() => {
+              vibrateClick();
+              setClearCartModal(true);
+            }}
           />
         </header>
 
@@ -667,7 +680,10 @@ const Cart: React.FC = () => {
                         {orderTypes.map((item, idx) => (
                           <div
                             key={item.value}
-                            onClick={() => handleClick(idx)}
+                            onClick={() => {
+                              vibrateClick();
+                              handleClick(idx);
+                            }}
                             className={`cart__order-type-wrapper bg-[#fff] border-[#e1e2e5] cursor-pointer justify-center ${
                               activeIndex === idx ? 'active' : ''
                             }`}
@@ -808,7 +824,10 @@ const Cart: React.FC = () => {
                       type='button'
                       className='text-[14px] block underline mb-3'
                       style={{ color: colorTheme }}
-                      onClick={() => setShowCommentInput(true)}
+                      onClick={() => {
+                        vibrateClick();
+                        setShowCommentInput(true);
+                      }}
                     >
                       {t('addComment')}
                     </button>
@@ -865,7 +884,10 @@ const Cart: React.FC = () => {
 
                 <div className='cart__sum bg-[#fff]'>
                   <div
-                    onClick={() => setActive(!active)}
+                    onClick={() => {
+                      vibrateClick();
+                      setActive(!active);
+                    }}
                     className='cart__sum-top text-[#80868B]'
                   >
                     {t('empty.deteil')}
@@ -921,6 +943,7 @@ const Cart: React.FC = () => {
                           aria-pressed={usePoints}
                           aria-label='Оплатить баллами'
                           onClick={() => {
+                            vibrateClick();
                             if (availablePoints <= 0) {
                               setShowNoPoints(true);
                               return;
@@ -951,6 +974,7 @@ const Cart: React.FC = () => {
                           size={18}
                           className='cursor-pointer'
                           onClick={() => {
+                            vibrateClick();
                             if (availablePoints <= 0) {
                               setShowNoPoints(true);
                             } else {
@@ -971,7 +995,10 @@ const Cart: React.FC = () => {
                     type='button'
                     className='text-[14px] block underline mb-3'
                     style={{ color: colorTheme }}
-                    onClick={() => setShowPromoInput(true)}
+                    onClick={() => {
+                      vibrateClick();
+                      setShowPromoInput(true);
+                    }}
                   >
                     {t('addPromoCode')}
                   </button>
@@ -1044,7 +1071,10 @@ const Cart: React.FC = () => {
             <button
               disabled={!cart.length}
               style={{ backgroundColor: colorTheme }}
-              onClick={handleOrder}
+              onClick={() => {
+                vibrateClick();
+                handleOrder();
+              }}
             >
               {'Оплатить'}
             </button>

@@ -53,7 +53,7 @@ const Home = () => {
         activeSpot: +location.pathname.split('/').filter((item) => +item)[0],
       })
     );
-  }, []);
+  }, [location.pathname, userData]);
 
   useEffect(() => {
     const h = setTimeout(() => setDebouncedSearchText(searchText), 300);

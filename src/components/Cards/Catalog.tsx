@@ -3,6 +3,7 @@ import { FC, useMemo, useState } from 'react';
 import { IProduct } from 'types/products.types';
 import { useAppDispatch } from 'hooks/useAppDispatch';
 import { useAppSelector } from 'hooks/useAppSelector';
+import { vibrateClick } from 'utils/haptics';
 
 import defaultProduct from 'assets/images/default-product.svg';
 
@@ -33,10 +34,12 @@ const CatalogCard: FC<IProps> = ({ item, foodDetail }) => {
   );
 
   const openFoodDetail = () => {
+    vibrateClick();
     if (foodDetail) foodDetail(item as IProduct);
   };
 
   const handleClick = () => {
+    vibrateClick();
     if (item.modificators.length) {
       openFoodDetail();
     } else {
@@ -53,6 +56,7 @@ const CatalogCard: FC<IProps> = ({ item, foodDetail }) => {
     }
   };
   const handleDecrement = () => {
+    vibrateClick();
     if (item.modificators.length) {
       openFoodDetail();
     } else {
@@ -95,6 +99,7 @@ const CatalogCard: FC<IProps> = ({ item, foodDetail }) => {
             <button
               onClick={(e) => {
                 e.stopPropagation();
+                vibrateClick();
                 handleDecrement();
               }}
               className='absolute flex items-center justify-center'
@@ -129,6 +134,7 @@ const CatalogCard: FC<IProps> = ({ item, foodDetail }) => {
             <button
               onClick={(e) => {
                 e.stopPropagation();
+                vibrateClick();
                 handleClick();
               }}
               style={{

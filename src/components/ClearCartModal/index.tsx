@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 
 import { useAppDispatch } from 'hooks/useAppDispatch';
 import { useAppSelector } from 'hooks/useAppSelector';
+import { vibrateClick } from 'utils/haptics';
 
 import close from 'assets/icons/close.svg';
 
@@ -22,10 +23,12 @@ const ClearCartModal: FC<IProps> = ({ isShow, setActive }) => {
   );
   const { t } = useTranslation();
   const handleClose = () => {
+    vibrateClick();
     setActive(!isShow);
   };
 
   const handleClear = () => {
+    vibrateClick();
     setActive(!isShow);
     dispatch(clearCart());
   };

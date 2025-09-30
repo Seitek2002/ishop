@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 
 import { loadUsersDataFromStorage } from 'src/utils/storageUtils';
+import { vibrateClick } from 'utils/haptics';
 
 import arrowIcon from 'assets/icons/Header/arrow.svg';
 import search from 'assets/icons/Header/search.svg';
@@ -35,19 +36,22 @@ const SupHeader: FC<IProps> = ({ searchText, setSearchText }) => {
     [i18n.language]
   );
   const { t } = useTranslation();
-  const toggleLanguageMenu = () => setIsLanguageOpen((prev) => !prev);
+  const toggleLanguageMenu = () => {
+    vibrateClick();
+    setIsLanguageOpen((prev) => !prev);
+  };
   const { data } = useGetVenueQuery({
     venueSlug: venue || '',
     tableId: Number(id) || undefined,
   });
 
   const selectLanguage = (language: string) => {
+    vibrateClick();
     const langCode = language === 'RU' ? 'ru' : language === 'KG' ? 'kg' : 'en';
     i18n.changeLanguage(langCode);
     localStorage.setItem('i18nextLng', langCode);
     setIsLanguageOpen(false);
 
-    if (navigator.vibrate) navigator.vibrate(50);
     window.location.reload();
   };
 

@@ -2,6 +2,7 @@ import { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useAppSelector } from 'hooks/useAppSelector';
+import { vibrateClick } from 'utils/haptics';
 
 // Reuse existing modal styles (overlay + clear-cart-modal)
 import 'components/ClearCartModal/index.scss';
@@ -21,7 +22,10 @@ const WorkTimeModal: FC<IProps> = ({ isShow, onClose }) => {
     <>
       <div
         className={isShow ? 'overlay active' : 'overlay'}
-        onClick={onClose}
+        onClick={() => {
+          vibrateClick();
+          onClose();
+        }}
       ></div>
       <div
         className={isShow ? 'clear-cart-modal active' : 'clear-cart-modal'}
@@ -47,7 +51,10 @@ const WorkTimeModal: FC<IProps> = ({ isShow, onClose }) => {
           <button
             className='text-white'
             style={{ backgroundColor: colorTheme }}
-            onClick={onClose}
+            onClick={() => {
+              vibrateClick();
+              onClose();
+            }}
           >
             {t('button.close')}
           </button>

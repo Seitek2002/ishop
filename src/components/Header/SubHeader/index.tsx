@@ -4,6 +4,7 @@ import { useParams } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 
 import { useGetVenueQuery } from 'api/Venue.api';
+import { vibrateClick } from 'utils/haptics';
 import { loadVenueFromStorage } from 'utils/storageUtils';
 // import { getTodayScheduleInfo } from 'utils/timeUtils';
 import WeeklyScheduleModal from 'components/WeeklyScheduleModal';
@@ -65,7 +66,10 @@ const SubHeader = () => {
             className='call cursor-pointer'
             role='button'
             aria-label='График работы'
-            onClick={() => setIsScheduleOpen(true)}
+            onClick={() => {
+              vibrateClick();
+              setIsScheduleOpen(true);
+            }}
           >
             <Calendar size={24} />
           </div>

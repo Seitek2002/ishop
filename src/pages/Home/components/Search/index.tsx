@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 
 import { useGetProductsQuery } from 'api/Products.api';
 import { IProduct } from 'types/products.types';
+import { vibrateClick } from 'utils/haptics';
 import FoodDetail from '../../../../components/FoodDetail';
 import CatalogCard from 'components/Cards/Catalog';
 
@@ -91,7 +92,10 @@ const Search: FC<IProps> = ({ onSearchChange, searchText, setSearchText }) => {
             viewBox='0 0 24 24'
             fill='none'
             xmlns='http://www.w3.org/2000/svg'
-            onClick={() => onSearchChange(false)}
+            onClick={() => {
+              vibrateClick();
+              onSearchChange(false);
+            }}
           >
             <g clipPath='url(#clip0_381_56772)'>
               <path

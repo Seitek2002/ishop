@@ -1,6 +1,7 @@
 import { FC } from 'react';
 
 import { useAppSelector } from 'hooks/useAppSelector';
+import { vibrateClick } from 'utils/haptics';
 
 interface IProps {
   item: {
@@ -22,7 +23,10 @@ const Item: FC<IProps> = ({ item, active, selectCategory }) => {
     <div
       className={`categories__item ${active === item.id ? 'active' : ''}`}
       key={item.id}
-      onClick={() => selectCategory(item.id)}
+      onClick={() => {
+        vibrateClick();
+        selectCategory(item.id);
+      }}
     >
       <div
         className={`categories__wrapper`}

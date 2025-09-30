@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { ISpot } from 'types/venues.types';
 import { useAppDispatch } from 'hooks/useAppDispatch';
 import { useAppSelector } from 'hooks/useAppSelector';
+import { vibrateClick } from 'utils/haptics';
 import { loadUsersDataFromStorage } from 'utils/storageUtils';
 import Header from 'src/components/Header';
 
@@ -19,6 +20,7 @@ const Takeaway = () => {
   );
 
   const handleClick = (spot: ISpot) => {
+    vibrateClick();
     const res = loadUsersDataFromStorage();
     dispatch(setUsersData({ ...res, type: 2, activeSpot: spot.id }));
     navigate(`/${data.slug}/${spot.id}/s`);

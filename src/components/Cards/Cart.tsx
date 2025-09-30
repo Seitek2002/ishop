@@ -3,6 +3,7 @@ import { FC, useState } from 'react';
 import { IFoodCart } from 'types/products.types';
 import { useAppDispatch } from 'hooks/useAppDispatch';
 import { useAppSelector } from 'hooks/useAppSelector';
+import { vibrateClick } from 'utils/haptics';
 
 import minus from 'assets/icons/Busket/minus.svg';
 import plus from 'assets/icons/Busket/plus.svg';
@@ -21,10 +22,12 @@ const BusketCard: FC<IProps> = ({ item }) => {
   );
 
   const increment = () => {
+    vibrateClick();
     dispatch(addToCart({ ...item, quantity: 1 }));
   };
 
   const decrement = () => {
+    vibrateClick();
     dispatch(incrementFromCart(item));
   };
 

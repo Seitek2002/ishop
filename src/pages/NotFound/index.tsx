@@ -2,6 +2,8 @@ import { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
+import { vibrateClick } from 'utils/haptics';
+
 import notFoundImg from 'assets/images/not-found-products.png';
 
 import './style.scss';
@@ -24,7 +26,10 @@ const NotFound: FC = () => {
         <button
           type='button'
           className='not-found__button'
-          onClick={() => navigate('/')}
+          onClick={() => {
+            vibrateClick();
+            navigate('/');
+          }}
         >
           {t('main') || 'На главную'}
         </button>
