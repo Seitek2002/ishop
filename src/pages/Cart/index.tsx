@@ -12,7 +12,17 @@ import { useAppSelector } from 'hooks/useAppSelector';
 import { vibrateClick } from 'utils/haptics';
 import { loadUsersDataFromStorage } from 'utils/storageUtils';
 import { getTodayScheduleWindow, isOutsideWorkTime } from 'utils/timeUtils';
+import {
+  ContactsForm,
+  DeliveryInfoBanner,
+  FooterBar,
+  HeaderBar,
+  Recommended,
+  SpotsSelector,
+  SumDetails,
+} from './components/CartUI';
 import Empty from './components/Empty';
+import NoPointsModal from './components/NoPointsModal';
 import BusketDesktop from 'components/BusketDesktop';
 import BusketCard from 'components/Cards/Cart';
 import CatalogCard from 'components/Cards/Catalog';
@@ -22,19 +32,13 @@ import FoodDetail from 'components/FoodDetail';
 import PointsModal from 'components/PointsModal';
 import WorkTimeModal from 'components/WorkTimeModal';
 
-import clearCartIcon from 'assets/icons/Busket/clear-cart.svg';
-import cookie from 'assets/icons/Busket/cookie.svg';
-import headerArrowIcon from 'assets/icons/Busket/header-arrow.svg';
-import priceArrow from 'assets/icons/Busket/price-arrow.svg';
-import deliveryIcon from 'assets/icons/Order/delivery.svg';
-
 import './style.scss';
 
 import { useMask } from '@react-input/mask';
-import { Pencil } from 'lucide-react';
 import { clearCart, setUsersData } from 'src/store/yourFeatureSlice';
 
 const Cart: React.FC = () => {
+  const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const [postOrder] = usePostOrdersMutation();
   const userData = loadUsersDataFromStorage();
@@ -42,18 +46,23 @@ const Cart: React.FC = () => {
   const [isShow, setIsShow] = useState(false);
   const cart = useAppSelector((state) => state.yourFeature.cart);
   const [isLoading, setIsLoading] = useState(false);
+  const [showNoPoints, setShowNoPoints] = useState(false);
   const colorTheme = useAppSelector(
     (state) => state.yourFeature.venue?.colorTheme
   );
   const venueData = useAppSelector((state) => state.yourFeature.venue);
-  const usersType = useAppSelector((state) => state.yourFeature.usersData?.type);
-  const usersActiveSpot = useAppSelector((state) => state.yourFeature.usersData?.activeSpot);
+  const usersType = useAppSelector(
+    (state) => state.yourFeature.usersData?.type
+  );
+  const usersActiveSpot = useAppSelector(
+    (state) => state.yourFeature.usersData?.activeSpot
+  );
 
   const [activeIndex, setActiveIndex] = useState(0);
   const defaultSpotId =
     venueData?.defaultDeliverySpot ?? venueData?.spots?.[0]?.id ?? 0;
   const [selectedSpot, setSelectedSpot] = useState(defaultSpotId);
-  
+
   // Sync selectedSpot with activeSpot derived from pickup URL (/:venue/:venueId/s)
   useEffect(() => {
     if (
@@ -73,18 +82,11 @@ const Cart: React.FC = () => {
   const [promoCode, setPromoCode] = useState('');
   const [showCommentInput, setShowCommentInput] = useState(false);
   const [showPromoInput, setShowPromoInput] = useState(false);
-
-  useEffect(() => {
-    try {
-      const storedPromo = localStorage.getItem('promoCode') || '';
-      if (storedPromo) {
-        setPromoCode(storedPromo);
-        setShowPromoInput(true);
-      }
-    } catch {
-      /* ignore */
-    }
-  }, []);
+  const storedPromo = localStorage.getItem('promoCode') || '';
+  if (storedPromo) {
+    setPromoCode(storedPromo);
+    setShowPromoInput(true);
+  }
 
   const [phoneError, setPhoneError] = useState('');
   const [addressError, setAddressError] = useState('');
@@ -95,7 +97,6 @@ const Cart: React.FC = () => {
   const [wrapperHeight, setWrapperHeight] = useState(0);
   const [clearCartModal, setClearCartModal] = useState(false);
   const [showWorkTimeModal, setShowWorkTimeModal] = useState(false);
-  const [showNoPoints, setShowNoPoints] = useState(false);
 
   const [isPointsModalOpen, setIsPointsModalOpen] = useState(false);
   const { data: bonusData } = useGetClientBonusQuery(
@@ -107,6 +108,7 @@ const Cart: React.FC = () => {
   const [bonusPoints, setBonusPoints] = useState(0);
   const [otpCode, setOtpCode] = useState<string>('');
   const lastOrderBaseRef = useRef<IReqCreateOrder | null>(null);
+
   const getHashLS = () => {
     try {
       if (typeof window === 'undefined') return undefined;
@@ -120,7 +122,6 @@ const Cart: React.FC = () => {
     }
   };
 
-  const navigate = useNavigate();
   const { data } = useGetProductsQuery(
     {
       organizationSlug: venueData?.slug,
@@ -128,8 +129,6 @@ const Cart: React.FC = () => {
     },
     { skip: !venueData?.slug }
   );
-
-  // console.log(data);
 
   const inputRef = useMask({
     mask: '+996_________',
@@ -159,13 +158,6 @@ const Cart: React.FC = () => {
         : [{ text: t('empty.delivery'), value: 3 }],
     [t, effectiveUsersType]
   );
-
-  const handleClick = (index: number) => {
-    setActiveIndex(index);
-    if (navigator.vibrate) {
-      navigator.vibrate(50);
-    }
-  };
 
   const handleClose = () => {
     setIsShow(false);
@@ -320,7 +312,7 @@ const Cart: React.FC = () => {
       organizationSlug: venueData.slug,
       useBonus: usePoints || undefined,
       bonus: usePoints ? Math.min(bonusPoints, maxUsablePoints) : undefined,
-      code: (promoCode?.trim() || otpCode || undefined),
+      code: promoCode?.trim() || otpCode || undefined,
       hash: hashLS,
     };
     lastOrderBaseRef.current = payloadBase;
@@ -610,62 +602,17 @@ const Cart: React.FC = () => {
           onClose={() => setShowWorkTimeModal(false)}
         />
         {/* No-points info modal */}
-        <div
-          className={showNoPoints ? 'overlay active' : 'overlay'}
-          onClick={() => {
-            vibrateClick();
-            setShowNoPoints(false);
-          }}
-        ></div>
-        <div
-          className={showNoPoints ? 'clear-cart-modal active' : 'clear-cart-modal'}
-          style={{
-            width: 'calc(100vw - 64px)',
-            maxWidth: '520px',
-            height: 'auto',
-            padding: '16px 24px',
-          }}
-        >
-          <div className='w-full px-[16px] md:px-[24px]'>
-            <h3 className='text-[20px] font-medium mb-2 text-center'>
-              К сожалению у вас нет баллов для использования
-            </h3>
-          </div>
-          <div className='clear-cart-modal__btns'>
-            <button
-              className='text-white'
-              style={{ backgroundColor: colorTheme }}
-              onClick={() => {
-                vibrateClick();
-                setShowNoPoints(false);
-              }}
-            >
-              {t('button.close')}
-            </button>
-          </div>
-        </div>
+        <NoPointsModal
+          showNoPoints={showNoPoints}
+          setShowNoPoints={setShowNoPoints}
+        />
         {isLoading && <CartLoader />}
 
-        <header className='cart__header'>
-          <img
-            src={headerArrowIcon}
-            alt=''
-            onClick={() => {
-              vibrateClick();
-              navigate(-1);
-            }}
-            className='cursor-pointer'
-          />
-          <h3>{t('basket.title')}</h3>
-          <img
-            src={clearCartIcon}
-            alt=''
-            onClick={() => {
-              vibrateClick();
-              setClearCartModal(true);
-            }}
-          />
-        </header>
+        <HeaderBar
+          title={t('basket.title')}
+          onBack={() => navigate(-1)}
+          onClear={() => setClearCartModal(true)}
+        />
 
         {window.innerWidth < 768 && (
           <>
@@ -689,324 +636,66 @@ const Cart: React.FC = () => {
           <div className='md:w-[50%]'>
             {cart.length > 0 ? (
               <>
-                {!venueData?.table?.tableNum && (
-                  <div className='cart__order-type'>
-                    {orderTypes.length !== 1 && (
-                      <>
-                        {orderTypes.map((item, idx) => (
-                          <div
-                            key={item.value}
-                            onClick={() => {
-                              vibrateClick();
-                              handleClick(idx);
-                            }}
-                            className={`cart__order-type-wrapper bg-[#fff] border-[#e1e2e5] cursor-pointer justify-center ${
-                              activeIndex === idx ? 'active' : ''
-                            }`}
-                            style={{
-                              borderColor:
-                                activeIndex === idx ? colorTheme : '#e1e2e5',
-                            }}
-                          >
-                            {item.text}
-                          </div>
-                        ))}
-                      </>
-                    )}
-                  </div>
-                )}
+                <SpotsSelector
+                  spots={venueData.spots?.map((s) => ({
+                    id: s.id,
+                    name: s.name,
+                    address: s.address || '',
+                  }))}
+                  selectedSpot={selectedSpot}
+                  onSelect={setSelectedSpot}
+                  colorTheme={colorTheme}
+                  t={t}
+                  visible={activeIndex === 0}
+                />
 
-                {venueData.spots?.length !== 1 && (
-                  <>
-                    {activeIndex === 0 && (
-                      <div className='cart__contacts'>
-                        <div className='flex items-center justify-between mb-6'>
-                          <h4>{t('selectBranch')}</h4>
-                        </div>
-
-                        <div className='space-y-4'>
-                          {venueData.spots?.map((location) => {
-                            const isSelected = selectedSpot === location.id;
-
-                            return (
-                              <label
-                                key={location.id}
-                                style={{
-                                  borderColor:
-                                    isSelected && colorTheme
-                                      ? colorTheme
-                                      : '#e1e2e5',
-                                }}
-                                className={`
-                              flex items-center w-full px-1 rounded-xl cursor-pointer transition-all duration-200
-                              border-[2px]
-                            `}
-                                htmlFor={location.id + ''}
-                              >
-                                <div className='relative mr-4 flex-shrink-0'>
-                                  <input
-                                    type='radio'
-                                    id={location.id + ''}
-                                    name='location'
-                                    checked={isSelected}
-                                    onChange={() =>
-                                      setSelectedSpot(location.id)
-                                    }
-                                    className='peer sr-only'
-                                  />
-                                  <div
-                                    style={{ backgroundColor: colorTheme }}
-                                    className={`
-                                w-5 h-5 rounded-full border-2 transition-colors duration-200
-                                ${
-                                  isSelected
-                                    ? 'border-amber-600 bg-amber-600'
-                                    : 'border-amber-400 bg-white peer-hover:border-amber-500'
-                                }
-                              `}
-                                  >
-                                    {isSelected && (
-                                      <div className='absolute inset-0 flex items-center justify-center'>
-                                        <div className='w-2 h-2 rounded-full bg-white' />
-                                      </div>
-                                    )}
-                                  </div>
-                                </div>
-                                <div style={{ color: colorTheme }}>
-                                  <div className='font-medium'>
-                                    {location.name}
-                                  </div>
-                                  <div className=''>{location.address}</div>
-                                </div>
-                              </label>
-                            );
-                          })}
-                        </div>
-                      </div>
-                    )}
-                  </>
-                )}
-
-                <div className='cart__contacts'>
-                  <div className='flex items-center justify-between mb-[12px]'>
-                    {/* <h4>{t('empty.contact')}</h4> */}
-                  </div>
-
-                  <label htmlFor='phoneNumber'>
-                    <span className='text-[16px]'>
-                      {t('phoneNumber')}{' '}
-                      <span className='required' style={{ color: colorTheme }}>
-                        {t('necessarily')}
-                      </span>
-                    </span>
-                    <input
-                      type='text'
-                      placeholder='+996'
-                      id='phoneNumber'
-                      ref={inputRef}
-                      value={phoneNumber}
-                      onChange={(e) => handlePhoneChange(e.target.value)}
-                      className='text-[16px]'
-                    />
-                    {phoneError && (
-                      <div className='error-message'>{phoneError}</div>
-                    )}
-                  </label>
-
-                  {
-                    <>
-                      {orderTypes[activeIndex]?.value === 3 && (
-                        <label htmlFor='address'>
-                          <span className='text-[14px]'>{t('addres')}</span>
-                          <input
-                            type='text'
-                            id='address'
-                            placeholder={t('empty.location') || t('addres')}
-                            value={address}
-                            onChange={(e) =>
-                              handleAddressChange(e.target.value)
-                            }
-                          />
-                          {addressError && (
-                            <div className='error-message'>{addressError}</div>
-                          )}
-                        </label>
-                      )}
-                    </>
-                  }
-
-                  {!showCommentInput ? (
-                    <button
-                      type='button'
-                      className='text-[14px] block underline mb-3'
-                      style={{ color: colorTheme }}
-                      onClick={() => {
-                        vibrateClick();
-                        setShowCommentInput(true);
-                      }}
-                    >
-                      {t('addComment')}
-                    </button>
-                  ) : (
-                    <label htmlFor='comment'>
-                      <span className='text-[14px]'>{t('comment')}</span>
-                      <input
-                        id='comment'
-                        type='text'
-                        placeholder={t('empty.comment') || t('comment')}
-                        value={comment}
-                        onChange={(e) => setComment(e.target.value)}
-                      />
-                    </label>
-                  )}
-                </div>
+                <ContactsForm
+                  t={t}
+                  colorTheme={colorTheme}
+                  inputRef={inputRef}
+                  phoneNumber={phoneNumber}
+                  onPhoneChange={handlePhoneChange}
+                  phoneError={phoneError}
+                  isDelivery={isDeliveryType}
+                  address={address}
+                  onAddressChange={handleAddressChange}
+                  addressError={addressError}
+                  showCommentInput={showCommentInput}
+                  setShowCommentInput={setShowCommentInput}
+                  comment={comment}
+                  setComment={setComment}
+                />
 
                 {/* Delivery info banner */}
-                {isDeliveryType && deliveryFreeFrom !== null && (
-                  <div
-                    className='cart__delivery-info rounded-[12px] mt-[12px] bg-white'
-                    style={{ border: `1px solid ${colorTheme}33` }}
-                  >
-                    <div
-                      className='cart__delivery-icon'
-                      style={{ borderColor: colorTheme }}
-                    >
-                      <img src={deliveryIcon} alt='delivery' />
-                    </div>
-                    <div className='cart__delivery-text'>
-                      {subtotal >= deliveryFreeFrom ? (
-                        <span>
-                          {t('freeDeliveryYouGet')}{' '}
-                          <span style={{ color: colorTheme, fontWeight: 600 }}>
-                            {t('freeDelivery')}
-                          </span>
-                        </span>
-                      ) : (
-                        <span>
-                          {t('freeDeliveryAdd', {
-                            amount: Math.max(
-                              0,
-                              Math.ceil(deliveryFreeFrom - subtotal)
-                            ),
-                          })}{' '}
-                          <span style={{ color: colorTheme, fontWeight: 600 }}>
-                            бесплатной доставки
-                          </span>
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                )}
+                <DeliveryInfoBanner
+                  isDelivery={isDeliveryType}
+                  deliveryFreeFrom={deliveryFreeFrom}
+                  subtotal={subtotal}
+                  colorTheme={colorTheme}
+                  t={t}
+                />
 
-                <div className='cart__sum bg-[#fff]'>
-                  <div
-                    onClick={() => {
-                      vibrateClick();
-                      setActive(!active);
-                    }}
-                    className='cart__sum-top text-[#80868B]'
-                  >
-                    {t('empty.deteil')}
-                    <img
-                      src={priceArrow}
-                      alt='arrow'
-                      className={
-                        active ? 'cart__sum-img' : 'cart__sum-img active'
-                      }
-                    />
-                  </div>
-                  <div
-                    ref={wrapperRef}
-                    className={
-                      active
-                        ? 'cart__sum-wrapper divide-y active'
-                        : 'cart__sum-wrapper divide-y'
-                    }
-                    style={{ height: `${wrapperHeight}px` }}
-                  >
-                    <div className='cart__sum-item text-[#80868B]'>
-                      {t('empty.total')}
-                      <div className='cart__sum-total all text-[#80868B]'>
-                        {subtotal} c
-                      </div>
-                    </div>
-                    {/* <div className='cart__sum-item text-[#80868B]'>
-                      {t('services')}
-                      <div className='cart__sum-total service'>
-                        {venueData.serviceFeePercent}%
-                      </div>
-                    </div> */}
-                    {isDeliveryType && (
-                      <div className='cart__sum-item text-[#80868B]'>
-                        {t('deliveryFee')}
-                        <div className='cart__sum-total delivery'>
-                          {deliveryFee} c
-                        </div>
-                      </div>
-                    )}
-                    {hasFreeDeliveryHint && (
-                      <div className='cart__sum-item text-[#80868B]'>
-                        <span className=''>{t('freeDeliveryFrom')}</span>
-                        <div className='cart__sum-total text-[#00BFB2] font-semibold'>
-                          {Number(deliveryFreeFrom)} c
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                  <div className='cart__sum-ress border-[#f3f3f3]' style={{ display: availablePoints <= 0 ? 'none' : undefined }}>
-                    <div className='flex items-center justify-between w-full'>
-                      <span className='flex items-center gap-2'>
-                        <button
-                          type='button'
-                          aria-pressed={usePoints}
-                          aria-label='Оплатить баллами'
-                          onClick={() => {
-                            vibrateClick();
-                            if (availablePoints <= 0) {
-                              setShowNoPoints(true);
-                              return;
-                            }
-                            const nv = !usePoints;
-                            setUsePoints(nv);
-                            if (nv) {
-                              setBonusPoints(maxUsablePoints);
-                              setIsPointsModalOpen(true);
-                            } else {
-                              setBonusPoints(0);
-                            }
-                          }}
-                          className={`w-[48px] h-[28px] rounded-full p-[3px] transition-colors duration-200 flex ${
-                            usePoints ? 'justify-end' : 'justify-start'
-                          }`}
-                          style={{
-                            backgroundColor: usePoints ? colorTheme : '#E5E7EB',
-                          }}
-                        >
-                          <span className='w-[22px] h-[22px] bg-white rounded-full shadow-md transition-transform duration-200' />
-                        </button>
-                        Оплатить баллами
-                      </span>
-                      <div className='flex items-center gap-[8px]'>
-                        {maxUsablePoints} б.
-                        <Pencil
-                          size={18}
-                          className='cursor-pointer'
-                          onClick={() => {
-                            vibrateClick();
-                            if (availablePoints <= 0) {
-                              setShowNoPoints(true);
-                            } else {
-                              setIsPointsModalOpen(true);
-                            }
-                          }}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                  <div className='cart__sum-ress border-[#f3f3f3]'>
-                    {t('empty.totalAmount')} <span>{displayTotal} c</span>
-                  </div>
-                </div>
+                <SumDetails
+                  t={t}
+                  colorTheme={colorTheme}
+                  active={active}
+                  setActive={setActive}
+                  wrapperRef={wrapperRef}
+                  wrapperHeight={wrapperHeight}
+                  subtotal={subtotal}
+                  isDelivery={isDeliveryType}
+                  deliveryFee={deliveryFee}
+                  hasFreeDeliveryHint={hasFreeDeliveryHint}
+                  deliveryFreeFrom={deliveryFreeFrom}
+                  availablePoints={availablePoints}
+                  usePoints={usePoints}
+                  setUsePoints={setUsePoints}
+                  maxUsablePoints={maxUsablePoints}
+                  setBonusPoints={setBonusPoints}
+                  onOpenPointsModal={() => setIsPointsModalOpen(true)}
+                  displayTotal={displayTotal}
+                  onShowNoPoints={() => setShowNoPoints(true)}
+                />
 
                 {!showPromoInput ? (
                   <button
@@ -1064,39 +753,24 @@ const Cart: React.FC = () => {
           )}
         </div>
 
-        {(data?.filter((item) => item.isRecommended) ?? []).length > 0 && (
-          <div className='cart__forgot'>
-            <h4 className='cart__forgot-title'>
-              {t('orders.forgotten')}
-              <img src={cookie} alt='cookie' />
-            </h4>
-            <div className='cart__forgot-wrapper'>
-              {data
-                ?.filter((item) => item.isRecommended)
-                .map((item) => (
-                  <CatalogCard
-                    foodDetail={handleOpen}
-                    key={item.id}
-                    item={item}
-                  />
-                ))}
-            </div>
-          </div>
-        )}
+        <Recommended
+          t={t}
+          items={data?.filter((it) => it.isRecommended) ?? []}
+          renderItem={(item) => (
+            <CatalogCard
+              foodDetail={handleOpen}
+              key={(item as IProduct).id}
+              item={item as IProduct}
+            />
+          )}
+        />
 
         {window.innerWidth < 768 && (
-          <footer className='cart__footer'>
-            <button
-              disabled={!cart.length}
-              style={{ backgroundColor: colorTheme }}
-              onClick={() => {
-                vibrateClick();
-                handleOrder();
-              }}
-            >
-              {'Оплатить'}
-            </button>
-          </footer>
+          <FooterBar
+            disabled={!cart.length}
+            colorTheme={colorTheme}
+            onPay={handleOrder}
+          />
         )}
         <PointsModal
           isShow={isPointsModalOpen}

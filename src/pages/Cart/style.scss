@@ -26,7 +26,7 @@
   }
 
   &__contacts {
-    @apply bg-white p-[12px] rounded-[12px];
+    @apply bg-white p-[12px] rounded-[12px] mt-[20px];
 
     input {
       @apply border-[1px] border-[#E1E2E5] rounded-[8px] w-full mb-[8px] py-[12px] px-[16px] text-[16px];
