@@ -1,4 +1,4 @@
-import { FC, useCallback, useEffect, useMemo, useState } from 'react';
+import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { IModificator, IProduct } from 'types/products.types';
@@ -14,7 +14,7 @@ import whitePlus from 'assets/icons/CatalogCard/white-plus.svg';
 
 import '../Cards/style.scss';
 
-import { useGesture } from '@use-gesture/react';
+import { useDrag,useGesture } from '@use-gesture/react';
 import { addToCart, incrementFromCart } from 'src/store/yourFeatureSlice';
 
 interface IProps {
@@ -35,6 +35,52 @@ const FoodDetail: FC<IProps> = ({ setIsShow, item, isShow }) => {
   const [selectedSize, setSelectedSize] = useState<IModificator | null>(null);
   const dispatch = useAppDispatch();
 
+  const containerRef = useRef<HTMLDivElement | null>(null);
+
+  // Touch handlers to close on swipe down across whole block
+  const touchStartY = useRef<number | null>(null);
+  const touchActive = useRef<boolean>(false);
+
+  const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
+    try {
+      touchStartY.current = e.touches[0]?.clientY ?? null;
+      touchActive.current = true;
+    } catch {
+      touchStartY.current = null;
+      touchActive.current = false;
+    }
+  };
+
+  const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (!touchActive.current || touchStartY.current == null) return;
+    const dy = (e.touches[0]?.clientY ?? 0) - (touchStartY.current ?? 0);
+    if (dy > 80) {
+      e.preventDefault();
+      touchActive.current = false;
+      setIsShow();
+    }
+  };
+
+  const handleTouchEnd = () => {
+    touchActive.current = false;
+    touchStartY.current = null;
+  };
+
+  // Global drag listener on the whole FoodDetail block: swipe down to close
+  useDrag(
+    ({ movement: [, y], last, direction: [, dy] }) => {
+      // close on downward swipe with enough travel
+      if (last && dy > 0 && y > 80) {
+        setIsShow();
+      }
+    },
+    {
+      target: containerRef,
+      eventOptions: { passive: false },
+      axis: 'y',
+      filterTaps: true,
+    }
+  );
 
   const handleCounterChange = useCallback((delta: number) => {
     vibrateClick();
@@ -197,8 +243,13 @@ const FoodDetail: FC<IProps> = ({ setIsShow, item, isShow }) => {
         onClick={handleImageClick}
       ></div>
       <div
+        ref={containerRef}
         className={`${isShow ? 'active' : ''} food-detail`}
-        style={{ backgroundColor: '#fff' }}
+        style={{ backgroundColor: '#fff', touchAction: 'none' }}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        onTouchCancel={handleTouchEnd}
       >
         <img
           src={close}
