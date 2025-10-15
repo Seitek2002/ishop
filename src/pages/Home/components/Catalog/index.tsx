@@ -126,6 +126,7 @@ const Catalog: FC<IProps> = ({
                 price: 0,
               },
             ],
+            quantity: 0,
             id: 0,
           }
         }

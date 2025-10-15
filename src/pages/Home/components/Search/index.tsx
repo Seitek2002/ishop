@@ -80,6 +80,7 @@ const Search: FC<IProps> = ({ onSearchChange, searchText, setSearchText }) => {
                 price: 0,
               },
             ],
+            quantity: 0,
             id: 0,
           }
         }
