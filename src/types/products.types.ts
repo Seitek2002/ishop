@@ -6,12 +6,13 @@ export interface ICategory {
 export interface IFoodCart {
   id: string;
   productName: string;
-  productDescription: string;
+  productDescription: string | null;
   productPrice: number;
   weight: number;
   productPhoto: string;
   category: ICategory;
   quantity: number;
+  availableQuantity?: number;
   modificators?: IModificator;
 }
 
@@ -24,7 +25,7 @@ export interface IModificator {
 export interface IProduct {
   id: number;
   productName: string;
-  productDescription: string;
+  productDescription: string | null;
   productPrice: number;
   weight: number;
   productPhoto: string;
@@ -34,6 +35,7 @@ export interface IProduct {
   categories?: ICategory[];
   modificators: IModificator[];
   isRecommended: boolean;
+  quantity: number;
 }
 
 export interface IOrderProduct {

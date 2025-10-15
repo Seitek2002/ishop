@@ -97,6 +97,7 @@ const Cart: React.FC = () => {
   const [wrapperHeight, setWrapperHeight] = useState(0);
   const [clearCartModal, setClearCartModal] = useState(false);
   const [showWorkTimeModal, setShowWorkTimeModal] = useState(false);
+  const [serverError, setServerError] = useState<string | null>(null);
 
   const [isPointsModalOpen, setIsPointsModalOpen] = useState(false);
   const { data: bonusData } = useGetClientBonusQuery(
@@ -130,6 +131,25 @@ const Cart: React.FC = () => {
     } catch {
       return undefined;
     }
+  };
+
+  const getErrorMessage = (err: unknown): string => {
+    if (typeof err === 'object' && err !== null) {
+      const obj = err as {
+        data?: { error?: string; detail?: string };
+        error?: string;
+        message?: string;
+      };
+      return (
+        obj.data?.error ||
+        obj.data?.detail ||
+        obj.error ||
+        obj.message ||
+        'Ошибка оформления заказа'
+      );
+    }
+    if (typeof err === 'string') return err;
+    return 'Ошибка оформления заказа';
   };
 
   const { data } = useGetProductsQuery(
@@ -328,27 +348,35 @@ const Cart: React.FC = () => {
     };
     lastOrderBaseRef.current = payloadBase;
 
-    const { data: res } = await postOrder({
-      body: payloadBase,
-      organizationSlug: venueData.slug,
-      spotId: selectedSpot,
-    });
+    try {
+      const res = await postOrder({
+        body: payloadBase,
+        organizationSlug: venueData.slug,
+        spotId: selectedSpot,
+      }).unwrap();
 
-    if (res?.paymentUrl) {
-      window.location.href = res.paymentUrl;
-      dispatch(clearCart());
-    } else if (res?.phoneVerificationHash) {
+      if (res?.paymentUrl) {
+        window.location.href = res.paymentUrl;
+        dispatch(clearCart());
+      } else if (res?.phoneVerificationHash) {
+        try {
+          localStorage.setItem('phoneVerificationHash', res.phoneVerificationHash);
+          localStorage.setItem('hash', res.phoneVerificationHash);
+        } catch {
+          /* ignore */
+        }
+        setIsLoading(false);
+      } else {
+        setIsLoading(false);
+      }
+    } catch (err: unknown) {
+      const msg = getErrorMessage(err);
       try {
-        localStorage.setItem(
-          'phoneVerificationHash',
-          res.phoneVerificationHash
-        );
-        localStorage.setItem('hash', res.phoneVerificationHash);
+        setServerError(String(msg));
+        setTimeout(() => setServerError(null), 5000);
       } catch {
         /* ignore */
       }
-      setIsLoading(false);
-    } else {
       setIsLoading(false);
     }
   };
@@ -476,11 +504,11 @@ const Cart: React.FC = () => {
       };
       lastOrderBaseRef.current = payloadBase;
 
-      const { data: res } = await postOrder({
+      const res = await postOrder({
         body: payloadBase,
         organizationSlug: venueData.slug,
         spotId: selectedSpot,
-      });
+      }).unwrap();
 
       if (res?.phoneVerificationHash) {
         try {
@@ -493,8 +521,13 @@ const Cart: React.FC = () => {
           /* ignore */
         }
       }
-    } catch {
-      /* ignore */
+    } catch (err: unknown) {
+      try {
+        setServerError(getErrorMessage(err));
+        setTimeout(() => setServerError(null), 5000);
+      } catch {
+        /* ignore */
+      }
     } finally {
       setIsLoading(false);
     }
@@ -563,11 +596,11 @@ const Cart: React.FC = () => {
 
       lastOrderBaseRef.current = payloadBase;
 
-      const { data: res } = await postOrder({
+      const res = await postOrder({
         body: payloadBase,
         organizationSlug: venueData.slug,
         spotId: selectedSpot,
-      });
+      }).unwrap();
 
       if (res?.phoneVerificationHash) {
         try {
@@ -580,8 +613,13 @@ const Cart: React.FC = () => {
           /* ignore */
         }
       }
-    } catch {
-      /* ignore */
+    } catch (err: unknown) {
+      try {
+        setServerError(getErrorMessage(err));
+        setTimeout(() => setServerError(null), 5000);
+      } catch {
+        /* ignore */
+      }
     } finally {
       setIsLoading(false);
     }
@@ -605,6 +643,7 @@ const Cart: React.FC = () => {
               productDescription: '',
               isRecommended: false,
               modificators: [{ id: 0, name: '', price: 0 }],
+              quantity: 0,
               id: 0,
             }
           }
@@ -819,6 +858,27 @@ const Cart: React.FC = () => {
             setIsPointsModalOpen(false);
           }}
         />
+        {serverError && (
+          <div
+            style={{
+              position: 'fixed',
+              bottom: '16px',
+              left: '50%',
+              transform: 'translateX(-50%)',
+              backgroundColor: '#ff4d4f',
+              color: '#fff',
+              padding: '12px 16px',
+              borderRadius: '8px',
+              zIndex: 9999,
+              maxWidth: '90%',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
+              textAlign: 'center',
+            }}
+            role="alert"
+          >
+            {serverError}
+          </div>
+        )}
       </section>
     </>
   );

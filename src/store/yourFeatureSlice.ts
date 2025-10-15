@@ -61,18 +61,41 @@ const yourFeatureSlice = createSlice({
       localStorage.setItem('venue', JSON.stringify(state.venue));
     },
     addToCart: (state, action: PayloadAction<IFoodCart>) => {
-      const foundItem = state.cart.find(
-        (item) => item.id === action.payload.id
-      );
-      if (foundItem) {
-        foundItem.quantity += action.payload.quantity;
+      const toAdd = action.payload;
+      const baseId = String(toAdd.id).split(',')[0];
+
+      // Current total in cart across all modificators for the same product
+      const currentTotalForProduct = state.cart
+        .filter((ci) => String(ci.id).split(',')[0] === baseId)
+        .reduce((sum, ci) => sum + ci.quantity, 0);
+
+      // Determine max available stock for the product
+      const maxAvail =
+        toAdd.availableQuantity ??
+        state.cart.find((ci) => String(ci.id).split(',')[0] === baseId)?.availableQuantity ??
+        Number.POSITIVE_INFINITY;
+
+      const remaining = Math.max(0, maxAvail - currentTotalForProduct);
+
+      const existingLine = state.cart.find((ci) => ci.id === toAdd.id);
+
+      if (existingLine) {
+        if (remaining > 0) {
+          const addQty = Math.min(remaining, toAdd.quantity);
+          existingLine.quantity += addQty;
+        }
       } else {
-        state.cart.push({
-          ...action.payload,
-          quantity: action.payload.quantity,
-        });
+        if (remaining > 0) {
+          const initQty = Math.min(toAdd.quantity, remaining);
+          state.cart.push({
+            ...toAdd,
+            quantity: initQty,
+            availableQuantity: toAdd.availableQuantity ?? (Number.isFinite(maxAvail) ? maxAvail : undefined),
+          });
+        }
       }
-      saveCartToStorage(state.cart)
+
+      saveCartToStorage(state.cart);
     },
     incrementFromCart: (state, action) => {
       const foundItem = state.cart.find((item) => item.id == action.payload.id);

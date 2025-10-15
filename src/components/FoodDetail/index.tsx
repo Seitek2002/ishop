@@ -45,20 +45,34 @@ const FoodDetail: FC<IProps> = ({ setIsShow, item, isShow }) => {
     vibrateClick();
     if (item) {
       const sizeId = selectedSize?.id ?? 0;
+
+      // Enforce stock across all modificators for this product
+      const baseId = String(item.id);
+      const currentTotal = cart
+        .filter((ci) => String(ci.id).split(',')[0] === baseId)
+        .reduce((sum, ci) => sum + ci.quantity, 0);
+      const maxAvail = Number.isFinite(item.quantity) ? item.quantity : Infinity;
+      const remaining = Math.max(0, maxAvail - currentTotal);
+      if (remaining <= 0) {
+        return;
+      }
+      const qtyToAdd = Math.min(counter, remaining);
+
       const newItem = {
         ...item,
         // Ensure required cart shape: always provide a single category
-        category: item.category ??
-          item.categories?.[0] ?? { id: 0, categoryName: '' },
+        category:
+          item.category ?? item.categories?.[0] ?? { id: 0, categoryName: '' },
         modificators: selectedSize ?? undefined,
         id: item.id + ',' + sizeId,
-        quantity: counter,
+        quantity: qtyToAdd,
+        availableQuantity: item.quantity,
       };
       dispatch(addToCart(newItem));
     }
 
     setIsShow();
-  }, [item, setIsShow, selectedSize, counter, dispatch]);
+  }, [item, setIsShow, selectedSize, counter, cart, dispatch]);
 
   const selectSize = useCallback(
     (sizeKey: IModificator) => {
@@ -87,6 +101,16 @@ const FoodDetail: FC<IProps> = ({ setIsShow, item, isShow }) => {
 
   const handleAddNoMods = useCallback(() => {
     vibrateClick();
+
+    const baseId = String(item.id);
+    const currentTotal = cart
+      .filter((ci) => String(ci.id).split(',')[0] === baseId)
+      .reduce((sum, ci) => sum + ci.quantity, 0);
+    const maxAvail = Number.isFinite(item.quantity) ? item.quantity : Infinity;
+    if (maxAvail <= 0 || currentTotal >= maxAvail) {
+      return;
+    }
+
     const newItem = {
       ...item,
       // Ensure cart item always has a single category (fallback to first categories[] or empty)
@@ -94,9 +118,10 @@ const FoodDetail: FC<IProps> = ({ setIsShow, item, isShow }) => {
       id: String(item.id),
       modificators: undefined,
       quantity: 1,
+      availableQuantity: item.quantity,
     };
     dispatch(addToCart(newItem));
-  }, [dispatch, item]);
+  }, [dispatch, item, cart]);
 
   const handleDecrementNoMods = useCallback(() => {
     vibrateClick();

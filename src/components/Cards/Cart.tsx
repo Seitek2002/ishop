@@ -20,10 +20,20 @@ const BusketCard: FC<IProps> = ({ item }) => {
   const colorTheme = useAppSelector(
     (state) => state.yourFeature.venue?.colorTheme
   );
+  const cart = useAppSelector((state) => state.yourFeature.cart);
 
   const increment = () => {
     vibrateClick();
-    dispatch(addToCart({ ...item, quantity: 1 }));
+    // prevent adding more than available stock for this product (across all modificators)
+    const baseId = String(item.id).split(',')[0];
+    const currentTotal = cart
+      .filter((ci) => String(ci.id).split(',')[0] === baseId)
+      .reduce((sum, ci) => sum + ci.quantity, 0);
+    const maxAvail = item.availableQuantity ?? Number.POSITIVE_INFINITY;
+    if (currentTotal >= maxAvail) {
+      return;
+    }
+    dispatch(addToCart({ ...item, quantity: 1, availableQuantity: item.availableQuantity }));
   };
 
   const decrement = () => {

@@ -43,14 +43,25 @@ const CatalogCard: FC<IProps> = ({ item, foodDetail }) => {
     if (item.modificators.length) {
       openFoodDetail();
     } else {
+      // Prevent adding more than stock
+      const baseId = String(item.id);
+      const currentTotal = cart
+        .filter((ci) => String(ci.id).split(',')[0] === baseId)
+        .reduce((sum, ci) => sum + ci.quantity, 0);
+      if (item.quantity <= 0 || currentTotal >= item.quantity) {
+        // Out of stock or reached limit
+        return;
+      }
+
       const newItem = {
         ...item,
         // Ensure cart item always has a single category (fallback to first categories[] or empty)
-        category: item.category ??
-          item.categories?.[0] ?? { id: 0, categoryName: '' },
+        category:
+          item.category ?? item.categories?.[0] ?? { id: 0, categoryName: '' },
         id: item.id + '',
         modificators: undefined,
         quantity: 1,
+        availableQuantity: item.quantity,
       };
       dispatch(addToCart(newItem));
     }
@@ -165,6 +176,7 @@ const CatalogCard: FC<IProps> = ({ item, foodDetail }) => {
         </div>
       )}
       <h4 className='cart-name'>{item.productName}</h4>
+      {item.quantity === 0 && <span className='text-center text-[red]'>Нет в наличии</span>}
     </div>
   );
 };
