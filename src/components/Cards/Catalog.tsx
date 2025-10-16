@@ -56,8 +56,8 @@ const CatalogCard: FC<IProps> = ({ item, foodDetail }) => {
       const newItem = {
         ...item,
         // Ensure cart item always has a single category (fallback to first categories[] or empty)
-        category:
-          item.category ?? item.categories?.[0] ?? { id: 0, categoryName: '' },
+        category: item.category ??
+          item.categories?.[0] ?? { id: 0, categoryName: '' },
         id: item.id + '',
         modificators: undefined,
         quantity: 1,
@@ -137,11 +137,14 @@ const CatalogCard: FC<IProps> = ({ item, foodDetail }) => {
             </span>
             <div></div>
           </div>
-          <div className='fixed-plus' style={{
-            width: foundCartItem?.quantity ? '25%' : '100%',
-            right: 0,
-            transition: '1.0s',
-          }}>
+          <div
+            className='fixed-plus'
+            style={{
+              width: foundCartItem?.quantity ? '25%' : '100%',
+              right: 0,
+              transition: '1.0s',
+            }}
+          >
             <button
               onClick={(e) => {
                 e.stopPropagation();
@@ -164,9 +167,13 @@ const CatalogCard: FC<IProps> = ({ item, foodDetail }) => {
       </div>
       {item.modificators.length ? (
         <div className='cart-info'>
-          <span className='cart-price' style={{ color: colorTheme }}>
-            от {+item.modificators[0].price} с
-          </span>
+          {item.quantity === 0 ? (
+            <span className='text-center text-[red]'>Нет в наличии</span>
+          ) : (
+            <span className='cart-price' style={{ color: colorTheme }}>
+              от {+item.modificators[0].price} с
+            </span>
+          )}
         </div>
       ) : (
         <div className='cart-info'>
@@ -176,7 +183,6 @@ const CatalogCard: FC<IProps> = ({ item, foodDetail }) => {
         </div>
       )}
       <h4 className='cart-name'>{item.productName}</h4>
-      {item.quantity === 0 && <span className='text-center text-[red]'>Нет в наличии</span>}
     </div>
   );
 };
