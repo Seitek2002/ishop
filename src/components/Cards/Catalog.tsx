@@ -104,7 +104,7 @@ const CatalogCard: FC<IProps> = ({ item, foodDetail }) => {
           className={
             foundCartItem ? 'add-btn opacity-90 active' : 'add-btn opacity-90'
           }
-          style={{ backgroundColor: colorTheme }}
+          style={{ backgroundColor: colorTheme, display: item.quantity ? 'block' : 'none' }}
         >
           <div className='wrapper-btn'>
             <button
