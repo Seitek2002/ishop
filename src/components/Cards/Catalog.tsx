@@ -174,7 +174,7 @@ const CatalogCard: FC<IProps> = ({ item, foodDetail }) => {
       ) : (
         <div className='cart-info'>
           {item.quantity === 0 ? (
-            <span className='text-center text-[red]'>Нет в наличии</span>
+            <span className='text-center text-[red] font-semibold'>Нет в наличии</span>
           ) : (
             <span className='cart-price' style={{ color: colorTheme }}>
               {+item.productPrice} с
