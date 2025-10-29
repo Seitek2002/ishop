@@ -94,12 +94,18 @@ const Catalog: FC<IProps> = ({
 
     // Items with photo first; stable tie-breaker by name then id
     return [...base].sort((a, b) => {
+      const sa = a.quantity > 0 ? 1 : 0;
+      const sb = b.quantity > 0 ? 1 : 0;
+      if (sb !== sa) return sb - sa; // In-stock first, out-of-stock last
+
       const ha = hasPhoto(a) ? 1 : 0;
       const hb = hasPhoto(b) ? 1 : 0;
-      if (hb !== ha) return hb - ha;
+      if (hb !== ha) return hb - ha; // Photo presence next
+
       const an = (a.productName || '').localeCompare(b.productName || '');
-      if (an !== 0) return an;
-      return (a.id || 0) - (b.id || 0);
+      if (an !== 0) return an; // Name tie-breaker
+
+      return (a.id || 0) - (b.id || 0); // Stable final tie-breaker
     });
   }, [items, selectedCategory]);
 

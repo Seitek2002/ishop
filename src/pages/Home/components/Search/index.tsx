@@ -34,14 +34,20 @@ const Search: FC<IProps> = ({ onSearchChange, searchText, setSearchText }) => {
   const hasError = !!isError;
 
   const sortedItems = (items ?? []).slice().sort((a, b) => {
+    const sa = a.quantity > 0 ? 1 : 0;
+    const sb = b.quantity > 0 ? 1 : 0;
+    if (sb !== sa) return sb - sa; // In-stock first, out-of-stock last
+
     const ha =
       a.productPhoto || a.productPhotoSmall || a.productPhotoLarge ? 1 : 0;
     const hb =
       b.productPhoto || b.productPhotoSmall || b.productPhotoLarge ? 1 : 0;
-    if (hb !== ha) return hb - ha;
+    if (hb !== ha) return hb - ha; // Photo presence next
+
     const an = (a.productName || '').localeCompare(b.productName || '');
-    if (an !== 0) return an;
-    return (a.id || 0) - (b.id || 0);
+    if (an !== 0) return an; // Name tie-breaker
+
+    return (a.id || 0) - (b.id || 0); // Stable final tie-breaker
   });
 
   const handleClose = () => {
