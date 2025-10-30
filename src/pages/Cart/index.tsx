@@ -160,6 +160,27 @@ const Cart: React.FC = () => {
     { skip: !venueData?.slug }
   );
 
+  const recommendedItems = useMemo<IProduct[]>(() => {
+    const base = (data ?? []).filter((it) => it.isRecommended);
+    const hasPhoto = (p: IProduct) =>
+      Boolean(p.productPhoto || p.productPhotoSmall || p.productPhotoLarge);
+
+    return base.slice().sort((a, b) => {
+      const sa = (a.quantity ?? 0) > 0 ? 1 : 0;
+      const sb = (b.quantity ?? 0) > 0 ? 1 : 0;
+      if (sb !== sa) return sb - sa; // In-stock first, out-of-stock last
+
+      const ha = hasPhoto(a) ? 1 : 0;
+      const hb = hasPhoto(b) ? 1 : 0;
+      if (hb !== ha) return hb - ha; // Photo presence next
+
+      const an = (a.productName || '').localeCompare(b.productName || '');
+      if (an !== 0) return an; // Name tie-breaker
+
+      return (a.id || 0) - (b.id || 0); // Stable final tie-breaker
+    });
+  }, [data]);
+
   const inputRef = useMask({
     mask: '+996_________',
     replacement: { _: /\d/ },
@@ -807,7 +828,7 @@ const Cart: React.FC = () => {
 
         <Recommended
           t={t}
-          items={data?.filter((it) => it.isRecommended) ?? []}
+          items={recommendedItems}
           renderItem={(item) => (
             <CatalogCard
               foodDetail={handleOpen}
