@@ -1,4 +1,5 @@
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://твой-домен/api';
+// NEXT_PUBLIC_API_URL=https://ishop.kg/
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://ishop.kg/api';
 
 interface FetchOptions extends RequestInit {
   params?: Record<string, string | number | boolean>;
