@@ -3,14 +3,12 @@ import localFont from 'next/font/local';
 import { Inter } from 'next/font/google';
 import './globals.css';
 
-// Подключаем стандартный Inter через Google Fonts
 const inter = Inter({
   subsets: ['latin', 'cyrillic'],
   variable: '--font-inter',
   display: 'swap',
 });
 
-// Подключаем локальный Benzin с разным весом
 const benzin = localFont({
   src: [
     {
@@ -43,7 +41,6 @@ const benzin = localFont({
   display: 'swap',
 });
 
-// Настраиваем Title, Description и Favicon
 export const metadata: Metadata = {
   title: 'iShop',
   description: 'iShop — онлайн-меню и заказы',
