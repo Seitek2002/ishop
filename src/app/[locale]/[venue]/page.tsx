@@ -1,4 +1,5 @@
-import React from 'react';
+import { Catalog } from '@/widgets/catalog/ui';
+import { Categories } from '@/widgets/categories/ui';
 // import { Hero } from '@/widgets/hero/ui';
 // import { Categories } from '@/widgets/categories/ui';
 // import { Catalog } from '@/widgets/catalog/ui';
@@ -29,16 +30,13 @@ export default async function VenuePage({
       <div className='w-full lg:w-[65%] flex flex-col gap-6'>
         {/* <Hero venueSlug={venue} /> */}
 
-        {/* <Categories 
-          venueSlug={venue} 
-          selectedCategoryId={categoryId} 
-        /> */}
+        <Categories venueSlug={venue} selectedCategoryId={categoryId} />
 
-        {/* <Catalog 
-          venueSlug={venue} 
-          categoryId={categoryId} 
-          searchQuery={searchQuery} 
-        /> */}
+        <Catalog
+          venueSlug={venue}
+          categoryId={categoryId}
+          searchQuery={searchQuery}
+        />
       </div>
 
       {/* Правая колонка: Десктопная корзина (Adaptivement из старого кода) */}

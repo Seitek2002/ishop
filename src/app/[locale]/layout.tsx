@@ -5,6 +5,7 @@ import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { locales } from '../../i18n';
+import { QueryProvider } from '@/shared/providers/query-provider';
 import './globals.css';
 
 const inter = Inter({
@@ -69,7 +70,8 @@ export default async function RootLayout({
     <html lang={locale}>
       <body className={`${inter.variable} ${benzin.variable} antialiased`}>
         <NextIntlClientProvider messages={messages}>
-          {children}
+          {/* Оборачиваем всё приложение в TanStack Query */}
+          <QueryProvider>{children}</QueryProvider>
         </NextIntlClientProvider>
       </body>
     </html>
