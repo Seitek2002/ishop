@@ -10,6 +10,7 @@ import { WeeklyScheduleModal } from '@/features/schedule-modal/ui';
 import { PhoneBonusModal } from '@/features/phone-bonus-modal/ui';
 
 interface StoreHeaderProps {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   venue: any; // Позже заменим на строгий тип Organization из твоего API
   searchText?: string;
   setSearchText?: (text: string) => void;
