@@ -6,7 +6,7 @@ import { useQuery } from '@tanstack/react-query';
 // import { useTranslations } from 'next-intl';
 import { Search } from 'lucide-react';
 import { vibrateClick } from '@/shared/lib/haptics';
-import { shopApi } from '@/shared/api/shop'; // Предполагаю, что у тебя есть этот файл для запросов
+import { shopApi } from '@/shared/api/shop';
 
 interface CategoriesProps {
   venueSlug: string;
@@ -19,7 +19,7 @@ export const Categories: React.FC<CategoriesProps> = ({
   selectedCategoryId,
   colorTheme = '#854C9D',
 }) => {
-//   const t = useTranslations('Header');
+  //   const t = useTranslations('Header');
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -53,10 +53,7 @@ export const Categories: React.FC<CategoriesProps> = ({
     return (
       <div className='flex gap-4 overflow-x-auto pb-4 scrollbar-hide'>
         {[1, 2, 3, 4, 5].map((i) => (
-          <div
-            key={i}
-            className='flex flex-col items-center gap-2 min-w-20'
-          >
+          <div key={i} className='flex flex-col items-center gap-2 min-w-20'>
             <div className='w-16 h-16 rounded-2xl bg-gray-200 animate-pulse' />
             <div className='w-12 h-3 rounded bg-gray-200 animate-pulse' />
           </div>
@@ -69,7 +66,7 @@ export const Categories: React.FC<CategoriesProps> = ({
     <section className='relative w-full'>
       <div
         ref={scrollRef}
-        className='flex gap-3 sm:gap-4 overflow-x-auto pb-4 pt-1 snap-x snap-mandatory scrollbar-hide'
+        className='flex gap-3 sm:gap-4 pb-4 pt-1'
         style={{ scrollBehavior: 'smooth' }}
       >
         {/* Кнопка "Поиск" (для мобилок) */}
@@ -116,7 +113,6 @@ export const Categories: React.FC<CategoriesProps> = ({
   );
 };
 
-// Внутренний компонент карточки категории (бывший Item.tsx)
 interface CategoryItemProps {
   id: number;
   title: string;
@@ -127,7 +123,7 @@ interface CategoryItemProps {
   icon?: React.ReactNode;
 }
 
-const CategoryItem: React.FC<CategoryItemProps> = ({
+export const CategoryItem: React.FC<CategoryItemProps> = ({
   title,
   isActive,
   colorTheme,
@@ -135,20 +131,24 @@ const CategoryItem: React.FC<CategoryItemProps> = ({
   imageUrl,
   icon,
 }) => {
-  // Обрезаем длинные названия до 2 слов, как было в старом коде
   const shortTitle = (title || '').trim().split(/\s+/).slice(0, 2).join(' ');
 
+  const handleClick = () => {
+    vibrateClick();
+    onClick();
+  };
+
   return (
-    <button
-      onClick={onClick}
-      className='flex flex-col items-center gap-2 group outline-none'
+    <div
+      onClick={handleClick}
+      className='text-center cursor-pointer w-15.75 h-15.75'
     >
       <div
-        className='w-16 h-16 sm:w-20 sm:h-20 flex items-center justify-center rounded-2xl transition-all duration-300 shadow-sm'
+        className='w-14 h-14 rounded-full flex items-center justify-center overflow-hidden border-solid transition-all duration-200'
         style={{
           backgroundColor: isActive ? colorTheme : 'white',
-          borderColor: isActive ? colorTheme : 'transparent',
-          borderWidth: isActive ? '2px' : '0px',
+          borderColor: isActive ? colorTheme : 'white',
+          borderWidth: isActive ? '3px' : '1px',
         }}
       >
         {imageUrl ? (
@@ -163,15 +163,9 @@ const CategoryItem: React.FC<CategoryItemProps> = ({
           </div>
         )}
       </div>
-      <span
-        className={`text-xs sm:text-sm font-medium leading-tight text-center max-w-20 transition-colors ${
-          isActive
-            ? 'text-gray-900 font-bold'
-            : 'text-gray-600 group-hover:text-gray-900'
-        }`}
-      >
+      <span className='mt-2 font-medium text-[12px] text-center block leading-tight text-black'>
         {shortTitle}
       </span>
-    </button>
+    </div>
   );
 };
