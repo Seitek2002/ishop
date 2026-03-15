@@ -12,6 +12,7 @@ interface ShopState {
   orderType: 2 | 3; // 2 - Самовывоз, 3 - Доставка
 
   addToCart: (item: CartItem) => void;
+  incrementQuantity: (id: string) => void; // <-- ДОБАВИЛИ В ИНТЕРФЕЙС
   decrementQuantity: (id: string) => void;
   clearCart: () => void;
 
@@ -42,6 +43,18 @@ export const useShopStore = create<ShopState>()(
           set({ cart: newCart });
         } else {
           set({ cart: [...cart, item] });
+        }
+      },
+
+      // <-- ДОБАВИЛИ ЛОГИКУ ПРИБАВЛЕНИЯ
+      incrementQuantity: (id) => {
+        const { cart } = get();
+        const existingItemIndex = cart.findIndex((c) => c.id === id);
+
+        if (existingItemIndex >= 0) {
+          const newCart = [...cart];
+          newCart[existingItemIndex].quantity += 1;
+          set({ cart: newCart });
         }
       },
 
