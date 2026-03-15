@@ -32,4 +32,15 @@ export const shopApi = {
   // Получить статус заказа (используем для Polling на клиенте)
   getOrderStatus: (orderId: number) =>
     apiClient<OrderList>(`/orders/${orderId}/`),
+
+  getOrders: async (params: {
+    phone: string;
+    organizationSlug: string;
+    spotId: number;
+  }) => {
+    // Временно возвращаем пустой массив или делай реальный fetch
+    // const res = await fetch(`.../orders?phone=${params.phone}...`);
+    // return res.json();
+    return [];
+  },
 };

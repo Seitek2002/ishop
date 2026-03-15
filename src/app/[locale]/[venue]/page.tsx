@@ -1,9 +1,8 @@
 import { Catalog } from '@/widgets/catalog/ui';
 import { Categories } from '@/widgets/categories/ui';
-// import { Hero } from '@/widgets/hero/ui';
-// import { Categories } from '@/widgets/categories/ui';
-// import { Catalog } from '@/widgets/catalog/ui';
-// import { DesktopCart } from '@/widgets/desktop-cart/ui';
+import { DesktopCart } from '@/widgets/desktop-cart/ui';
+import { StatusHero } from '@/widgets/status-hero/ui';
+import { shopApi } from '@/shared/api/shop';
 
 export default async function VenuePage({
   params,
@@ -12,9 +11,10 @@ export default async function VenuePage({
   params: Promise<{ locale: string; venue: string }>;
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-  const { venue } = await params;
+  const { venue: venueSlug } = await params;
 
-  // Достаем параметры из URL (ждем промис в Next.js 15+)
+  const venueData = await shopApi.getOrganization(venueSlug);
+
   const resolvedSearchParams = await searchParams;
   const categoryId = resolvedSearchParams.categoryId
     ? Number(resolvedSearchParams.categoryId)
@@ -26,25 +26,20 @@ export default async function VenuePage({
 
   return (
     <div className='flex gap-8 items-start w-full pb-20'>
-      {/* Левая колонка: Баннеры, Категории, Товары */}
       <div className='w-full lg:w-[65%] flex flex-col gap-6'>
-        {/* <Hero venueSlug={venue} /> */}
+        <StatusHero venue={venueData} />
 
-        <Categories venueSlug={venue} selectedCategoryId={categoryId} />
+        <Categories venueSlug={venueSlug} selectedCategoryId={categoryId} />
 
         <Catalog
-          venueSlug={venue}
+          venueSlug={venueSlug}
           categoryId={categoryId}
           searchQuery={searchQuery}
         />
       </div>
 
-      {/* Правая колонка: Десктопная корзина (Adaptivement из старого кода) */}
       <div className='hidden lg:block lg:w-[35%] sticky top-24'>
-        {/* <DesktopCart /> */}
-        <div className='bg-white rounded-2xl p-6 shadow-sm border border-gray-100 min-h-[300px] flex items-center justify-center text-gray-400'>
-          Здесь будет корзина
-        </div>
+        <DesktopCart venue={venueData} />
       </div>
     </div>
   );

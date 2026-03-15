@@ -1,17 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-
-// Позже вынесешь эти интерфейсы в отдельный файл типов
-export interface CartItem {
-  id: string; // У тебя в старом коде id приводился к строке
-  productName: string;
-  productPrice: number;
-  quantity: number;
-  availableQuantity: number;
-  productPhotoSmall?: string;
-  // ... остальные нужные поля
-  [key: string]: any;
-}
+import type { CartItem } from '@/shared/api/types';
 
 interface ShopState {
   phoneNumber: string;

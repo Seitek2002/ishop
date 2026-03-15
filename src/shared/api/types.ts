@@ -1,79 +1,72 @@
-export type ServiceMode = 1 | 2 | 3; // 1 - На месте, 2 - Самовывоз, 3 - Доставка
-export type OrderStatus = 0 | 1 | 2 | 3 | 4 | 7;
-
+// --- РАСПИСАНИЕ И ЗАВЕДЕНИЕ ---
 export interface WorkSchedule {
   dayOfWeek: number;
-  dayName: string;
-  workStart: string;
-  workEnd: string;
-  isDayOff: boolean;
-  is24h: boolean;
+  dayName?: string;
+  workStart: string | null;
+  workEnd: string | null;
+  isDayOff?: boolean;
+  is24h?: boolean;
 }
 
 export interface Spot {
   id: number;
-  name: string;
-  address: string | null;
+  name?: string;
 }
 
 export interface Organization {
-  companyName: string;
+  id?: number;
   slug: string;
-  colorTheme: string;
-  logo: string | null;
-  schedules: WorkSchedule[];
-  serviceFeePercent: number;
-  spots: Spot[];
-  isDeliveryAvailable: boolean;
-  deliveryFixedFee: string;
-  deliveryFreeFrom: string | null;
-  isTakeoutAvailable: boolean;
-  terms: string | null;
-  description: string | null;
+  name?: string;
+  colorTheme?: string;
+  defaultDeliverySpot?: number;
+  spots?: Spot[];
+  schedule?: string;
+  schedules?: WorkSchedule[];
+  table?: { tableNum: string | number };
 }
 
-export interface Category {
+// --- ТОВАРЫ И КАТЕГОРИИ ---
+export interface ICategory {
   id: number;
   categoryName: string;
-  categoryPhoto: string;
-  categoryPhotoSmall: string;
+  categoryPhoto?: string;
 }
 
-export interface Product {
+export interface IModificator {
   id: number;
+  name: string;
+  price: number;
+}
+
+export interface IProduct {
+  id: number | string;
   productName: string;
-  weight: number;
-  productPhoto: string;
+  productDescription?: string;
+  productPrice: number;
+  quantity: number;
+  productPhoto?: string;
+  productPhotoSmall?: string;
+  productPhotoLarge?: string;
+  isRecommended?: boolean;
+  weight?: number;
+
+  category?: ICategory;
+  categories?: ICategory[];
+  modificators?: IModificator[];
 }
 
-export interface OrderProductCreate {
-  product: number;
-  count: number;
-  modificator?: number | null;
+// --- КОРЗИНА (Zustand) ---
+export interface CartItem extends Omit<IProduct, 'id' | 'modificators'> {
+  id: string; // В корзине ID строго строка (напр. "123" или "123,45")
+  quantity: number; // Сколько выбрал юзер
+  availableQuantity: number; // Сколько максимум доступно на складе
+  modificators?: IModificator; // В корзине лежит только один ВЫБРАННЫЙ модификатор (или undefined)
 }
 
-export interface OrderCreate {
-  phone: string;
-  comment?: string | null;
-  serviceMode: ServiceMode;
-  address?: string | null;
-  servicePrice?: string;
-  tipsPrice?: number;
-  spot?: number | null;
-  orderProducts: OrderProductCreate[];
-  useBonus?: boolean;
-  promoCode?: string | null;
-}
-
-export interface OrderList {
+// --- ЗАКАЗЫ ---
+export interface IOrder {
   id: number;
-  totalPrice: string;
-  status: OrderStatus;
-  createdAt: string;
-  serviceMode: ServiceMode;
-  address: string | null;
-  comment: string | null;
-  phone: string;
+  status: number;
   statusText: string;
-  // orderProducts также вложены, если нужно, можем типизировать глубже
+  serviceMode: number;
 }

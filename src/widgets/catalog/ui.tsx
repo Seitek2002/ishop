@@ -5,6 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import { vibrateClick } from '@/shared/lib/haptics';
 import { shopApi } from '@/shared/api/shop';
 import { CatalogCard } from './ui/catalog-card';
+import { FoodDetailModal } from '@/features/food-detail-modal/ui';
 
 interface CatalogProps {
   venueSlug: string;
@@ -19,6 +20,8 @@ export const Catalog: React.FC<CatalogProps> = ({
   searchQuery = '',
   colorTheme = '#854C9D',
 }) => {
+  const [selectedFood, setSelectedFood] = useState<any | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [showStockToast, setShowStockToast] = useState(false);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -108,7 +111,10 @@ export const Catalog: React.FC<CatalogProps> = ({
               item={item}
               colorTheme={colorTheme}
               onMaxExceeded={showMaxStockToast}
-              onFoodDetail={(food) => console.log('Открыть модалку:', food)} // Модалку деталей добавим позже
+              onFoodDetail={(food) => {
+                setSelectedFood(food);
+                setIsModalOpen(true);
+              }}
             />
           ))}
         </div>
@@ -121,6 +127,13 @@ export const Catalog: React.FC<CatalogProps> = ({
           <p className='text-gray-500'>Попробуйте выбрать другую категорию</p>
         </div>
       )}
+
+      <FoodDetailModal
+        item={selectedFood}
+        isShow={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        colorTheme={colorTheme}
+      />
     </section>
   );
 };
