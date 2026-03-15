@@ -89,15 +89,21 @@ export const shopApi = {
   },
 
   // Получить список заказов
-  getOrders: async (params: {
-    phone: string;
+  getOrders: (params: {
     organizationSlug: string;
     spotId: number;
-  }): Promise<OrderList[]> => {
-    // <-- Строго указываем, что вернется массив OrderList
-    // Временно возвращаем пустой массив или делай реальный fetch
-    // const res = await fetch(`.../orders?phone=${params.phone}...`);
-    // return res.json();
-    return [];
+    phone?: string;
+  }) => {
+    const queryParams: Record<string, string | number> = {
+      organizationSlug: params.organizationSlug,
+      spotId: params.spotId,
+    };
+
+    // Телефон опциональный, добавляем только если есть
+    if (params.phone) {
+      queryParams.phone = params.phone;
+    }
+
+    return apiClient<OrderList[]>('/orders/', { params: queryParams });
   },
 };
