@@ -3,7 +3,6 @@
 import React, { useRef } from 'react';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
-// import { useTranslations } from 'next-intl';
 import { Search } from 'lucide-react';
 import { vibrateClick } from '@/shared/lib/haptics';
 import { shopApi } from '@/shared/api/shop';
@@ -19,54 +18,55 @@ export const Categories: React.FC<CategoriesProps> = ({
   selectedCategoryId,
   colorTheme = '#854C9D',
 }) => {
-  //   const t = useTranslations('Header');
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  // Запрашиваем категории через TanStack Query
   const { data: categories, isLoading } = useQuery({
     queryKey: ['categories', venueSlug],
-    queryFn: () => shopApi.getCategories(venueSlug), // Замени на свой реальный метод API
+    queryFn: () => shopApi.getCategories(venueSlug),
     enabled: !!venueSlug,
   });
 
-  // Функция обновления URL при клике на категорию
   const selectCategory = (id: number) => {
     vibrateClick();
-
-    // Создаем новый объект параметров на основе текущих (чтобы не затереть поиск, если он есть)
     const params = new URLSearchParams(searchParams.toString());
 
     if (id === 0) {
-      params.delete('categoryId'); // Если "Все", просто убираем параметр из URL
+      params.delete('categoryId');
     } else {
       params.set('categoryId', id.toString());
     }
 
-    // Обновляем URL без перезагрузки страницы и без скролла наверх
     router.replace(`${pathname}?${params.toString()}`, { scroll: false });
   };
 
   if (isLoading) {
     return (
-      <div className='flex gap-4 overflow-x-auto pb-4 scrollbar-hide'>
-        {[1, 2, 3, 4, 5].map((i) => (
-          <div key={i} className='flex flex-col items-center gap-2 min-w-20'>
-            <div className='w-16 h-16 rounded-2xl bg-gray-200 animate-pulse' />
-            <div className='w-12 h-3 rounded bg-gray-200 animate-pulse' />
-          </div>
-        ))}
-      </div>
+      <section className='sticky top-[80px] md:top-[90px] z-10 bg-[#F1F2F3] overflow-x-auto overflow-y-hidden [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]'>
+        <div className='flex items-center gap-[15px] pt-[15px] pb-[40px] px-4 md:flex-wrap md:gap-[30px] md:h-[107px] md:overflow-hidden'>
+          {[1, 2, 3, 4, 5].map((i) => (
+            <div
+              key={i}
+              className='flex flex-col items-center gap-2 min-w-[63px]'
+            >
+              <div className='w-[56px] h-[56px] rounded-full bg-gray-200 animate-pulse' />
+              <div className='w-10 h-2 mt-1 rounded bg-gray-200 animate-pulse' />
+            </div>
+          ))}
+        </div>
+      </section>
     );
   }
 
   return (
-    <section className='relative w-full'>
+    // 1. Секция получила sticky, фон, z-index и скрытие скроллбара
+    <section className='sticky top-0 z-10 bg-gray-50 overflow-x-auto overflow-y-hidden md:overflow-visible [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]'>
+      {/* // 2. Внутренний контейнер получил отступы из твоего старого .categories__content */}
       <div
         ref={scrollRef}
-        className='flex gap-3 sm:gap-4 pb-4 pt-1'
+        className='flex items-center gap-[15px] pt-[15px] pb-[40px] md:flex-wrap md:gap-[30px] md:h-[107px] md:overflow-hidden'
         style={{ scrollBehavior: 'smooth' }}
       >
         {/* Кнопка "Поиск" (для мобилок) */}
@@ -74,11 +74,9 @@ export const Categories: React.FC<CategoriesProps> = ({
           <CategoryItem
             id={-1}
             title='Поиск'
-            isActive={false} // Поиск мы позже свяжем с открытием инпута
+            isActive={false}
             colorTheme={colorTheme}
-            onClick={() => {
-              /* Тут позже добавим фокус на инпут поиска */
-            }}
+            onClick={() => {}}
             icon={<Search className='w-6 h-6' />}
           />
         </div>

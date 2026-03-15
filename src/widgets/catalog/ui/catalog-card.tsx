@@ -40,9 +40,14 @@ export const CatalogCard: React.FC<CatalogCardProps> = ({
   // подпрыгивание числа
   useEffect(() => {
     if (quantity > 0) {
-      setBounce(true);
-      const t = setTimeout(() => setBounce(false), 200);
-      return () => clearTimeout(t);
+      // Откладываем начало анимации на 10мс, чтобы выйти из синхронного рендера
+      const startTimer = setTimeout(() => setBounce(true), 10);
+      const endTimer = setTimeout(() => setBounce(false), 200);
+
+      return () => {
+        clearTimeout(startTimer);
+        clearTimeout(endTimer);
+      };
     }
   }, [quantity]);
 

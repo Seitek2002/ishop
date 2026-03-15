@@ -108,7 +108,7 @@ export const Catalog: React.FC<CatalogProps> = ({
       </div>
 
       {filteredItems.length > 0 ? (
-        <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4'>
+        <div className='grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4'>
           {filteredItems.map((item) => (
             <CatalogCard
               key={item.id}
