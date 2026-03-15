@@ -2,7 +2,8 @@
 
 import React, { useState } from 'react';
 import { vibrateClick } from '@/shared/lib/haptics';
-import { useShopStore, CartItem } from '@/shared/store/shopStore';
+import { useShopStore } from '@/shared/store/shopStore';
+import { CartItem } from '@/shared/api/types';
 
 interface CartItemCardProps {
   item: CartItem;
@@ -57,7 +58,6 @@ export const CartItemCard: React.FC<CartItemCardProps> = ({
         {!isLoaded && (
           <div className='absolute inset-0 bg-gray-200 animate-pulse' />
         )}
-        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={item.productPhotoSmall || item.productPhoto || defaultProduct}
           alt={item.productName}

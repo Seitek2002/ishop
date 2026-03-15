@@ -112,10 +112,10 @@ export const FoodDetailModal: React.FC<FoodDetailModalProps> = ({
       const restItem = { ...item };
       delete restItem.modificators;
 
+      console.log(item);
+
       const newItem: CartItem = {
         ...restItem,
-        category: item.category ??
-          item.categories?.[0] ?? { id: 0, categoryName: '' },
         id: hasMods ? `${item.id},${sizeId}` : String(item.id),
         modificators: hasMods && selectedSize ? selectedSize : undefined,
         quantity: hasMods ? Math.min(counter, remaining) : 1,

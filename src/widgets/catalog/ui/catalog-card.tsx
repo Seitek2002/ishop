@@ -3,11 +3,12 @@
 import React, { useMemo, useState } from 'react';
 import { vibrateClick } from '@/shared/lib/haptics';
 import { useShopStore } from '@/shared/store/shopStore';
+import { IProduct } from '@/shared/api/types';
 
 interface CatalogCardProps {
-  item: any; // Заменишь на IProduct
+  item: IProduct; // Заменишь на IProduct
   colorTheme?: string;
-  onFoodDetail?: (item: any) => void;
+  onFoodDetail?: (item: IProduct) => void;
   onMaxExceeded?: () => void;
 }
 
@@ -58,6 +59,7 @@ export const CatalogCard: React.FC<CatalogCardProps> = ({
       ...item,
       id: baseId,
       availableQuantity: item.quantity,
+      modificators: undefined,
     });
   };
 
@@ -77,7 +79,6 @@ export const CatalogCard: React.FC<CatalogCardProps> = ({
         {!isLoaded && (
           <div className='absolute inset-0 bg-gray-200 animate-pulse' />
         )}
-        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={srcCandidate}
           alt={item.productName || 'product'}
@@ -105,7 +106,7 @@ export const CatalogCard: React.FC<CatalogCardProps> = ({
             <>
               <button
                 onClick={handleRemove}
-                className='w-[30px] h-full flex items-center justify-center text-white text-lg font-medium'
+                className='w-7.5 h-full flex items-center justify-center text-white text-lg font-medium'
               >
                 -
               </button>
@@ -114,7 +115,7 @@ export const CatalogCard: React.FC<CatalogCardProps> = ({
               </span>
               <button
                 onClick={handleAdd}
-                className='w-[30px] h-full flex items-center justify-center text-white text-lg font-medium'
+                className='w-7.5 h-full flex items-center justify-center text-white text-lg font-medium'
               >
                 +
               </button>

@@ -1,8 +1,8 @@
 import { apiClient } from './client';
 import type {
   Organization,
-  Product,
-  Category,
+  IProduct,
+  ICategory,
   OrderCreate,
   OrderList,
 } from './types';
@@ -14,13 +14,13 @@ export const shopApi = {
 
   // Получить товары с фильтрацией по магазину
   getProducts: (organizationSlug: string, spotId?: string) =>
-    apiClient<Product[]>('/products/', {
+    apiClient<IProduct[]>('/products/', {
       params: { organizationSlug, ...(spotId && { spotId }) },
     }),
 
   // Получить категории
   getCategories: (organizationSlug: string) =>
-    apiClient<Category[]>('/categories/', { params: { organizationSlug } }),
+    apiClient<ICategory[]>('/categories/', { params: { organizationSlug } }),
 
   // Создать заказ (используем в мутации TanStack Query)
   createOrder: (data: OrderCreate) =>

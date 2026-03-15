@@ -6,6 +6,7 @@ import { vibrateClick } from '@/shared/lib/haptics';
 import { shopApi } from '@/shared/api/shop';
 import { CatalogCard } from './ui/catalog-card';
 import { FoodDetailModal } from '@/features/food-detail-modal/ui';
+import { IProduct } from '@/shared/api/types';
 
 interface CatalogProps {
   venueSlug: string;
@@ -20,7 +21,7 @@ export const Catalog: React.FC<CatalogProps> = ({
   searchQuery = '',
   colorTheme = '#854C9D',
 }) => {
-  const [selectedFood, setSelectedFood] = useState<any | null>(null);
+  const [selectedFood, setSelectedFood] = useState<IProduct | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showStockToast, setShowStockToast] = useState(false);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
@@ -51,15 +52,18 @@ export const Catalog: React.FC<CatalogProps> = ({
     const base =
       categoryId === 0
         ? items
-        : items.filter((p: any) => {
-            const fromArray = (p.categories || []).map((c: any) => c.id);
+        : items.filter((p: IProduct) => {
+            const fromArray = (p.categories || []).map((c) => c.id);
             const fromSingle = p.category ? [p.category.id] : [];
             const allIds = fromArray.length ? fromArray : fromSingle;
             return allIds.includes(categoryId);
           });
 
-    const hasPhoto = (p: any) =>
-      Boolean(p.productPhoto || p.productPhotoSmall || p.productPhotoLarge);
+    const hasPhoto = (p: IProduct) => {
+      return Boolean(
+        p.productPhoto || p.productPhotoSmall || p.productPhotoLarge,
+      );
+    };
 
     return [...base].sort((a, b) => {
       const sa = Number.isFinite(a.quantity) && a.quantity > 0 ? 1 : 0;
@@ -73,7 +77,7 @@ export const Catalog: React.FC<CatalogProps> = ({
       const an = (a.productName || '').localeCompare(b.productName || '');
       if (an !== 0) return an;
 
-      return (a.id || 0) - (b.id || 0);
+      return ((a.id as number) || 0) - ((b.id as number) || 0);
     });
   }, [items, categoryId]);
 
@@ -105,13 +109,13 @@ export const Catalog: React.FC<CatalogProps> = ({
 
       {filteredItems.length > 0 ? (
         <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4'>
-          {filteredItems.map((item: any) => (
+          {filteredItems.map((item) => (
             <CatalogCard
               key={item.id}
               item={item}
               colorTheme={colorTheme}
               onMaxExceeded={showMaxStockToast}
-              onFoodDetail={(food) => {
+              onFoodDetail={(food: IProduct) => {
                 setSelectedFood(food);
                 setIsModalOpen(true);
               }}

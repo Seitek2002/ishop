@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { useTranslations } from 'next-intl';
+// import { useTranslations } from 'next-intl';
 import { usePathname, useRouter } from 'next/navigation';
 
 import { vibrateClick } from '@/shared/lib/haptics';
@@ -12,9 +12,10 @@ import {
   isOutsideWorkTime,
 } from '@/shared/lib/timeUtils';
 import { WorkTimeModal } from '@/features/work-time-modal/ui';
+import { Organization } from '@/shared/api/types';
 
 interface DesktopCartProps {
-  venue: any; // Временно any, позже заменим на тип Organization
+  venue: Organization;
   createOrder?: () => void;
   disabled?: boolean;
 }
@@ -24,7 +25,7 @@ export const DesktopCart: React.FC<DesktopCartProps> = ({
   createOrder,
   disabled,
 }) => {
-  const t = useTranslations('Header'); // Заменишь на нужный неймспейс
+  // const t = useTranslations('Header');
   const router = useRouter();
   const pathname = usePathname();
 

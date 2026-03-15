@@ -1,3 +1,6 @@
+export type ServiceMode = 1 | 2 | 3; // 1 - На месте, 2 - Самовывоз, 3 - Доставка
+export type OrderStatus = 0 | 1 | 2 | 3 | 4 | 7;
+
 // --- РАСПИСАНИЕ И ЗАВЕДЕНИЕ ---
 export interface WorkSchedule {
   dayOfWeek: number;
@@ -10,7 +13,8 @@ export interface WorkSchedule {
 
 export interface Spot {
   id: number;
-  name?: string;
+  name: string;
+  address: string | null;
 }
 
 export interface Organization {
@@ -23,13 +27,24 @@ export interface Organization {
   schedule?: string;
   schedules?: WorkSchedule[];
   table?: { tableNum: string | number };
+
+  companyName: string;
+  logo: string | null;
+  serviceFeePercent: number;
+  isDeliveryAvailable: boolean;
+  deliveryFixedFee: string;
+  deliveryFreeFrom: string | null;
+  isTakeoutAvailable: boolean;
+  terms: string | null;
+  description: string | null;
 }
 
 // --- ТОВАРЫ И КАТЕГОРИИ ---
 export interface ICategory {
   id: number;
   categoryName: string;
-  categoryPhoto?: string;
+  categoryPhoto: string;
+  categoryPhotoSmall: string;
 }
 
 export interface IModificator {
@@ -51,7 +66,10 @@ export interface IProduct {
   weight?: number;
 
   category?: ICategory;
-  categories?: ICategory[];
+  categories?: {
+    categoryName: string;
+    id: number;
+  }[];
   modificators?: IModificator[];
 }
 
@@ -69,4 +87,36 @@ export interface IOrder {
   status: number;
   statusText: string;
   serviceMode: number;
+}
+
+export interface OrderProductCreate {
+  product: number;
+  count: number;
+  modificator?: number | null;
+}
+
+export interface OrderCreate {
+  phone: string;
+  comment?: string | null;
+  serviceMode: ServiceMode;
+  address?: string | null;
+  servicePrice?: string;
+  tipsPrice?: number;
+  spot?: number | null;
+  orderProducts: OrderProductCreate[];
+  useBonus?: boolean;
+  promoCode?: string | null;
+}
+
+export interface OrderList {
+  id: number;
+  totalPrice: string;
+  status: OrderStatus;
+  createdAt: string;
+  serviceMode: ServiceMode;
+  address: string | null;
+  comment: string | null;
+  phone: string;
+  statusText: string;
+  // orderProducts также вложены, если нужно, можем типизировать глубже
 }
