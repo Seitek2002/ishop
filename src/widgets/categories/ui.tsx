@@ -1,11 +1,12 @@
 'use client';
 
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
 import { Search } from 'lucide-react';
 import { vibrateClick } from '@/shared/lib/haptics';
 import { shopApi } from '@/shared/api/shop';
+import { MobileSearchModal } from '@/features/mobile-search-modal/ui';
 
 interface CategoriesProps {
   venueSlug: string;
@@ -22,6 +23,7 @@ export const Categories: React.FC<CategoriesProps> = ({
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const scrollRef = useRef<HTMLDivElement>(null);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
 
   const { data: categories, isLoading } = useQuery({
     queryKey: ['categories', venueSlug],
@@ -76,7 +78,7 @@ export const Categories: React.FC<CategoriesProps> = ({
             title='Поиск'
             isActive={false}
             colorTheme={colorTheme}
-            onClick={() => {}}
+            onClick={() => setIsSearchOpen(true)}
             icon={<Search className='w-6 h-6' />}
           />
         </div>
@@ -107,6 +109,13 @@ export const Categories: React.FC<CategoriesProps> = ({
           </div>
         ))}
       </div>
+
+      <MobileSearchModal
+        isOpen={isSearchOpen}
+        onClose={() => setIsSearchOpen(false)}
+        venueSlug={venueSlug}
+        colorTheme={colorTheme}
+      />
     </section>
   );
 };

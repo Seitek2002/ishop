@@ -1,19 +1,22 @@
 'use client';
 
-import React, { useState } from 'react';
-import { useTranslations } from 'next-intl';
-import { useParams, usePathname, useRouter } from 'next/navigation';
+import React, { useState, useEffect } from 'react';
+// import { useTranslations } from 'next-intl';
+import {
+  useParams,
+  usePathname,
+  useRouter,
+  useSearchParams,
+} from 'next/navigation';
 import { Coins, Calendar, Search, ChevronDown } from 'lucide-react';
 import { useShopStore } from '@/shared/store/shopStore';
 
 import { WeeklyScheduleModal } from '@/features/schedule-modal/ui';
 import { PhoneBonusModal } from '@/features/phone-bonus-modal/ui';
+import { Organization } from '@/shared/api/types';
 
 interface StoreHeaderProps {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  venue: any; // Позже заменим на строгий тип Organization из твоего API
-  searchText?: string;
-  setSearchText?: (text: string) => void;
+  venue: Organization;
 }
 
 const LANGUAGES = ['ru', 'kg', 'en'];
@@ -23,15 +26,12 @@ const LANGUAGE_MAP: Record<string, string> = {
   en: 'ENG',
 };
 
-export const StoreHeader: React.FC<StoreHeaderProps> = ({
-  venue,
-  searchText,
-  setSearchText,
-}) => {
-  const t = useTranslations('Header'); // Подтянем ключи перевода позже
+export const StoreHeader: React.FC<StoreHeaderProps> = ({ venue }) => {
+  // const t = useTranslations('Header');
   const router = useRouter();
   const pathname = usePathname();
-  const params = useParams(); // Получаем текущую локаль из URL (например, { locale: 'ru', venue: 'test' })
+  const params = useParams();
+  const searchParams = useSearchParams();
 
   const currentLocale = (params.locale as string) || 'ru';
   const activeLang = LANGUAGE_MAP[currentLocale] || 'RU';
@@ -40,11 +40,36 @@ export const StoreHeader: React.FC<StoreHeaderProps> = ({
   const [isPhoneModalOpen, setPhoneModalOpen] = useState(false);
   const [isScheduleOpen, setIsScheduleOpen] = useState(false);
 
+  // Локальный стейт для быстрого ввода в инпут
+  const [localSearch, setLocalSearch] = useState(
+    searchParams.get('search') || '',
+  );
+
   const { phoneNumber, setPhoneNumber } = useShopStore();
 
-  // Здесь позже подключим TanStack Query для получения баллов
-  // const { data: bonusData } = useQuery(...)
   const bonusBalance = 0;
+
+  // Дебаунс: обновляем URL через 400мс после того, как юзер перестал печатать
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      // 1. Смотрим, что сейчас реально лежит в URL
+      const currentUrlSearch = searchParams.get('search') || '';
+      const newSearchValue = localSearch.trim();
+
+      // 2. БЛОКИРАТОР ЦИКЛА: Обновляем роутер ТОЛЬКО если значения отличаются
+      if (currentUrlSearch !== newSearchValue) {
+        const current = new URLSearchParams(searchParams.toString());
+        if (newSearchValue) {
+          current.set('search', newSearchValue);
+        } else {
+          current.delete('search');
+        }
+        router.replace(`${pathname}?${current.toString()}`, { scroll: false });
+      }
+    }, 400);
+
+    return () => clearTimeout(timer);
+  }, [localSearch, pathname, router, searchParams]);
 
   const toggleLanguageMenu = () => {
     setIsLanguageOpen((prev) => !prev);
@@ -52,7 +77,6 @@ export const StoreHeader: React.FC<StoreHeaderProps> = ({
 
   const selectLanguage = (newLocale: string) => {
     setIsLanguageOpen(false);
-    // Заменяем текущую локаль в URL на новую (например, /ru/shop -> /kg/shop)
     const newPath = pathname.replace(`/${currentLocale}`, `/${newLocale}`);
     router.replace(newPath);
   };
@@ -72,22 +96,20 @@ export const StoreHeader: React.FC<StoreHeaderProps> = ({
           </span>
         </div>
 
-        {setSearchText && (
-          <label
-            htmlFor='search'
-            className='flex-1 max-w-md flex items-center bg-[#F9F9F9] rounded-xl px-3 py-2'
-          >
-            <Search className='w-5 h-5 text-gray-400 mr-2' />
-            <input
-              type='text'
-              placeholder='Поиск...'
-              value={searchText}
-              onChange={(e) => setSearchText(e.target.value)}
-              id='search'
-              className='bg-transparent border-none outline-none w-full text-sm'
-            />
-          </label>
-        )}
+        <label
+          htmlFor='search'
+          className='hidden md:flex flex-1 max-w-md items-center bg-[#F9F9F9] rounded-xl px-3 py-2'
+        >
+          <Search className='w-5 h-5 text-gray-400 mr-2' />
+          <input
+            type='text'
+            placeholder='Поиск...'
+            value={localSearch}
+            onChange={(e) => setLocalSearch(e.target.value)}
+            id='search'
+            className='bg-transparent border-none outline-none w-full text-sm'
+          />
+        </label>
 
         <div className='flex items-center gap-3'>
           <button
@@ -168,7 +190,6 @@ export const StoreHeader: React.FC<StoreHeaderProps> = ({
         </div>
       </div>
 
-      {/* Здесь будут рендериться модалки */}
       <PhoneBonusModal
         isOpen={isPhoneModalOpen}
         onClose={() => setPhoneModalOpen(false)}
@@ -177,7 +198,6 @@ export const StoreHeader: React.FC<StoreHeaderProps> = ({
         onSubmit={async (p) => {
           const digits = p.replace(/\D/g, '');
           setPhoneNumber(digits);
-          // Здесь TanStack Query сам дернет API бонусов, как только изменится phoneNumber
         }}
       />
 

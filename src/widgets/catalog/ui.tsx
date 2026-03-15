@@ -27,8 +27,8 @@ export const Catalog: React.FC<CatalogProps> = ({
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   const { data: items, isLoading } = useQuery({
-    queryKey: ['products', venueSlug, searchQuery],
-    queryFn: () => shopApi.getProducts(venueSlug, searchQuery), // Замени на свой API метод
+    queryKey: ['products', venueSlug, categoryId, searchQuery],
+    queryFn: () => shopApi.getProducts(venueSlug, categoryId, searchQuery),
     enabled: !!venueSlug,
   });
 

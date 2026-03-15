@@ -13,10 +13,21 @@ export const shopApi = {
     apiClient<Organization>(`/organizations/${slug}/`, init),
 
   // Получить товары с фильтрацией по магазину
-  getProducts: (organizationSlug: string, spotId?: string) =>
-    apiClient<IProduct[]>('/products/', {
-      params: { organizationSlug, ...(spotId && { spotId }) },
-    }),
+  getProducts: (
+    organizationSlug: string,
+    categoryId?: number,
+    search?: string,
+    spotId?: string,
+  ) => {
+    // Собираем параметры динамически. Если чего-то нет (undefined), оно не полетит в URL
+    const params: Record<string, string | number> = { organizationSlug };
+
+    if (categoryId && categoryId !== 0) params.category = categoryId;
+    if (search) params.search = search;
+    if (spotId) params.spotId = spotId;
+
+    return apiClient<IProduct[]>('/products/', { params });
+  },
 
   // Получить категории
   getCategories: (organizationSlug: string) =>
