@@ -84,7 +84,7 @@ export const MobileSearchModal: React.FC<MobileSearchModalProps> = ({
 
   return (
     <div
-      className={`fixed inset-0 z-[120] bg-[#F1F2F3] flex flex-col transition-transform duration-300 ease-out ${
+      className={`fixed inset-0 z-120 bg-[#F1F2F3] flex flex-col transition-transform duration-300 ease-out ${
         isOpen ? 'translate-y-0' : 'translate-y-full pointer-events-none'
       }`}
     >
@@ -125,7 +125,7 @@ export const MobileSearchModal: React.FC<MobileSearchModalProps> = ({
         ) : isLoading ? (
           <div className='grid grid-cols-2 gap-3'>
             {Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className='bg-white rounded-[12px] p-3'>
+              <div key={i} className='bg-white rounded-xl p-3'>
                 <div className='w-full aspect-square bg-gray-200 animate-pulse rounded-xl mb-2' />
                 <div className='h-4 bg-gray-200 animate-pulse rounded w-1/3 mb-2' />
                 <div className='h-4 bg-gray-200 animate-pulse rounded w-3/4' />
@@ -143,11 +143,10 @@ export const MobileSearchModal: React.FC<MobileSearchModalProps> = ({
             <h3 className='text-2xl font-semibold mb-6 text-gray-800'>
               Увы, ничего не найдено(
             </h3>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={notFoundImg}
               alt='Not found'
-              className='w-[80%] max-w-[300px] opacity-90'
+              className='w-[80%] max-w-75 opacity-90'
             />
           </div>
         )}

@@ -90,9 +90,9 @@ export const CatalogCard: React.FC<CatalogCardProps> = ({
   };
 
   return (
-    <div className='cart-block bg-white rounded-[12px] p-[4px] relative flex flex-col justify-between min-h-[216px] shadow-sm border border-gray-100'>
+    <div className='cart-block bg-white rounded-xl p-1 relative flex flex-col justify-between min-h-54 shadow-sm border border-gray-100'>
       {/* IMAGE */}
-      <div className='cart-img relative overflow-hidden rounded-[12px] aspect-square flex items-center justify-center w-full'>
+      <div className='cart-img relative overflow-hidden rounded-xl aspect-square flex items-center justify-center w-full'>
         {!isLoaded && (
           <div className='absolute inset-0 bg-gray-200 animate-pulse z-0' />
         )}
@@ -107,10 +107,10 @@ export const CatalogCard: React.FC<CatalogCardProps> = ({
           onClick={openFoodDetail}
         />
 
-        {/* BUTTON */}
+        {/* BUTTON BACKGROUND & MINUS/COUNT */}
         <div
-          className={`absolute bottom-0 right-0 h-[44px] ml-auto flex items-center transition-all duration-500 ease-in-out overflow-hidden cursor-pointer rounded-tl-[12px] opacity-90 ${
-            quantity ? 'w-full px-[12px] left-0' : 'w-[25%]'
+          className={`absolute bottom-0 right-0 h-11 ml-auto flex items-center transition-all duration-500 ease-in-out overflow-hidden cursor-pointer rounded-tl-xl opacity-90 ${
+            quantity ? 'w-full px-3 left-0' : 'w-[25%]'
           }`}
           style={{ backgroundColor: colorTheme }}
         >
@@ -118,13 +118,13 @@ export const CatalogCard: React.FC<CatalogCardProps> = ({
             {/* MINUS */}
             <button
               onClick={handleRemove}
-              className={`absolute left-0 flex items-center justify-center text-white font-bold text-[20px] transition-all duration-300 ${
+              className={`absolute left-0 flex items-center justify-center text-white transition-all duration-300 ${
                 quantity
                   ? 'opacity-100 translate-x-0'
                   : 'opacity-0 -translate-x-4 pointer-events-none'
               }`}
             >
-              -
+              <MinusIcon className='w-5 h-5' />
             </button>
 
             {/* COUNT */}
@@ -135,26 +135,25 @@ export const CatalogCard: React.FC<CatalogCardProps> = ({
             >
               {quantity}
             </span>
-
-            {/* PLUS */}
-            <button
-              onClick={handleAdd}
-              className={`absolute right-0 text-white font-bold text-[20px] flex items-center justify-center transition-transform duration-300 ${
-                quantity ? 'rotate-360' : 'rotate-0'
-              }`}
-              style={{ width: quantity ? '25%' : '100%' }}
-            >
-              +
-            </button>
           </div>
         </div>
+
+        {/* PLUS */}
+        <button
+          onClick={handleAdd}
+          className={`absolute w-1/4 right-0 bottom-0 text-white h-11 flex items-center justify-center transition-transform duration-300 ${
+            quantity ? 'rotate-180' : 'rotate-0'
+          }`}
+        >
+          <PlusIcon className='w-5 h-5' />
+        </button>
       </div>
 
       {/* PRICE */}
-      <div className='flex items-center gap-[4px] mt-[8px] mb-[4px] px-1'>
+      <div className='flex items-center gap-1 mt-2 mb-1 px-1'>
         {item.modificators?.length ? (
           <span
-            className='font-[600] text-[16px]'
+            className='font-semibold text-[16px]'
             style={{ color: colorTheme }}
           >
             от {+item.modificators[0].price} с
@@ -165,7 +164,7 @@ export const CatalogCard: React.FC<CatalogCardProps> = ({
           </span>
         ) : (
           <span
-            className='font-[600] text-[16px]'
+            className='font-semibold text-[16px]'
             style={{ color: colorTheme }}
           >
             {+item.productPrice} с
@@ -174,9 +173,47 @@ export const CatalogCard: React.FC<CatalogCardProps> = ({
       </div>
 
       {/* NAME */}
-      <h4 className='px-1 font-[500] text-[16px] leading-[17px] line-clamp-2 text-gray-900 pb-2'>
+      <h4 className='px-1 font-medium text-[16px] leading-4.25 line-clamp-2 text-gray-900 pb-2'>
         {item.productName}
       </h4>
     </div>
   );
 };
+
+// ============================================================================
+// SVG ИКОНКИ
+// ============================================================================
+
+const PlusIcon = ({ className }: { className?: string }) => (
+  <svg
+    className={className}
+    viewBox='0 0 24 24'
+    fill='none'
+    xmlns='http://www.w3.org/2000/svg'
+  >
+    <path
+      d='M12 5V19M5 12H19'
+      stroke='currentColor'
+      strokeWidth='2.5'
+      strokeLinecap='round'
+      strokeLinejoin='round'
+    />
+  </svg>
+);
+
+const MinusIcon = ({ className }: { className?: string }) => (
+  <svg
+    className={className}
+    viewBox='0 0 24 24'
+    fill='none'
+    xmlns='http://www.w3.org/2000/svg'
+  >
+    <path
+      d='M5 12H19'
+      stroke='currentColor'
+      strokeWidth='2.5'
+      strokeLinecap='round'
+      strokeLinejoin='round'
+    />
+  </svg>
+);
