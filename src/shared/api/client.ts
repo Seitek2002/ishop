@@ -13,6 +13,8 @@ export const apiClient = async <T>(
 
   let url = `${BASE_URL}${endpoint}`;
 
+  console.log(url);
+
   if (params) {
     const searchParams = new URLSearchParams();
     Object.entries(params).forEach(([key, value]) => {

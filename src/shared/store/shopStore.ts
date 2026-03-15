@@ -1,79 +1,75 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { CartItem } from '@/shared/api/types';
+import { CartItem } from '../api/types';
 
 interface ShopState {
-  phoneNumber: string;
-  activeSpot: number;
-  deliveryType: 2 | 3;
   cart: CartItem[];
-  setPhoneNumber: (phone: string) => void;
-  setDeliveryType: (type: 2 | 3) => void;
-  setActiveSpot: (spot: number) => void;
+  // Добавляем поля для оформления заказа
+  phoneNumber: string;
+  address: string;
+  comment: string;
+  activeSpot: number | null; // ID выбранного заведения для самовывоза
+  orderType: 2 | 3; // 2 - Самовывоз, 3 - Доставка
+
+  addToCart: (item: CartItem) => void;
+  decrementQuantity: (id: string) => void;
   clearCart: () => void;
 
-  // Методы корзины
-  addToCart: (item: CartItem) => void;
-  incrementQuantity: (id: string) => void;
-  decrementQuantity: (id: string) => void;
+  setPhoneNumber: (phone: string) => void;
+  setAddress: (address: string) => void;
+  setComment: (comment: string) => void;
+  setActiveSpot: (spotId: number) => void;
+  setOrderType: (type: 2 | 3) => void;
 }
 
 export const useShopStore = create<ShopState>()(
   persist(
     (set, get) => ({
-      phoneNumber: '',
-      activeSpot: 0,
-      deliveryType: 3,
       cart: [],
-
-      setPhoneNumber: (phone) => set({ phoneNumber: phone }),
-      setDeliveryType: (type) => set({ deliveryType: type }),
-      setActiveSpot: (spot) => set({ activeSpot: spot }),
-      clearCart: () => set({ cart: [] }),
+      phoneNumber: '',
+      address: '',
+      comment: '',
+      activeSpot: null,
+      orderType: 3,
 
       addToCart: (item) => {
         const { cart } = get();
-        const existing = cart.find((c) => c.id === item.id);
-        if (existing) {
-          if (existing.quantity < existing.availableQuantity) {
-            set({
-              cart: cart.map((c) =>
-                c.id === item.id ? { ...c, quantity: c.quantity + 1 } : c,
-              ),
-            });
-          }
-        } else {
-          set({ cart: [...cart, { ...item, quantity: 1 }] });
-        }
-      },
+        const existingItemIndex = cart.findIndex((c) => c.id === item.id);
 
-      incrementQuantity: (id) => {
-        const { cart } = get();
-        set({
-          cart: cart.map((c) =>
-            c.id === id && c.quantity < c.availableQuantity
-              ? { ...c, quantity: c.quantity + 1 }
-              : c,
-          ),
-        });
+        if (existingItemIndex >= 0) {
+          const newCart = [...cart];
+          newCart[existingItemIndex].quantity += item.quantity;
+          set({ cart: newCart });
+        } else {
+          set({ cart: [...cart, item] });
+        }
       },
 
       decrementQuantity: (id) => {
         const { cart } = get();
-        const existing = cart.find((c) => c.id === id);
-        if (existing?.quantity === 1) {
-          set({ cart: cart.filter((c) => c.id !== id) }); // Удаляем, если было 1
-        } else {
-          set({
-            cart: cart.map((c) =>
-              c.id === id ? { ...c, quantity: c.quantity - 1 } : c,
-            ),
-          });
+        const existingItemIndex = cart.findIndex((c) => c.id === id);
+
+        if (existingItemIndex >= 0) {
+          const newCart = [...cart];
+          if (newCart[existingItemIndex].quantity > 1) {
+            newCart[existingItemIndex].quantity -= 1;
+            set({ cart: newCart });
+          } else {
+            set({ cart: cart.filter((c) => c.id !== id) });
+          }
         }
       },
+
+      clearCart: () => set({ cart: [] }),
+
+      setPhoneNumber: (phoneNumber) => set({ phoneNumber }),
+      setAddress: (address) => set({ address }),
+      setComment: (comment) => set({ comment }),
+      setActiveSpot: (activeSpot) => set({ activeSpot }),
+      setOrderType: (orderType) => set({ orderType }),
     }),
     {
-      name: 'ishop-cart-storage',
+      name: 'ishop-cart-storage', // Имя в localStorage
     },
   ),
 );

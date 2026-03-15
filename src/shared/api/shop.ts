@@ -35,7 +35,7 @@ export const shopApi = {
 
   // Создать заказ (используем в мутации TanStack Query)
   createOrder: (data: OrderCreate) =>
-    apiClient<OrderCreate>('/orders/', {
+    apiClient<{ paymentUrl?: string; phoneVerificationHash?: string }>('/orders/', {
       method: 'POST',
       body: JSON.stringify(data),
     }),
@@ -43,6 +43,9 @@ export const shopApi = {
   // Получить статус заказа (используем для Polling на клиенте)
   getOrderStatus: (orderId: number) =>
     apiClient<OrderList>(`/orders/${orderId}/`),
+
+  getClientBonus: (params: { phone: string; organizationSlug: string }) =>
+    apiClient<{ balance: number }>('/client/bonus/', { params }),
 
   getOrders: async (params: {
     phone: string;

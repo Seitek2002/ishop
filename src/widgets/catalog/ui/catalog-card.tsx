@@ -75,6 +75,7 @@ export const CatalogCard: React.FC<CatalogCardProps> = ({
       id: baseId,
       availableQuantity: item.quantity,
       modificators: undefined,
+      quantity: 1,
     });
   };
 
