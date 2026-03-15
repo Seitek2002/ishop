@@ -3,6 +3,8 @@ import { Categories } from '@/widgets/categories/ui';
 import { DesktopCart } from '@/widgets/desktop-cart/ui';
 import { StatusHero } from '@/widgets/status-hero/ui';
 import { shopApi } from '@/shared/api/shop';
+import { StoreHeader } from '@/widgets/store-header/ui';
+import { FloatingCartButton } from '@/widgets/cart/ui/floating-cart-button';
 
 export default async function VenuePage({
   params,
@@ -25,22 +27,27 @@ export default async function VenuePage({
       : '';
 
   return (
-    <div className='flex gap-8 items-start w-full pb-20'>
-      <div className='w-full lg:w-[65%] flex flex-col gap-6'>
-        <StatusHero venue={venueData} />
+    <>
+      <StoreHeader venue={venueData} />
+      <div className='flex gap-8 items-start w-full pb-20'>
+        <div className='w-full lg:w-[65%] flex flex-col gap-6'>
+          <StatusHero venue={venueData} />
 
-        <Categories venueSlug={venueSlug} selectedCategoryId={categoryId} />
+          <Categories venueSlug={venueSlug} selectedCategoryId={categoryId} />
 
-        <Catalog
-          venueSlug={venueSlug}
-          categoryId={categoryId}
-          searchQuery={searchQuery}
-        />
+          <Catalog
+            venueSlug={venueSlug}
+            categoryId={categoryId}
+            searchQuery={searchQuery}
+          />
+
+          <FloatingCartButton colorTheme={venueData.colorTheme} />
+        </div>
+
+        <div className='hidden lg:block lg:w-[35%] sticky top-24'>
+          <DesktopCart venue={venueData} />
+        </div>
       </div>
-
-      <div className='hidden lg:block lg:w-[35%] sticky top-24'>
-        <DesktopCart venue={venueData} />
-      </div>
-    </div>
+    </>
   );
 }

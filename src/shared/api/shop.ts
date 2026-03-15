@@ -8,7 +8,7 @@ import type {
 } from './types';
 
 export const shopApi = {
-  // Получить данные магазина (используем в Server Component app/[venue]/page.tsx)
+  // Получить данные магазина
   getOrganization: (slug: string, init?: RequestInit) =>
     apiClient<Organization>(`/organizations/${slug}/`, init),
 
@@ -35,7 +35,8 @@ export const shopApi = {
 
   // Создать заказ (используем в мутации TanStack Query)
   createOrder: (data: OrderCreate) =>
-    apiClient<{ paymentUrl?: string; phoneVerificationHash?: string }>('/orders/', {
+    apiClient<OrderCreate>('/orders/', {
+      // <-- Возвращаем оригинальный тип OrderCreate, в нем уже есть нужные поля
       method: 'POST',
       body: JSON.stringify(data),
     }),
@@ -44,14 +45,56 @@ export const shopApi = {
   getOrderStatus: (orderId: number) =>
     apiClient<OrderList>(`/orders/${orderId}/`),
 
+  // Получить баланс клиента
   getClientBonus: (params: { phone: string; organizationSlug: string }) =>
     apiClient<{ balance: number }>('/client/bonus/', { params }),
 
+  // Отправить СМС с кодом
+  sendSms: (phoneNumber: string) => {
+    const body = new URLSearchParams();
+    body.append('phoneNumber', phoneNumber);
+
+    return apiClient<{ phoneNumber: string }>('/auth/sms/send/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: body.toString(),
+    });
+  },
+
+  // Проверить СМС код
+  verifySms: (phoneNumber: string, code: string, referralCode?: string) => {
+    const body = new URLSearchParams();
+    body.append('phoneNumber', phoneNumber);
+    body.append('code', code);
+    if (referralCode) {
+      body.append('referralCode', referralCode);
+    }
+
+    // Добавляем hash и phoneVerificationHash в ожидаемый ответ!
+    return apiClient<{
+      phoneNumber: string;
+      code: string;
+      referralCode?: string;
+      hash?: string;
+      phoneVerificationHash?: string;
+    }>('/auth/sms/verify/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: body.toString(),
+    });
+  },
+
+  // Получить список заказов
   getOrders: async (params: {
     phone: string;
     organizationSlug: string;
     spotId: number;
-  }) => {
+  }): Promise<OrderList[]> => {
+    // <-- Строго указываем, что вернется массив OrderList
     // Временно возвращаем пустой массив или делай реальный fetch
     // const res = await fetch(`.../orders?phone=${params.phone}...`);
     // return res.json();

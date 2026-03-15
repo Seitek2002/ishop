@@ -14,11 +14,9 @@ import { Organization } from '@/shared/api/types';
 import { CartItem } from '@/widgets/cart/ui/cart-item';
 import { CheckoutForm } from '@/widgets/cart/ui/checkout-form';
 import { CartSummary } from '@/widgets/cart/ui/cart-summary';
-
-// Заглушки для модалок (раскомментируешь свои)
-// import { PointsModal } from '@/features/points-modal/ui';
-// import { ClearCartModal } from '@/features/clear-cart-modal/ui';
-// import { ServerErrorModal } from '@/features/server-error-modal/ui';
+import { PointsModal } from './modals/points-modal';
+import { ClearCartModal } from './modals/clear-cart-modal';
+import { ServerErrorModal } from './modals/server-error-modal';
 
 interface CartPageProps {
   venue: Organization;
@@ -60,10 +58,37 @@ export const CartClient: React.FC<CartPageProps> = ({ venue }) => {
     enabled: phoneNumber.length >= 12 && !!venue.slug,
   });
 
+  // --- МУТАЦИИ ДЛЯ СМС ---
+  const { mutate: sendSmsMutation } = useMutation({
+    mutationFn: (phone: string) => shopApi.sendSms(phone),
+    onError: (err: any) =>
+      setServerError(err?.message || 'Ошибка отправки SMS'),
+  });
+
+  const { mutate: verifySmsMutation } = useMutation({
+    mutationFn: (data: { phone: string; code: string }) =>
+      shopApi.verifySms(data.phone, data.code),
+    onSuccess: (res: any) => {
+      // <-- Добавили :any сюда, чтобы TS отстал от res.hash
+      // Если бэк возвращает hash после проверки СМС, сохраняем его
+      if (res?.hash || res?.phoneVerificationHash) {
+        localStorage.setItem('hash', res.hash || res.phoneVerificationHash);
+      }
+      setIsPointsModalOpen(false); // Закрываем модалку только при успехе!
+    },
+    onError: (err: any) => setServerError(err?.message || 'Неверный код'),
+  });
+
   // 2. Мутация отправки заказа
   const { mutate: createOrder, isPending: isCreating } = useMutation({
     mutationFn: (payload: any) => shopApi.createOrder(payload),
-    onSuccess: (res) => {
+    onSuccess: (response) => {
+      // Подмешиваем нужные поля прямо на месте, не ломая вывод типов useMutation
+      const res = response as typeof response & {
+        paymentUrl?: string;
+        phoneVerificationHash?: string;
+      };
+
       if (res?.paymentUrl) {
         // Очищаем корзину перед уходом на оплату
         clearCart();
@@ -73,8 +98,8 @@ export const CartClient: React.FC<CartPageProps> = ({ venue }) => {
         localStorage.setItem('hash', res.phoneVerificationHash);
       }
     },
-    onError: (err: any) => {
-      setServerError(err?.message || 'Ошибка оформления заказа');
+    onError: (err: Error) => {
+      setServerError(err.message || 'Ошибка оформления заказа');
     },
   });
 
@@ -152,7 +177,7 @@ export const CartClient: React.FC<CartPageProps> = ({ venue }) => {
 
   return (
     <div className='min-h-screen bg-[#F1F2F3] pb-28 md:pb-12 pt-4 md:pt-8 font-inter'>
-      <div className='max-w-[1140px] mx-auto px-4'>
+      <div className='max-w-285 mx-auto px-4'>
         {/* Шапка корзины */}
         <div className='flex items-center justify-between mb-6'>
           <div className='flex items-center gap-3'>
@@ -269,9 +294,42 @@ export const CartClient: React.FC<CartPageProps> = ({ venue }) => {
       )}
 
       {/* Вызов модалок */}
-      {/* <PointsModal isShow={isPointsModalOpen} ... /> */}
-      {/* <ClearCartModal isShow={isClearModalOpen} ... /> */}
-      {/* <ServerErrorModal error={serverError} ... /> */}
+      <PointsModal
+        isShow={isPointsModalOpen}
+        max={maxUsablePoints}
+        initial={maxUsablePoints}
+        skipOtp={
+          typeof window !== 'undefined' ? !!localStorage.getItem('hash') : false
+        }
+        colorTheme={venue.colorTheme}
+        onCancel={() => {
+          setIsPointsModalOpen(false);
+          setUsePoints(false);
+        }}
+        onConfirm={(val) => {
+          setBonusPoints(val);
+          setUsePoints(true);
+          // Отправляем СМС на введенный номер!
+          sendSmsMutation(phoneNumber.replace(/\D/g, ''));
+        }}
+        onConfirmOtp={(code) => {
+          // Проверяем введенный код
+          verifySmsMutation({ phone: phoneNumber.replace(/\D/g, ''), code });
+        }}
+      />
+
+      <ClearCartModal
+        isShow={isClearModalOpen}
+        onClose={() => setIsClearModalOpen(false)}
+        colorTheme={venue.colorTheme}
+      />
+
+      <ServerErrorModal
+        isShow={!!serverError}
+        error={serverError}
+        onClose={() => setServerError(null)}
+        colorTheme={venue.colorTheme}
+      />
     </div>
   );
 };

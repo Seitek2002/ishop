@@ -5,8 +5,10 @@ import React, {
   useEffect,
   useRef,
   useState,
+  useMemo,
 } from 'react';
-import { X } from 'lucide-react';
+import { X, ShoppingBag } from 'lucide-react';
+import { useRouter, useParams } from 'next/navigation';
 
 import { vibrateClick } from '@/shared/lib/haptics';
 import { useShopStore } from '@/shared/store/shopStore';
@@ -29,6 +31,8 @@ export const FoodDetailModal: React.FC<FoodDetailModalProps> = ({
   onClose,
   colorTheme = '#854C9D',
 }) => {
+  const router = useRouter();
+  const params = useParams(); // Достаем locale и venue из URL
   const cart = useShopStore((state) => state.cart);
   const addToCart = useShopStore((state) => state.addToCart);
   const decrementQuantity = useShopStore((state) => state.decrementQuantity);
@@ -39,7 +43,6 @@ export const FoodDetailModal: React.FC<FoodDetailModalProps> = ({
 
   const sizes: IModificator[] = item?.modificators || [];
 
-  // Сброс состояния при смене товара (React 18+ pattern)
   const [prevItemId, setPrevItemId] = useState<string | number | undefined>(
     undefined,
   );
@@ -53,7 +56,14 @@ export const FoodDetailModal: React.FC<FoodDetailModalProps> = ({
     setCounter(found ? found.quantity : 1);
   }
 
-  // Блокировка скролла и Escape
+  // Считаем общую сумму корзины для кнопки
+  const cartTotal = useMemo(() => {
+    return cart.reduce((sum, cartItem) => {
+      const price = cartItem.modificators?.price || cartItem.productPrice;
+      return sum + price * cartItem.quantity;
+    }, 0);
+  }, [cart]);
+
   useEffect(() => {
     document.body.style.overflow = isShow ? 'hidden' : '';
     return () => {
@@ -68,7 +78,6 @@ export const FoodDetailModal: React.FC<FoodDetailModalProps> = ({
     return () => window.removeEventListener('keydown', onKey);
   }, [isShow, onClose]);
 
-  // Свайп вниз
   const onTouchStart = (e: React.TouchEvent) => {
     startY.current = e.touches?.[0]?.clientY ?? null;
   };
@@ -90,7 +99,6 @@ export const FoodDetailModal: React.FC<FoodDetailModalProps> = ({
     setCounter(found ? found.quantity : 1);
   };
 
-  // Добавление в корзину (Общая логика)
   const handleAddToCart = useCallback(
     (hasMods: boolean) => {
       vibrateClick();
@@ -112,8 +120,6 @@ export const FoodDetailModal: React.FC<FoodDetailModalProps> = ({
       const restItem = { ...item };
       delete restItem.modificators;
 
-      console.log(item);
-
       const newItem: CartItem = {
         ...restItem,
         id: hasMods ? `${item.id},${sizeId}` : String(item.id),
@@ -127,6 +133,13 @@ export const FoodDetailModal: React.FC<FoodDetailModalProps> = ({
     },
     [item, selectedSize, counter, cart, addToCart, onClose],
   );
+
+  const goToCart = () => {
+    vibrateClick();
+    onClose();
+    // Переход по правильному URL Next.js
+    router.push(`/${params.locale}/${params.venue}/cart`);
+  };
 
   if (!item) return null;
 
@@ -143,7 +156,7 @@ export const FoodDetailModal: React.FC<FoodDetailModalProps> = ({
       />
 
       <div
-        className={`fixed left-1/2 top-[55%] md:top-1/2 z-101 w-full md:w-150 h-[90dvh] md:h-auto md:max-h-[90dvh] -translate-x-1/2 -translate-y-1/2 bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden transition-all duration-300 ${isShow ? 'scale-100 opacity-100' : 'scale-95 opacity-0 pointer-events-none'}`}
+        className={`fixed left-1/2 top-[55%] md:top-1/2 z-101 w-full md:w-150 h-[90dvh] md:h-auto md:max-h-[90dvh] -translate-x-1/2 -translate-y-1/2 bg-white rounded-t-3xl md:rounded-3xl shadow-2xl flex flex-col overflow-hidden transition-all duration-300 ${isShow ? 'scale-100 opacity-100' : 'scale-95 opacity-0 pointer-events-none'}`}
         role='dialog'
         onTouchStart={onTouchStart}
         onTouchEnd={onTouchEnd}
@@ -179,20 +192,38 @@ export const FoodDetailModal: React.FC<FoodDetailModalProps> = ({
           </div>
         </div>
 
-        <ProductFooter
-          sizes={sizes}
-          counter={counter}
-          price={item.productPrice}
-          foundCartItemNoMods={foundCartItemNoMods}
-          colorTheme={colorTheme}
-          onCounterChange={handleCounterChange}
-          onAddWithMods={() => handleAddToCart(true)}
-          onAddNoMods={() => handleAddToCart(false)}
-          onDecrementNoMods={() => {
-            vibrateClick();
-            decrementQuantity(String(item.id));
-          }}
-        />
+        {/* Обёртка для футера и кнопки перехода в корзину */}
+        <div className='bg-white px-5 pb-6 md:pb-5 pt-2 flex flex-col gap-3 shadow-[0_-10px_20px_rgba(0,0,0,0.03)] z-10 relative'>
+          <ProductFooter
+            sizes={sizes}
+            counter={counter}
+            price={item.productPrice}
+            foundCartItemNoMods={foundCartItemNoMods}
+            colorTheme={colorTheme}
+            onCounterChange={handleCounterChange}
+            onAddWithMods={() => handleAddToCart(true)}
+            onAddNoMods={() => handleAddToCart(false)}
+            onDecrementNoMods={() => {
+              vibrateClick();
+              decrementQuantity(String(item.id));
+            }}
+          />
+
+          {/* Кнопка "Перейти в корзину" (появляется только если в корзине что-то есть) */}
+          {cartTotal > 0 && (
+            <button
+              onClick={goToCart}
+              className='w-full py-3.5 rounded-xl text-white font-semibold text-[15px] flex items-center justify-between px-5 transition-transform active:scale-[0.98]'
+              style={{ backgroundColor: colorTheme }}
+            >
+              <div className='flex items-center gap-2'>
+                <ShoppingBag size={18} />
+                <span>Перейти в корзину</span>
+              </div>
+              <span>{cartTotal} с</span>
+            </button>
+          )}
+        </div>
       </div>
     </>
   );
