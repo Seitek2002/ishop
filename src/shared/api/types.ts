@@ -118,5 +118,12 @@ export interface OrderList {
   comment: string | null;
   phone: string;
   statusText: string;
-  // orderProducts также вложены, если нужно, можем типизировать глубже
+  orderProducts: OrderProduct[];
+}
+
+export interface OrderProduct {
+  product: IProduct;
+  count: number;
+  price: string | number;
+  modificator?: number | null;
 }
